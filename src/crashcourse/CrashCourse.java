@@ -18,6 +18,7 @@ import javafx.stage.Stage;
  * @author johanwendt
  */
 public class CrashCourse extends Application {
+    private MainPopup mainPopup;
     
     @Override
     public void start(Stage primaryStage) {
@@ -50,7 +51,8 @@ public class CrashCourse extends Application {
     }
 
     private void createPopup() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //String title, String infoText, String okMessage, String cancelMessage, CrashCourse crashCourse
+        mainPopup = new MainPopup("Crash Course", "Nothing yet", "Start Game", "Cancel", this);
     }
     
 }
