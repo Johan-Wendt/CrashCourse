@@ -52,7 +52,7 @@ public class CrashCourse extends Application {
 
     private void createPopup() {
         //String title, String infoText, String okMessage, String cancelMessage, CrashCourse crashCourse
-        mainPopup = new MainPopup("Crash Course", "Nothing yet", "Start Game", "Cancel", this);
+        mainPopup = new MainPopup("Crash Course", "Start Game", "Cancel", this);
     }
     
 }

@@ -7,6 +7,7 @@ package crashcourse;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
@@ -41,7 +42,7 @@ public abstract class PopUp {
     private final VBox popUpPane = new VBox();
     private final VBox popUpPaneInnerUpper = new VBox();
     private final HBox popUpPaneInnerLower = new HBox();
-   // private HBox extraPane = new HBox();
+    private Pane extraPane = new Pane();
     
     protected final static int STANDARD_PANE_WIDTH = 600;
     private final static int STANDARD_PANE_HEIGHT = 600;
@@ -68,13 +69,14 @@ public abstract class PopUp {
         setOnActions();
         okButton.requestFocus();
     }
-    public PopUp(String title, String infoText, String okMessage, int paneWidth) {
+    /**
+    public PopUp(String title, String okMessage, String cancelMessage, int paneWidth) {
         setUpOuterPart(title, paneWidth);
         setUpLowerPart();
         setUpExtraPane();
         setUpUpperPart();
-        setUpInfoLabel(infoText);
         addOkButton(okMessage);
+        addCancelButton(cancelMessage);
         setStandardOnStageKeyBehaviour();
         setOnActions();
         okButton.requestFocus();
@@ -91,6 +93,8 @@ public abstract class PopUp {
         setOnActions();
         okButton.requestFocus();
     }
+    * 
+    * **/
     private void setUpOuterPart(String title, int paneWidth) {
         pupUpStage.setTitle(title);
         pupUpStage.setAlwaysOnTop(true);
@@ -108,34 +112,24 @@ public abstract class PopUp {
         pupUpStage.setScene(popUpScene);
         pupUpStage.setResizable(false);
     }
-    protected void setUpUpperPart() { 
+    private void setUpUpperPart() { 
         popUpPaneInnerUpper.setPadding(new Insets(STANDARD_PADDING / 2, STANDARD_PADDING, STANDARD_PADDING / 4, STANDARD_PADDING));
         popUpPaneInnerUpper.setPrefHeight(INNER_UPPER_HEIGHT);
-        popUpPaneInnerUpper.getChildren().add(infoLabelText);
     }
-    protected void setUpExtraPane() {
+    private void setUpExtraPane() {
         HBox extraPane = new HBox();
         popUpPane.getChildren().add(1, extraPane);
         extraPane.setAlignment(Pos.CENTER);
         extraPane.getChildren().add(extraLabel);
     }
-    protected void setUpLowerPart() {
+    private void setUpLowerPart() {
         popUpPaneInnerLower.setPrefHeight(INNER_LOWER_HEIGHT);
         popUpPaneInnerLower.setAlignment(Pos.CENTER_RIGHT);
         popUpPaneInnerLower.setPadding(new Insets(STANDARD_PADDING));
         HBox.setMargin(okButton, new Insets(0, STANDARD_PADDING / 4, 0, STANDARD_PADDING / 4));
 
     }
-    protected void setUpInfoLabel(String infoText) {
-        infoLabelText.setText(infoText);
-        infoLabelText.setWrapText(true);
-        infoLabelText.setStyle("-fx-font-size: 25px; -fx-text-fill: #2B2B22");
-        VBox.setMargin(infoLabelText, new Insets(0, 0, STANDARD_PADDING, 0));
-        
-    }
-    protected  void setInfoText(String infoText) {
-        getInfoLabel().setText(infoText);
-    }       
+    
     protected void showPopUp(boolean show) {
         if(show && !pupUpStage.isShowing()) {
             pupUpStage.show();
@@ -172,9 +166,7 @@ public abstract class PopUp {
         extraButton.setPrefHeight(STANDARD_BUTTON_HEIGHT);
         popUpPaneInnerLower.getChildren().add(0, extraButton);
     }
-    protected Label getInfoLabel() {
-        return infoLabelText;
-    }
+
     protected Button getOkButton() {
         return okButton;
     }
@@ -217,8 +209,8 @@ public abstract class PopUp {
         Background background = new Background(backgroundImage);
         popUpPane.setBackground(background);
     }
-    protected void addExtraPane(Pane pane) {
-        popUpPaneInnerUpper.getChildren().add(pane);
+    protected void addExtraPane(Node node) {
+        popUpPaneInnerUpper.getChildren().add(node);
         popUpPaneInnerUpper.setAlignment(Pos.TOP_CENTER);
     }
     protected Stage getPopUpStage() {
@@ -226,5 +218,12 @@ public abstract class PopUp {
     }
     protected static int getStandardPadding() {
         return STANDARD_PADDING;
+    }
+    protected void addShortCutButton(Button shortCutButton) {
+        shortCutButton.setStyle("-fx-base: #01c9f3; -fx-font-size: 15px;");
+        shortCutButton.setMinWidth(150);
+        shortCutButton.setPadding(new Insets(PopUp.getStandardPadding() * 3));
+        shortCutButton.setMinWidth(100);
+        popUpPaneInnerUpper.getChildren().add(shortCutButton);
     }
 }

@@ -20,7 +20,6 @@ import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.Font;
 import javafx.util.Duration;
 
 /**
@@ -39,15 +38,15 @@ public class MainPopup extends PopUp{
     
     
     
-    public MainPopup(String title, String infoText, String okMessage, String cancelMessage, CrashCourse crashCourse) {
-        super(title, infoText, okMessage, cancelMessage, PopUp.STANDARD_PANE_WIDTH);
+    public MainPopup(String title, String okMessage, String cancelMessage, CrashCourse crashCourse) {
+        super(title, okMessage, cancelMessage, PopUp.STANDARD_PANE_WIDTH);
         this.crashCourse = crashCourse;
         
         getOkButton().setDisable(true);
         getCancelButton().setDisable(true);
      //   setUpWinnerInfo(null, false);
         addComboBox();
-        setUpLowerPart();
+      //  setUpLowerPart();
         addExtraPane(setUpMenuShortcuts());
         showPopUp(true);
     }
@@ -69,7 +68,9 @@ public class MainPopup extends PopUp{
                 getCancelButton().setDisable(false);
             }
         });
-        addExtraButton(chooseNumberOfPlayers);
+        chooseNumberOfPlayers.setStyle("-fx-base: #0000FF; -fx-font-size: 15px;");
+        chooseNumberOfPlayers.setPrefHeight(STANDARD_BUTTON_HEIGHT);
+        addExtraPane(chooseNumberOfPlayers);
     }
     @Override
     protected void setOnActions() {
@@ -119,13 +120,13 @@ public class MainPopup extends PopUp{
         
         HBox innerButtonPane = new HBox();
         
+        final Button newGameButton = new Button("Start new game");
         final Button controllButton = new Button("Controlls");
-        final Button ruleButton = new Button("  Rules  ");
-        final Button quitButton = new Button("   Quit  ");
+        final Button ruleButton = new Button("Rules");
         
         controllButton.setStyle("-fx-base: #01c9f3; -fx-font-size: 15px;");
         ruleButton.setStyle("-fx-base: #01c9f3; -fx-font-size: 15px;");
-        quitButton.setStyle("-fx-base: #01c9f3; -fx-font-size: 15px;");
+        newGameButton.setStyle("-fx-base: #01c9f3; -fx-font-size: 15px;");
         
         controllButton.setMinWidth(150);
         ruleButton.setMinWidth(150);
@@ -133,7 +134,7 @@ public class MainPopup extends PopUp{
         
         controllButton.setPadding(new Insets(PopUp.getStandardPadding() * 3));
         ruleButton.setPadding(new Insets(PopUp.getStandardPadding() * 3));
-        quitButton.setPadding(new Insets(PopUp.getStandardPadding() * 3));
+        newGameButton.setPadding(new Insets(PopUp.getStandardPadding() * 3));
         
         controllButton.setMinWidth(100);
         ruleButton.setMinWidth(100);
@@ -148,11 +149,11 @@ public class MainPopup extends PopUp{
         ruleButton.setOnAction(e -> {
      //       UserInterface.showRulesStage(true);
         });
-        quitButton.setOnAction(e -> {
+        newGameButton.setOnAction(e -> {
       //      UserInterface.showQuitStage(true);
         });
         
-        innerButtonPane.getChildren().addAll(controllButton, ruleButton, quitButton);
+        innerButtonPane.getChildren().addAll(newGameButton, controllButton, ruleButton);
         
         return innerButtonPane;
     }
