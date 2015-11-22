@@ -18,8 +18,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
 /**
@@ -28,29 +28,24 @@ import javafx.util.Duration;
  */
 public class MainPopup extends PopUp{
  //   private final static ComboBox chooseNumberOfPlayers = new ComboBox<>();
-    private static final Label winnerInfo = new Label();
+   // private static final Label winnerInfo = new Label();
     private CrashCourse crashCourse;
-    
-    
-    private static final GridPane controlsPane = new GridPane();
-
-    
-    
-    
-    
+  //  private static final GridPane controlsPane = new GridPane();
     public MainPopup(String title, String okMessage, String cancelMessage, CrashCourse crashCourse) {
-        super(title, okMessage, cancelMessage, PopUp.STANDARD_PANE_WIDTH);
+        super(title, okMessage, cancelMessage);
         this.crashCourse = crashCourse;
         
+        setBackGround("invincibagelsplash.png", true);
         getOkButton().setDisable(true);
         getCancelButton().setDisable(true);
      //   setUpWinnerInfo(null, false);
-        addComboBox();
+        setUpStartGameMenu();
+        setUpRulesMenu();
       //  setUpLowerPart();
-        addExtraPane(setUpMenuShortcuts());
+        //setUpMenuShortcuts();
         showPopUp(true);
     }
-    private void addComboBox() {
+    private void setUpStartGameMenu() {
         ObservableList<String> options = FXCollections.observableArrayList("1 player", "2 players","3 players","4 players");
         ComboBox chooseNumberOfPlayers = new ComboBox<>();
         chooseNumberOfPlayers.getItems().addAll(options);
@@ -70,7 +65,16 @@ public class MainPopup extends PopUp{
         });
         chooseNumberOfPlayers.setStyle("-fx-base: #0000FF; -fx-font-size: 15px;");
         chooseNumberOfPlayers.setPrefHeight(STANDARD_BUTTON_HEIGHT);
-        addExtraPane(chooseNumberOfPlayers);
+        Pane gameMenu = new Pane();
+        gameMenu.getChildren().add(chooseNumberOfPlayers);
+        
+        addMenuChoice("Start new game", gameMenu);
+    }
+    private void setUpRulesMenu() {
+        Label rules = new Label("Theese are the rules");
+        Pane rulesMenu = new Pane();
+        rulesMenu.getChildren().add(rules);
+        addMenuChoice("Rules", rulesMenu);
     }
     @Override
     protected void setOnActions() {
@@ -78,16 +82,13 @@ public class MainPopup extends PopUp{
             Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1000),ae -> 
             startGame()
             ));
-            
            // UserInterface.setDisableMenuBar(false);
             showPopUp(false);
             getCancelButton().setDisable(false);
         });
-
         getCancelButton().setOnAction(e -> {
             showPopUp(false);
         });   
-        
     }
     private void startGame() {
    //     gameEngine.restart();

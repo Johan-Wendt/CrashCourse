@@ -7,13 +7,12 @@ package crashcourse;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
@@ -34,23 +33,25 @@ public abstract class PopUp {
     private final Stage pupUpStage = new Stage();
     private Scene popUpScene;
     private final Label infoLabelText = new Label();
-    private Label extraLabel = new Label();
+  //  private Label extraLabel = new Label();
     private final Button okButton = new Button();
     private final Button cancelButton = new Button();
     
     
     private final VBox popUpPane = new VBox();
-    private final VBox popUpPaneInnerUpper = new VBox();
+    private final HBox popUpPaneInnerUpper = new HBox();
     private final HBox popUpPaneInnerLower = new HBox();
-    private Pane extraPane = new Pane();
+    private Group popUpPaneInnerMiddle = new Group();
     
-    protected final static int STANDARD_PANE_WIDTH = 600;
+    private final static int STANDARD_PANE_WIDTH = 600;
     private final static int STANDARD_PANE_HEIGHT = 600;
     private final static int INNER_UPPER_HEIGHT = STANDARD_PANE_HEIGHT - 50;
     private final static int INNER_LOWER_HEIGHT = STANDARD_PANE_HEIGHT - INNER_UPPER_HEIGHT;
     private final static int STANDARD_PADDING = 20;
     
     protected final static int STANDARD_BUTTON_HEIGHT = 70;
+    
+    private Background background;
     
     /**
      * Create a popup with a title, a message for the ok button and a preffered 
@@ -59,12 +60,19 @@ public abstract class PopUp {
      * @param okMessage message displayed on the confirmation button.
      * @param paneWidth prefered width of the pane
      */
-    public PopUp(String title, String okMessage, int paneWidth) {
-        setUpOuterPart(title, paneWidth);
+    public PopUp() {
+        setUpOuterPart();
         setUpLowerPart();
-        setUpExtraPane();
+        setUpMiddlePane();
+        setUpUpperPart();
+    }
+    public PopUp(String title, String okMessage, String cancelMessage) {
+        setUpOuterPart(title, STANDARD_PANE_WIDTH);
+        setUpLowerPart();
+        setUpMiddlePane();
         setUpUpperPart();
         addOkButton(okMessage);
+        addCancelButton(cancelMessage);
         setStandardOnStageKeyBehaviour();
         setOnActions();
         okButton.requestFocus();
@@ -73,7 +81,7 @@ public abstract class PopUp {
     public PopUp(String title, String okMessage, String cancelMessage, int paneWidth) {
         setUpOuterPart(title, paneWidth);
         setUpLowerPart();
-        setUpExtraPane();
+        setUpMiddlePane();
         setUpUpperPart();
         addOkButton(okMessage);
         addCancelButton(cancelMessage);
@@ -84,7 +92,7 @@ public abstract class PopUp {
     public PopUp(String title, String infoText, String okMessage, String cancelMessage, int paneWidth) {
         setUpOuterPart(title, paneWidth);
         setUpLowerPart();
-        setUpExtraPane();
+        setUpMiddlePane();
         setUpUpperPart();
         setUpInfoLabel(infoText);
         addOkButton(okMessage);
@@ -95,6 +103,17 @@ public abstract class PopUp {
     }
     * 
     * **/
+    private void setUpOuterPart() {
+        pupUpStage.setAlwaysOnTop(true);
+   //     pupUpStage.initOwner(UserInterface.getBattleStage());
+        pupUpStage.setOnCloseRequest(c -> {
+            showPopUp(false);
+        });
+        popUpPane.getChildren().addAll(popUpPaneInnerUpper, popUpPaneInnerMiddle, popUpPaneInnerLower);
+        popUpScene = new Scene(popUpPane);
+        pupUpStage.setScene(popUpScene);
+        pupUpStage.setResizable(false);
+    }
     private void setUpOuterPart(String title, int paneWidth) {
         pupUpStage.setTitle(title);
         pupUpStage.setAlwaysOnTop(true);
@@ -104,9 +123,7 @@ public abstract class PopUp {
         });
       //  setBackGround("test.jpg", true);
                 
-        popUpPane.getChildren().add(popUpPaneInnerUpper);
-       // popUpPane.getChildren().add(extraPane);
-        popUpPane.getChildren().add(popUpPaneInnerLower);
+        popUpPane.getChildren().addAll(popUpPaneInnerUpper, popUpPaneInnerMiddle, popUpPaneInnerLower);
         
         popUpScene = new Scene(popUpPane, paneWidth, STANDARD_PANE_HEIGHT);
         pupUpStage.setScene(popUpScene);
@@ -116,11 +133,10 @@ public abstract class PopUp {
         popUpPaneInnerUpper.setPadding(new Insets(STANDARD_PADDING / 2, STANDARD_PADDING, STANDARD_PADDING / 4, STANDARD_PADDING));
         popUpPaneInnerUpper.setPrefHeight(INNER_UPPER_HEIGHT);
     }
-    private void setUpExtraPane() {
-        HBox extraPane = new HBox();
-        popUpPane.getChildren().add(1, extraPane);
-        extraPane.setAlignment(Pos.CENTER);
-        extraPane.getChildren().add(extraLabel);
+    private void setUpMiddlePane() {
+       // popUpPane.getChildren().add(1, popUpPaneInnerMiddle);
+        //popUpPaneInnerMiddle.setAlignment(Pos.CENTER);
+      //  popUpPaneInnerMiddle.getChildren().add(extraLabel);
     }
     private void setUpLowerPart() {
         popUpPaneInnerLower.setPrefHeight(INNER_LOWER_HEIGHT);
@@ -176,7 +192,7 @@ public abstract class PopUp {
     public VBox getPopUpPane() {
         return popUpPane;
     }
-    protected VBox getPopUpPaneInnerUpper() {
+    protected HBox getPopUpPaneInnerUpper() {
         return popUpPaneInnerUpper;
     }
     protected HBox getPopUpPaneInnerLower() {
@@ -193,12 +209,14 @@ public abstract class PopUp {
      */
     protected abstract void setOnActions();
     
+    /**
     protected void addInfoPicture(ImageView picture) {
         extraLabel.setGraphic(picture);
     }
     protected Label getExtraLabel() {
         return extraLabel;
     }
+    * **/
     protected void setBackGround(String name, boolean cover) {
         Image image = new Image(getClass().getResourceAsStream(name));
         // new BackgroundSize(width, height, widthAsPercentage, heightAsPercentage, contain, cover)
@@ -206,24 +224,38 @@ public abstract class PopUp {
         // new BackgroundImage(image, repeatX, repeatY, position, size)
         BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.CENTER, backgroundSize);
         // new Background(images...)
-        Background background = new Background(backgroundImage);
-        popUpPane.setBackground(background);
+        background = new Background(backgroundImage);
+      //  popUpPane.setBackground(background);
     }
-    protected void addExtraPane(Node node) {
-        popUpPaneInnerUpper.getChildren().add(node);
-        popUpPaneInnerUpper.setAlignment(Pos.TOP_CENTER);
+    /**
+    protected void setMiddleContent(Node node) {
+        popUpPaneInnerMiddle.getChildren().add(node);
+       // popUpPaneInnerUpper.setAlignment(Pos.TOP_CENTER);
     }
+    * **/
     protected Stage getPopUpStage() {
         return pupUpStage;
     }
     protected static int getStandardPadding() {
         return STANDARD_PADDING;
     }
-    protected void addShortCutButton(Button shortCutButton) {
+    protected void addMenuChoice(String shortCutName, Pane menuChoice) {
+        final Button shortCutButton = new Button(shortCutName);
         shortCutButton.setStyle("-fx-base: #01c9f3; -fx-font-size: 15px;");
         shortCutButton.setMinWidth(150);
         shortCutButton.setPadding(new Insets(PopUp.getStandardPadding() * 3));
         shortCutButton.setMinWidth(100);
+        
+        menuChoice.setPrefSize(STANDARD_PANE_WIDTH, STANDARD_PANE_HEIGHT - 200);
+        
         popUpPaneInnerUpper.getChildren().add(shortCutButton);
+        popUpPaneInnerMiddle.getChildren().add(menuChoice);
+        
+        shortCutButton.setOnAction(e -> {
+            menuChoice.toFront();
+        });
+        if(background != null) {
+            menuChoice.setBackground(background);
+        }
     }
 }
