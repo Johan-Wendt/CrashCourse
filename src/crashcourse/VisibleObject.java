@@ -72,17 +72,17 @@ public abstract class VisibleObject {
     public SVGPath getBorders() {
         return borders;
     }
-
-    public void setRightBorder(SVGPath rightBorder) {
-        this.rightBorder = rightBorder;
+    public SVGPath getUpBorders() {
+        return uppBorder;
     }
-
-    public void setDownBorder(SVGPath downBorder) {
-        this.downBorder = downBorder;
+    public SVGPath getRightBorders() {
+        return rightBorder;
     }
-
-    public void setLeftBorder(SVGPath leftBorder) {
-        this.leftBorder = leftBorder;
+    public SVGPath getDownBorders() {
+        return downBorder;
+    }
+    public SVGPath getLeftBorders() {
+        return leftBorder;
     }
     
 
@@ -98,10 +98,26 @@ public abstract class VisibleObject {
         leftBorder = new SVGPath();
         leftBorder.setContent(details.getSVGDataLeft());
     }
-    public int crashedInto(Bounds crasherBounds) {
-        Bounds appearance.getBoundsInParent();
-        int crashReturn = -1;
-        if()
-        
+    
+    public int crashedInto(VisibleObject crasher) {
+       // if(crasher.getAppearance().getBoundsInParent().intersects(getAppearance().getBoundsInParent()) && !this.equals(crasher)) { 
+            if(crasher.getBorders().intersects(getUpBorders().getBoundsInLocal())) {
+                return CRASH_UP;
+        //    }
+            /**
+            if(crasher.getBorders().intersects(getRightBorders().getBoundsInLocal())) {
+                return CRASH_RIGHT;
+            }
+            
+            if(crasher.getBorders().intersects(getDownBorders().getBoundsInLocal())) {
+                return CRASH_DOWN;
+            }
+           
+            if(crasher.getBorders().intersects(getLeftBorders().getBoundsInLocal())) {
+                return CRASH_LEFT;
+            }
+            * **/
+        }
+        return -1;
     }
 }

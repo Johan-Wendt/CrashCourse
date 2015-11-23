@@ -149,12 +149,14 @@ public class Player extends MovingObject{
 
     private void checkCollision() {
         loop: for(VisibleObject object : ObjectHandler.getCurrentObjects()) {
-            if(crash(object)) {
-                handleCrash();
+            int crashSort = object.crashedInto(this);
+            if(crashSort >= 0 ) {
+                handleCrash(crashSort);
                 break loop;
             }
         }
     }
+    /**
     private boolean crash(VisibleObject object) {
         if(getAppearance().getBoundsInParent().intersects(object.getAppearance().getBoundsInParent()) && !this.equals(object)) {
             Shape intersection = SVGPath.intersect(getBorders(), object.getBorders()); 
@@ -164,8 +166,21 @@ public class Player extends MovingObject{
         }
         return false; 
     }
+    * **/
 
-    private void handleCrash() {
-        setCurrentSpeed((float) 0.1);
+    private void handleCrash(int crashSort) {
+       // setCurrentSpeed((float) 0.1);
+        System.out.println(crashSort);
+        if(crashSort == VisibleObject.CRASH_UP || crashSort == VisibleObject.CRASH_DOWN) {
+            invertYDirection();
+        }
+        else if(crashSort == VisibleObject.CRASH_RIGHT || crashSort == VisibleObject.CRASH_LEFT) {
+            invertXDirection();
+        }
+        float speedFactor = getCurrentSpeed() / getMaxSpeed();
+        slideX = speedFactor * ((float) getXDirection());
+        slideY =speedFactor * ((float) getYDirection());
+        isSliding = true;
+        slideFactor = (float) 1.0;
     }
 }
