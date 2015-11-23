@@ -20,9 +20,7 @@ public class Player extends MovingObject{
     private HashMap<KeyCode, Integer> controls = new HashMap<>();
     private int facing, turningSpeed, turnsPlayed, baseRotate;
     private float retardation, slippeyTires, slideX, slideY, slideFactor;
-    
-    private int bangForTheBuck = 0;
-    
+        
 
     public Player(CrashCourse crashCourse, VisibleObjects deatils, Players playerDetails) {
         super(crashCourse, deatils);
@@ -168,7 +166,6 @@ public class Player extends MovingObject{
     }
 
     private void handleCrash() {
-        System.out.println("Bang!" + bangForTheBuck);
-        bangForTheBuck ++;
+        setCurrentSpeed((float) 0.1);
     }
 }

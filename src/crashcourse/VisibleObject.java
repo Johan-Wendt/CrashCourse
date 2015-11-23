@@ -5,6 +5,7 @@
  */
 package crashcourse;
 
+import javafx.geometry.Bounds;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.SVGPath;
 
@@ -16,15 +17,20 @@ public abstract class VisibleObject {
     private VisibleObjects details;
     private float xLocation, yLocation;
     private ImageView appearance;
-    private SVGPath borders;
+    private SVGPath borders, uppBorder, rightBorder, downBorder, leftBorder;
+    public static int CRASH_UP = 0;
+    public static int CRASH_RIGHT = 1;
+    public static int CRASH_DOWN = 2;
+    public static int CRASH_LEFT = 3;
+    
+    
     
     public VisibleObject(CrashCourse crashCourse, VisibleObjects deatils) {
         this.details = deatils;
         appearance = new ImageView(details.getImages().get(0));
         crashCourse.getRoot().getChildren().add(appearance);
         
-        borders = new SVGPath();
-        borders.setContent(details.getSVGData());
+        setBorders();
         
         ObjectHandler.addToCurrentObjects(this);
     }
@@ -38,8 +44,7 @@ public abstract class VisibleObject {
         appearance.setTranslateX(xLocation);
         appearance.setTranslateY(yLocation);
         
-        borders = new SVGPath();
-        borders.setContent(details.getSVGData());
+        setBorders();
         
         ObjectHandler.addToCurrentObjects(this);
     }
@@ -67,5 +72,36 @@ public abstract class VisibleObject {
     public SVGPath getBorders() {
         return borders;
     }
+
+    public void setRightBorder(SVGPath rightBorder) {
+        this.rightBorder = rightBorder;
+    }
+
+    public void setDownBorder(SVGPath downBorder) {
+        this.downBorder = downBorder;
+    }
+
+    public void setLeftBorder(SVGPath leftBorder) {
+        this.leftBorder = leftBorder;
+    }
     
+
+    private void setBorders() {
+        borders = new SVGPath();
+        borders.setContent(details.getSVGData());
+        uppBorder = new SVGPath();
+        uppBorder.setContent(details.getSVGDataUpp());
+        rightBorder = new SVGPath();
+        rightBorder.setContent(details.getSVGDataRight());
+        downBorder = new SVGPath();
+        downBorder.setContent(details.getSVGDataDown());
+        leftBorder = new SVGPath();
+        leftBorder.setContent(details.getSVGDataLeft());
+    }
+    public int crashedInto(Bounds crasherBounds) {
+        Bounds appearance.getBoundsInParent();
+        int crashReturn = -1;
+        if()
+        
+    }
 }
