@@ -103,8 +103,8 @@ public abstract class VisibleObject {
        // if(crasher.getAppearance().getBoundsInParent().intersects(getAppearance().getBoundsInParent()) && !this.equals(crasher)) { 
             if(crasher.getBorders().intersects(getUpBorders().getBoundsInLocal())) {
                 return CRASH_UP;
-        //    }
-            /**
+            }
+            
             if(crasher.getBorders().intersects(getRightBorders().getBoundsInLocal())) {
                 return CRASH_RIGHT;
             }
@@ -116,8 +116,8 @@ public abstract class VisibleObject {
             if(crasher.getBorders().intersects(getLeftBorders().getBoundsInLocal())) {
                 return CRASH_LEFT;
             }
-            * **/
-        }
+        
+     //   }
         return -1;
     }
 }
