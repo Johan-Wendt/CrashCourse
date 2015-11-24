@@ -111,7 +111,6 @@ public abstract class VisibleObject {
     public int crashedInto(VisibleObject crasher) {
        // if(crasher.getAppearance().getBoundsInParent().intersects(getAppearance().getBoundsInParent()) && !this.equals(crasher)) { 
         
-        Shape intersection = SVGPath.intersect(crasher.getBorders(), getUpBorders());
             if(SVGPath.intersect(crasher.getBorders(), getUpBorders()).getBoundsInLocal().getWidth() != -1) {
                 return CRASH_UP;
             }
