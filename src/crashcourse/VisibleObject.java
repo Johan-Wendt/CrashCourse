@@ -7,7 +7,9 @@ package crashcourse;
 
 import javafx.geometry.Bounds;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
+import javafx.scene.shape.Shape;
 
 /**
  *
@@ -17,7 +19,7 @@ public abstract class VisibleObject {
     private VisibleObjects details;
     private float xLocation, yLocation;
     private ImageView appearance;
-    private SVGPath borders, uppBorder, rightBorder, downBorder, leftBorder;
+    private SVGPath borders, upBorder, rightBorder, downBorder, leftBorder;
     public static int CRASH_UP = 0;
     public static int CRASH_RIGHT = 1;
     public static int CRASH_DOWN = 2;
@@ -30,7 +32,7 @@ public abstract class VisibleObject {
         appearance = new ImageView(details.getImages().get(0));
         crashCourse.getRoot().getChildren().add(appearance);
         
-        setBorders();
+        setBorders(crashCourse);
         
         ObjectHandler.addToCurrentObjects(this);
     }
@@ -44,7 +46,7 @@ public abstract class VisibleObject {
         appearance.setTranslateX(xLocation);
         appearance.setTranslateY(yLocation);
         
-        setBorders();
+        setBorders(crashCourse);
         
         ObjectHandler.addToCurrentObjects(this);
     }
@@ -73,7 +75,7 @@ public abstract class VisibleObject {
         return borders;
     }
     public SVGPath getUpBorders() {
-        return uppBorder;
+        return upBorder;
     }
     public SVGPath getRightBorders() {
         return rightBorder;
@@ -86,21 +88,46 @@ public abstract class VisibleObject {
     }
     
 
-    private void setBorders() {
+    private void setBorders(CrashCourse crashCourse) {
         borders = new SVGPath();
         borders.setContent(details.getSVGData());
-        uppBorder = new SVGPath();
-        uppBorder.setContent(details.getSVGDataUpp());
+        upBorder = new SVGPath();
+        upBorder.setContent(details.getSVGDataUpp());
         rightBorder = new SVGPath();
         rightBorder.setContent(details.getSVGDataRight());
         downBorder = new SVGPath();
         downBorder.setContent(details.getSVGDataDown());
         leftBorder = new SVGPath();
         leftBorder.setContent(details.getSVGDataLeft());
+        
+        crashCourse.getRoot().getChildren().addAll(borders, upBorder, rightBorder, downBorder, leftBorder);
+        
+        upBorder.setFill(Color.RED);
+        rightBorder.setFill(Color.BLUE);
+        downBorder.setFill(Color.GREEN);
+        leftBorder.setFill(Color.YELLOW);
     }
     
     public int crashedInto(VisibleObject crasher) {
        // if(crasher.getAppearance().getBoundsInParent().intersects(getAppearance().getBoundsInParent()) && !this.equals(crasher)) { 
+        
+        Shape intersection = SVGPath.intersect(crasher.getBorders(), getUpBorders());
+            if(SVGPath.intersect(crasher.getBorders(), getUpBorders()).getBoundsInLocal().getWidth() != -1) {
+                return CRASH_UP;
+            }
+            
+            if(SVGPath.intersect(crasher.getBorders(), getRightBorders()).getBoundsInLocal().getWidth() != -1) {
+                return CRASH_RIGHT;
+            }
+           
+            if(SVGPath.intersect(crasher.getBorders(), getDownBorders()).getBoundsInLocal().getWidth() != -1) {
+                return CRASH_DOWN;
+            }
+           
+            if(SVGPath.intersect(crasher.getBorders(), getLeftBorders()).getBoundsInLocal().getWidth() != -1) {
+                return CRASH_LEFT;
+            }
+            /**
             if(crasher.getBorders().intersects(getUpBorders().getBoundsInLocal())) {
                 return CRASH_UP;
             }
@@ -108,7 +135,7 @@ public abstract class VisibleObject {
             if(crasher.getBorders().intersects(getRightBorders().getBoundsInLocal())) {
                 return CRASH_RIGHT;
             }
-            
+           
             if(crasher.getBorders().intersects(getDownBorders().getBoundsInLocal())) {
                 return CRASH_DOWN;
             }
@@ -116,6 +143,8 @@ public abstract class VisibleObject {
             if(crasher.getBorders().intersects(getLeftBorders().getBoundsInLocal())) {
                 return CRASH_LEFT;
             }
+            * */
+        
         
      //   }
         return -1;
