@@ -100,18 +100,21 @@ public abstract class VisibleObject {
         leftBorder = new SVGPath();
         leftBorder.setContent(details.getSVGDataLeft());
         
+        
+        /**
         crashCourse.getRoot().getChildren().addAll(borders, upBorder, rightBorder, downBorder, leftBorder);
         
         upBorder.setFill(Color.RED);
         rightBorder.setFill(Color.BLUE);
         downBorder.setFill(Color.GREEN);
         leftBorder.setFill(Color.YELLOW);
+        * */
     }
     
     public int crashedInto(VisibleObject crasher) {
-       // if(crasher.getAppearance().getBoundsInParent().intersects(getAppearance().getBoundsInParent()) && !this.equals(crasher)) { 
+        if(crasher.getAppearance().getBoundsInParent().intersects(getAppearance().getBoundsInParent()) && !this.equals(crasher)) { 
         
-            if(SVGPath.intersect(crasher.getBorders(), getUpBorders()).getBoundsInLocal().getWidth() != -1) {
+            if(crasher.getBorders().getBoundsInParent().intersects(getUpBorders().getBoundsInParent())) {
                 return CRASH_UP;
             }
             
@@ -145,7 +148,7 @@ public abstract class VisibleObject {
             * */
         
         
-     //   }
+        }
         return -1;
     }
 }

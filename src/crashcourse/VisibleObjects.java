@@ -13,10 +13,10 @@ import javafx.scene.image.Image;
  * @author johanwendt
  */
 public enum VisibleObjects {
-    PLAYER_ONE("M0,31 L0,31 28,21 44,21 64,27 64,37 54,43 49,43 45,40 16,40 13,43 9,43 4,39 0,39 z","", "", "", "", 64, 64),
+    //PLAYER_ONE("M0,31 L0,31 28,21 44,21 64,27 64,37 54,43 49,43 45,40 16,40 13,43 9,43 4,39 0,39 z","", "", "", "", 64, 64),
     //HINDER("M 41.25,70.50", 40, 40);
-    //PLAYER_ONE("M12 12 M 12 52 52 52 52 12 Z","", "", "", "", 64, 64),
-    HINDER("M0 0 L0 40 40 40 40 0 Z", "M 1 1 L 400 1 L 20 10 z", "M0 0 H 40", "M0 40 H 40", "M0 0 V 40", 40, 40);
+    PLAYER_ONE("M 12 12 L 12 52 52 52 52 12 Z","", "", "", "", 64, 64),
+    HINDER("M0,0 L0,40 40,40 40,0 Z", "M0,0 H 40", "M0,0 L0,40 20,40 20,0 Z", "M0 40 H 40", "M0 0 V 40", 40, 40);
     
     private final ArrayList<Image> images = new ArrayList<>();
     private final String SVGData;
