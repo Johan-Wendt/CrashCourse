@@ -48,9 +48,28 @@ public abstract class VisibleObject {
         
         setBorders(crashCourse);
         
+        setPosition();
+        
+       // setBorders(crashCourse);
+        
         ObjectHandler.addToCurrentObjects(this);
     }
     public abstract void act();
+    
+    protected void setPosition() {
+        appearance.setTranslateX(getxLocation());
+        appearance.setTranslateY(getyLocation());
+        borders.setTranslateX(xLocation);
+        borders.setTranslateY(yLocation);
+        upBorder.setTranslateX(xLocation);
+        upBorder.setTranslateY(yLocation);
+        rightBorder.setTranslateX(xLocation);
+        rightBorder.setTranslateY(yLocation);
+        downBorder.setTranslateX(xLocation);
+        downBorder.setTranslateY(yLocation);
+        leftBorder.setTranslateX(xLocation);
+        leftBorder.setTranslateY(yLocation);
+    }
 
     public float getxLocation() {
         return xLocation;
@@ -99,54 +118,26 @@ public abstract class VisibleObject {
         downBorder.setContent(details.getSVGDataDown());
         leftBorder = new SVGPath();
         leftBorder.setContent(details.getSVGDataLeft());
-        
-        
-        /**
-        crashCourse.getRoot().getChildren().addAll(borders, upBorder, rightBorder, downBorder, leftBorder);
-        
-        upBorder.setFill(Color.RED);
-        rightBorder.setFill(Color.BLUE);
-        downBorder.setFill(Color.GREEN);
-        leftBorder.setFill(Color.YELLOW);
-        * */
     }
     
     public int crashedInto(VisibleObject crasher) {
-        if(crasher.getAppearance().getBoundsInParent().intersects(getAppearance().getBoundsInParent()) && !this.equals(crasher)) { 
-        
-            if(crasher.getBorders().getBoundsInParent().intersects(getUpBorders().getBoundsInParent())) {
+        if(crasher.getBorders().getBoundsInParent().intersects(borders.getBoundsInParent()) && !this.equals(crasher)) { 
+
+            if(crasher.getBorders().getBoundsInParent().intersects(upBorder.getBoundsInParent())) {
                 return CRASH_UP;
             }
             
-            if(SVGPath.intersect(crasher.getBorders(), getRightBorders()).getBoundsInLocal().getWidth() != -1) {
+            if(crasher.getBorders().getBoundsInParent().intersects(rightBorder.getBoundsInParent())) {
                 return CRASH_RIGHT;
             }
            
-            if(SVGPath.intersect(crasher.getBorders(), getDownBorders()).getBoundsInLocal().getWidth() != -1) {
+            if(crasher.getBorders().getBoundsInParent().intersects(downBorder.getBoundsInParent())) {
                 return CRASH_DOWN;
             }
            
-            if(SVGPath.intersect(crasher.getBorders(), getLeftBorders()).getBoundsInLocal().getWidth() != -1) {
+            if(crasher.getBorders().getBoundsInParent().intersects(leftBorder.getBoundsInParent())) {
                 return CRASH_LEFT;
             }
-            /**
-            if(crasher.getBorders().intersects(getUpBorders().getBoundsInLocal())) {
-                return CRASH_UP;
-            }
-            
-            if(crasher.getBorders().intersects(getRightBorders().getBoundsInLocal())) {
-                return CRASH_RIGHT;
-            }
-           
-            if(crasher.getBorders().intersects(getDownBorders().getBoundsInLocal())) {
-                return CRASH_DOWN;
-            }
-           
-            if(crasher.getBorders().intersects(getLeftBorders().getBoundsInLocal())) {
-                return CRASH_LEFT;
-            }
-            * */
-        
         
         }
         return -1;

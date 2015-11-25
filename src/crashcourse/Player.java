@@ -54,7 +54,7 @@ public class Player extends MovingObject{
     public void act() {
         turn();
         setLocation();
-        move();
+        setPosition();
         checkCollision();
         turnsPlayed ++;
     }
@@ -80,10 +80,14 @@ public class Player extends MovingObject{
         if(getCurrentSpeed() > 0) setCurrentSpeed(getCurrentSpeed() - retardation);
         if(getCurrentSpeed() < 0) setCurrentSpeed(0);
     }
+    /**
     private void move() {
         getAppearance().setTranslateX(getxLocation());
         getAppearance().setTranslateY(getyLocation());
+        getBorders().setTranslateX(getXDirection());
+        getBorders().setTranslateY(getYDirection());
     }
+    * **/
     public void setControls(KeyCode gas, KeyCode left, KeyCode right) {
         controls.clear();
         controls.put(gas, PlayerControls.MOVE_FORWARD);

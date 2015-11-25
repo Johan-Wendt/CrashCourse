@@ -9,7 +9,7 @@ package crashcourse;
  *
  * @author johanwendt
  */
-public class Hinder extends NeutralObject {
+public abstract class Hinder extends NeutralObject {
 
     public Hinder(CrashCourse crashCourse, VisibleObjects deatils, float xLocation, float yLocation) {
         super(crashCourse, deatils, xLocation, yLocation);

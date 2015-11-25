@@ -22,12 +22,13 @@ import javafx.stage.Stage;
 public class CrashCourse extends Application {
     private MainPopup mainPopup;
     private Group root = new Group();
-    private static final int GAME_WIDTH = 1000;
-    private static final int GAME_HEIGHT = 600;
     private Player playerOne;
     private GameLoop gameLoop;
     private Scene scene;
     private TrackBuilder trackBuilder;
+    
+    public static final int GAME_WIDTH = 1000;
+    public static final int GAME_HEIGHT = 600;
     
     @Override
     public void start(Stage primaryStage) {
@@ -62,8 +63,12 @@ public class CrashCourse extends Application {
     private void loadImages() {
         Image playerOne = new Image(getClass().getResourceAsStream("playerOne.png"), VisibleObjects.PLAYER_ONE.getWidth(), VisibleObjects.PLAYER_ONE.getHeight(), true, false);
         VisibleObjects.PLAYER_ONE.getImages().add(playerOne);
-        Image hinder = new Image(getClass().getResourceAsStream("hinder.png"), VisibleObjects.HINDER.getWidth(), VisibleObjects.HINDER.getHeight(), true, false);
-        VisibleObjects.HINDER.getImages().add(hinder);
+        Image hinder = new Image(getClass().getResourceAsStream("hinder.png"), VisibleObjects.SMALL_HINDER.getWidth(), VisibleObjects.SMALL_HINDER.getHeight(), true, false);
+        VisibleObjects.SMALL_HINDER.getImages().add(hinder);
+        Image Hhinder = new Image(getClass().getResourceAsStream("hinder.png"), VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER.getWidth(), VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER.getHeight(), true, false);
+        VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER.getImages().add(hinder);
+        Image Vhinder = new Image(getClass().getResourceAsStream("hinder.png"), VisibleObjects.VERTICAL_FULLSCREEN_HINDER.getWidth(), VisibleObjects.VERTICAL_FULLSCREEN_HINDER.getHeight(), true, false);
+        VisibleObjects.VERTICAL_FULLSCREEN_HINDER.getImages().add(hinder);
     }
 
     private void createPlayers() {
