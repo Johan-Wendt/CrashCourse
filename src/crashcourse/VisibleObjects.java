@@ -13,7 +13,7 @@ import javafx.scene.image.Image;
  * @author johanwendt
  */
 public enum VisibleObjects {
-    PLAYER_ONE("M0,31 L0,31 28,21 44,21 64,27 64,37 54,43 49,43 45,40 16,40 13,43 9,43 4,39 0,39 z","", "", "", "", 64, 64),
+    PLAYER_ONE("M0,0 L20,0 20,40 0,40 z","M0,0 H 20", "M20,0 V 40", "M0,40 H 20", "M0,0 V 40", 20, 40),
     SMALL_HINDER("M0,0 L0,40 40,40 40,0 Z", "M0,0 H 40", "M40,0 V 40", "M0,40 H 40", "M0,0 V 40", 40, 40),
     HORIZONTAL_FULLSCREEN_HINDER("M0,0 L0,40 1000,40 1000,0 Z", "M0,0 H 1000", "M1000,0 V 40", "M0,40 H 1000", "M0,0 V 40", 1000, 40),
     VERTICAL_FULLSCREEN_HINDER("M0,40 L0,560 40,560 40,40 Z", "M0,40 H 40", "M40,40 V 560", "M0,560 H 40", "M0,40 V 560", 40, 520);

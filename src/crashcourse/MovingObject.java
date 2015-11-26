@@ -10,7 +10,7 @@ package crashcourse;
  * @author johanwendt
  */
 public abstract class MovingObject extends VisibleObject {
-    private float yDirection, xDirection, maxSpeed, currentSpeed, acceleration;
+    private float yMovingDirection, xMovingDirection, maxSpeed, currentSpeed, acceleration;
     
     public MovingObject(CrashCourse crashCourse, VisibleObjects deatils) {
         super(crashCourse, deatils);
@@ -23,17 +23,17 @@ public abstract class MovingObject extends VisibleObject {
         this.acceleration = acceleration;
         currentSpeed = 0;
     }
-    protected float getXDirection() {
-        return xDirection;
+    protected float getXMovingDirection() {
+        return xMovingDirection;
     }
-    protected float getYDirection() {
-        return yDirection;
+    protected float getYMovingDirection() {
+        return yMovingDirection;
     }
-    protected void setXDirection(float newDirection) {
-        xDirection = newDirection;
+    protected void setXMovingDirection(float newDirection) {
+        xMovingDirection = newDirection;
     }
-    protected void setYDirection(float newDirection) {
-        yDirection = newDirection;
+    protected void setYMovingDirection(float newDirection) {
+        yMovingDirection = newDirection;
     }
     public float getMaxSpeed() {
         return maxSpeed;
@@ -58,9 +58,9 @@ public abstract class MovingObject extends VisibleObject {
         this.currentSpeed = currentSpeed;
     }
     protected void invertXDirection() {
-        xDirection = - xDirection;
+        xMovingDirection = - xMovingDirection;
     }
     protected void invertYDirection() {
-        yDirection = - yDirection;
+        yMovingDirection = - yMovingDirection;
     }
 }

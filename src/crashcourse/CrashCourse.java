@@ -62,7 +62,7 @@ public class CrashCourse extends Application {
     }
 
     private void loadImages() {
-        Image playerOne = new Image(getClass().getResourceAsStream("playerOne.png"), VisibleObjects.PLAYER_ONE.getWidth(), VisibleObjects.PLAYER_ONE.getHeight(), true, false);
+        Image playerOne = new Image(getClass().getResourceAsStream("player-one1.png"), VisibleObjects.PLAYER_ONE.getWidth(), VisibleObjects.PLAYER_ONE.getHeight(), true, false);
         VisibleObjects.PLAYER_ONE.getImages().add(playerOne);
         Image hinder = new Image(getClass().getResourceAsStream("hinder.png"), VisibleObjects.SMALL_HINDER.getWidth(), VisibleObjects.SMALL_HINDER.getHeight(), true, false);
         VisibleObjects.SMALL_HINDER.getImages().add(hinder);
