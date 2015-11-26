@@ -142,4 +142,10 @@ public abstract class VisibleObject {
         }
         return -1;
     }
+    public boolean turnedInto(VisibleObject turner) {
+        if(turner.getBorders().getBoundsInParent().intersects(borders.getBoundsInParent()) && !this.equals(turner)) {
+            return true;
+        }
+        return false;
+    }
 }

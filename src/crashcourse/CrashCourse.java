@@ -9,6 +9,7 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -40,7 +41,7 @@ public class CrashCourse extends Application {
         loadImages();
         createPlayers();
         createTrack();
-        setPlayerStartControls();
+     //   setPlayerStartControls();
         createEventHandling();
         startGameLoop();
     }
@@ -65,10 +66,10 @@ public class CrashCourse extends Application {
         VisibleObjects.PLAYER_ONE.getImages().add(playerOne);
         Image hinder = new Image(getClass().getResourceAsStream("hinder.png"), VisibleObjects.SMALL_HINDER.getWidth(), VisibleObjects.SMALL_HINDER.getHeight(), true, false);
         VisibleObjects.SMALL_HINDER.getImages().add(hinder);
-        Image Hhinder = new Image(getClass().getResourceAsStream("hinder.png"), VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER.getWidth(), VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER.getHeight(), true, false);
-        VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER.getImages().add(hinder);
-        Image Vhinder = new Image(getClass().getResourceAsStream("hinder.png"), VisibleObjects.VERTICAL_FULLSCREEN_HINDER.getWidth(), VisibleObjects.VERTICAL_FULLSCREEN_HINDER.getHeight(), true, false);
-        VisibleObjects.VERTICAL_FULLSCREEN_HINDER.getImages().add(hinder);
+        Image Hhinder = new Image(getClass().getResourceAsStream("horizontal-hinder.png"), VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER.getWidth(), VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER.getHeight(), false, false);
+        VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER.getImages().add(Hhinder);
+        Image Vhinder = new Image(getClass().getResourceAsStream("hinder.png"), VisibleObjects.VERTICAL_FULLSCREEN_HINDER.getWidth(), VisibleObjects.VERTICAL_FULLSCREEN_HINDER.getHeight(), false, false);
+        VisibleObjects.VERTICAL_FULLSCREEN_HINDER.getImages().add(Vhinder);
     }
 
     private void createPlayers() {
@@ -84,13 +85,18 @@ public class CrashCourse extends Application {
         gameLoop.start();
     }
 
+    /**
     private void setPlayerStartControls() {
         playerOne.setControls(KeyCode.UP, KeyCode.LEFT, KeyCode.RIGHT);
     }
+    * **/
 
     private void createEventHandling() {
         scene.setOnKeyPressed(e -> {
             playerOne.takeKeyPressed(e.getCode());
+            if(e.getCode().equals(KeyCode.R)) {
+                reStart();
+            }
         });
         scene.setOnKeyReleased(e -> {
             playerOne.takeKeyReleased(e.getCode());
@@ -108,6 +114,13 @@ public class CrashCourse extends Application {
     private void createTrack() {
         trackBuilder = new TrackBuilder(this);
         trackBuilder.buildStandardTrack();
+    }
+    private void reStart() {
+        playerOne.removePlayer(this);
+        createPlayers();
+    }
+    public void removeFromScreen(Node toRemove) {
+        root.getChildren().remove(toRemove);
     }
     
 }

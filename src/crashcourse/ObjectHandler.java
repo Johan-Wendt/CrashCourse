@@ -24,4 +24,8 @@ public class ObjectHandler {
     public static HashSet<VisibleObject> getCurrentObjects() {
         return currentObjects;
     }
+    
+    public static void removeFromCurrentObjects(VisibleObject object) {
+        currentObjects.remove(object);
+    }
 }

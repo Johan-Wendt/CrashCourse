@@ -24,7 +24,7 @@ public enum VisibleObjects {
     private final String SVGDataRight;
     private final String SVGDataDown;
     private final String SVGDataLeft;
-    private final int width,  height;
+    private final int width, height;
     
     VisibleObjects(String SVGData, String SVGDataUpp, String SVGDataRight, String SVGDataDown, String SVGDataLeft, int width, int height) {
         this.SVGData = SVGData;

@@ -35,7 +35,7 @@ public class MainPopup extends PopUp{
         super(title, okMessage, cancelMessage);
         this.crashCourse = crashCourse;
         
-        setBackGround("invincibagelsplash.png", true);
+        setBackGround("hinder.png", true);
         getOkButton().setDisable(true);
         getCancelButton().setDisable(true);
      //   setUpWinnerInfo(null, false);

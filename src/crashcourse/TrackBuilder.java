@@ -19,18 +19,22 @@ public class TrackBuilder {
     }
 
     private void createBoundaries() {
-        createUpperboundary();
-        createLowererboundary(); 
-        createLeftboundary(); 
-        createRightboundary(); 
+       // createUpperboundary();
+       // createLowererboundary(); 
+       // createLeftboundary(); 
+       // createRightboundary(); 
+        HorizontalFullscreenHinder hinderUp = new HorizontalFullscreenHinder(crashCourse, VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER, 0, 0);
+        HorizontalFullscreenHinder hinderDown = new HorizontalFullscreenHinder(crashCourse, VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER, 0,560);
+        VerticalFullscreenHinder hinderRight = new VerticalFullscreenHinder(crashCourse, VisibleObjects.VERTICAL_FULLSCREEN_HINDER, 960, 40);
+        VerticalFullscreenHinder hinderLeft = new VerticalFullscreenHinder(crashCourse, VisibleObjects.VERTICAL_FULLSCREEN_HINDER, 0, 40);
     }
+    
 
     private void createUpperboundary() {
         int x = 0;
         int y = 0;
         while(x < CrashCourse.getGameWidth()) {
-         //   SmallHinder hinder = new SmallHinder(crashCourse, VisibleObjects.SMALL_HINDER, x, y);
-            HorizontalFullscreenHinder hinder = new HorizontalFullscreenHinder(crashCourse, VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER, x, y);
+            SmallHinder hinder = new SmallHinder(crashCourse, VisibleObjects.SMALL_HINDER, x, y);
             x += VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER.getWidth();
         }
     }
@@ -39,8 +43,7 @@ public class TrackBuilder {
         int x = 0;
         int y = CrashCourse.getGameHeight() - VisibleObjects.SMALL_HINDER.getHeight();
         while(x < CrashCourse.getGameWidth()) {
-           // Hinder hinder = new SmallHinder(crashCourse, VisibleObjects.SMALL_HINDER, x, y);
-            HorizontalFullscreenHinder hinder = new HorizontalFullscreenHinder(crashCourse, VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER, x, y);
+            Hinder hinder = new SmallHinder(crashCourse, VisibleObjects.SMALL_HINDER, x, y);
             x += VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER.getWidth();
         }
     }
@@ -49,8 +52,7 @@ public class TrackBuilder {
         int x = 0;
         int y = 0;
         while(y < CrashCourse.getGameHeight()) {
-          //  Hinder hinder = new SmallHinder(crashCourse, VisibleObjects.SMALL_HINDER, x, y);
-            VerticalFullscreenHinder hinder = new VerticalFullscreenHinder(crashCourse, VisibleObjects.VERTICAL_FULLSCREEN_HINDER, x, y);
+            Hinder hinder = new SmallHinder(crashCourse, VisibleObjects.SMALL_HINDER, x, y);
             y += VisibleObjects.VERTICAL_FULLSCREEN_HINDER.getHeight();
         }
     }
