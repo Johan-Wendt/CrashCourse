@@ -7,8 +7,6 @@ package crashcourse;
 
 import java.util.HashMap;
 import javafx.scene.input.KeyCode;
-import javafx.scene.shape.SVGPath;
-import javafx.scene.shape.Shape;
 
 /**
  *
@@ -18,8 +16,8 @@ public class Player extends MovingObject{
     private Players playerDetails;
     private boolean isTurningRight, isTurningLeft, isMovingForward, isSliding;
     private HashMap<KeyCode, Integer> controls = new HashMap<>();
-    private int turningSpeed, turnsPlayed, baseRotate;
-    private float retardation, slippeyTires, slideX, slideY, slideFactor;
+    private int turningSpeed, slideCounter, baseRotate;
+    private float retardation, slippeyTires, slideX, slideY, slideFactor, steepTurning;
         
 
     public Player(CrashCourse crashCourse, VisibleObjects deatils, Players playerDetails) {
@@ -37,7 +35,7 @@ public class Player extends MovingObject{
         retardation = playerDetails.getStartRetardation();
         slippeyTires = playerDetails.getSlipperyTires();
         slideX = slideY = slideFactor = 0;
-        turnsPlayed = 0;
+        slideCounter = 0;
     }
     /**
     public Player(CrashCourse crashCourse, VisibleObjects deatils, Players playerDetails, float xLocation, float yLocation, float startSpeed, float acceleration, float retardation) {
@@ -46,7 +44,7 @@ public class Player extends MovingObject{
         isTurningLeft = isTurningRight = isMovingForward = false;
         facing = 0;
         turningSpeed = 8;
-        turnsPlayed = 0;
+        slideCounter = 0;
         baseRotate = 90;
         this.retardation = retardation;
     }
@@ -57,10 +55,13 @@ public class Player extends MovingObject{
         setLocation();
         setPosition();
         checkCollision();
-        turnsPlayed ++;
+        slideCounter ++;
     }
     private void setLocation() {
         float noSlidePart = (float) (1.0 - slideFactor);
+    //    System.out.println("noslide" + (noSlidePart * getXMovingDirection()));
+    //    System.out.println(("Sssslide" + slideFactor * slideX));
+    //    System.out.println(("SssslideFactor" + slideFactor));
         if(isMovingForward) {
             setxLocation(getxLocation() + getCurrentSpeed() * (noSlidePart * getXMovingDirection() + slideFactor * slideX));
             setyLocation(getyLocation() + getCurrentSpeed() * (noSlidePart * getYMovingDirection() + slideFactor * slideY));
@@ -117,23 +118,29 @@ public class Player extends MovingObject{
     }
 
     private void turn() {
-        if(!isSliding) {
-            float speedFactor = getCurrentSpeed() / getMaxSpeed();
-            slideX = speedFactor * ((float) Math.sin(Math.toRadians(getRotation())));
-            slideY =speedFactor * ((float) - Math.cos(Math.toRadians(getRotation())));
-            isSliding = true;
-            slideFactor = (float) 1.0;
-        }
+        boolean turned = false;
+        float speedFactor = getCurrentSpeed() / getMaxSpeed();
         if(isTurningLeft && mayTurn(getRotation() - turningSpeed)) {
             setRotation(getRotation() - turningSpeed);
-          //  facing -= turningSpeed;
+            turned = true;
         }
         if(isTurningRight && mayTurn(getRotation() + turningSpeed)) {
             setRotation(getRotation() + turningSpeed);
-            //facing += turningSpeed;
+            turned = true;
         }
-        setXMovingDirection((float) Math.sin(Math.toRadians(getRotation())));
-        setYMovingDirection((float) - Math.cos(Math.toRadians(getRotation())));
+        if(turned) {
+            steepTurning += turningSpeed;
+        }
+        else if (steepTurning > 0) {
+            steepTurning -= turningSpeed;
+        }
+        if(speedFactor * steepTurning > 5 * turningSpeed) {
+            slide(speedFactor);
+        }
+        if(!isSliding) {
+            setXMovingDirection((float) Math.sin(Math.toRadians(getRotation())));
+            setYMovingDirection((float) - Math.cos(Math.toRadians(getRotation())));
+        }
 
         
        // getAppearance().setRotate(baseRotate + facing);
@@ -149,9 +156,35 @@ public class Player extends MovingObject{
         }
         * **/
     }
+    private void slide(float speedFactor) {
+        if(!isSliding) {
+            slideX = speedFactor * ((float) Math.sin(Math.toRadians(getRotation())));
+            slideY =speedFactor * ((float) - Math.cos(Math.toRadians(getRotation())));
+            isSliding = true;
+            slideFactor = (float) 1.0;
+            slideCounter = 0;
+            setXMovingDirection((float) Math.sin(Math.toRadians(getRotation())));
+            setYMovingDirection((float) - Math.cos(Math.toRadians(getRotation())));
+        }
+    }
+    
+    private void wallCollide(float movingXDirection, float movingYDirection) {
+        System.out.println("x" + movingXDirection);
+        System.out.println("y" + movingYDirection);
+        System.out.println("xBefore" + getXMovingDirection());
+        System.out.println("yBefore" + getXMovingDirection());
+        slideX = movingXDirection;
+        slideY = movingYDirection;
+        isSliding = true;
+        slideFactor = (float) 1.0;
+        slideCounter = 0;
+        setXMovingDirection(movingXDirection);
+        setYMovingDirection(movingYDirection);
+        
+    }
 
     private void deSlide() {
-        if(turnsPlayed % 20 == 0) {
+        if(slideCounter % 20 == 0) {
             if(slideFactor > 0) slideFactor -= slippeyTires;
             if(slideFactor < 0) {
                 slideFactor = 0;
@@ -182,19 +215,16 @@ public class Player extends MovingObject{
 
 
     private void handleCrash(int crashSort) {
-       // setCurrentSpeed((float) 0.1);
         if(crashSort == VisibleObject.CRASH_UP || crashSort == VisibleObject.CRASH_DOWN) {
-            invertYDirection();
+            //invertYDirection();
+            wallCollide(getXMovingDirection(), getInvertYDirection());
         }
         else if(crashSort == VisibleObject.CRASH_RIGHT || crashSort == VisibleObject.CRASH_LEFT) {
-            invertXDirection();
+         //   invertXDirection();
+            wallCollide(getInvertXDirection(), getYMovingDirection());
         }
-        float speedFactor = getCurrentSpeed() / getMaxSpeed();
-        slideX = speedFactor * ((float) getXMovingDirection());
-        slideY =speedFactor * ((float) getYMovingDirection());
-        isSliding = true;
-        slideFactor = (float) 1.0;
     }
+    
     public void removePlayer(CrashCourse crashCourse) {
         crashCourse.removeFromScreen(getAppearance());
         ObjectHandler.removeFromCurrentObjects(this);

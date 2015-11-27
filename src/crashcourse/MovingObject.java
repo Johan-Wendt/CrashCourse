@@ -57,10 +57,10 @@ public abstract class MovingObject extends VisibleObject {
     public void setCurrentSpeed(float currentSpeed) {
         this.currentSpeed = currentSpeed;
     }
-    protected void invertXDirection() {
-        xMovingDirection = - xMovingDirection;
+    protected float  getInvertXDirection() {
+        return - xMovingDirection;
     }
-    protected void invertYDirection() {
-        yMovingDirection = - yMovingDirection;
+    protected float getInvertYDirection() {
+        return - yMovingDirection;
     }
 }

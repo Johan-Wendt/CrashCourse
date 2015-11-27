@@ -17,8 +17,7 @@ import javafx.scene.shape.Shape;
  */
 public abstract class VisibleObject {
     private VisibleObjects details;
-    private float xLocation, yLocation;
-    private int rotation;
+    private float xLocation, yLocation, rotation;
     private ImageView appearance;
     private SVGPath borders, upBorder, rightBorder, downBorder, leftBorder;
     public static int CRASH_UP = 0;
@@ -146,18 +145,18 @@ public abstract class VisibleObject {
         }
         return -1;
     }
-    public boolean mayTurn(int degrees) {
+    public boolean mayTurn(float degrees) {
         borders.setRotate(degrees);
         for(VisibleObject object : ObjectHandler.getCurrentObjects()) {
-            if(!object.getBorders().getBoundsInParent().intersects(borders.getBoundsInParent()) && !this.equals(object)) {
+            if(object.getBorders().getBoundsInParent().intersects(borders.getBoundsInParent()) && !this.equals(object)) {
                 borders.setRotate(rotation);
-                return true;
+                return false;
             }
         }
         borders.setRotate(rotation);
-        return false;
+        return true;
     }
-    protected void setRotation(int degrees) {
+    protected void setRotation(float degrees) {
         rotation = degrees;
         appearance.setRotate(rotation);
         borders.setRotate(rotation);
@@ -166,7 +165,7 @@ public abstract class VisibleObject {
         downBorder.setRotate(rotation);
         leftBorder.setRotate(rotation);
     }
-    protected int getRotation() {
+    protected float getRotation() {
         return rotation;
     }
 }
