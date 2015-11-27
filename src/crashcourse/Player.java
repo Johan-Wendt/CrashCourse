@@ -128,13 +128,13 @@ public class Player extends MovingObject{
             setRotation(getRotation() + turningSpeed);
             turned = true;
         }
-        if(turned) {
+        if(turned && !isSliding) {
             steepTurning += turningSpeed;
         }
         else if (steepTurning > 0) {
             steepTurning -= turningSpeed;
         }
-        if(speedFactor * steepTurning > 5 * turningSpeed) {
+        if(speedFactor * steepTurning > 10 * turningSpeed) {
             slide(speedFactor);
         }
         if(!isSliding) {
@@ -165,14 +165,15 @@ public class Player extends MovingObject{
             slideCounter = 0;
             setXMovingDirection((float) Math.sin(Math.toRadians(getRotation())));
             setYMovingDirection((float) - Math.cos(Math.toRadians(getRotation())));
+            steepTurning = 0;
         }
     }
     
     private void wallCollide(float movingXDirection, float movingYDirection) {
-        System.out.println("x" + movingXDirection);
-        System.out.println("y" + movingYDirection);
-        System.out.println("xBefore" + getXMovingDirection());
-        System.out.println("yBefore" + getXMovingDirection());
+     //   System.out.println("x" + movingXDirection);
+     //   System.out.println("y" + movingYDirection);
+     //   System.out.println("xBefore" + getXMovingDirection());
+     //   System.out.println("yBefore" + getXMovingDirection());
         slideX = movingXDirection;
         slideY = movingYDirection;
         isSliding = true;
@@ -180,7 +181,7 @@ public class Player extends MovingObject{
         slideCounter = 0;
         setXMovingDirection(movingXDirection);
         setYMovingDirection(movingYDirection);
-        
+        steepTurning = 0;
     }
 
     private void deSlide() {

@@ -68,7 +68,7 @@ public class CrashCourse extends Application {
         VisibleObjects.SMALL_HINDER.getImages().add(hinder);
         Image Hhinder = new Image(getClass().getResourceAsStream("horizontal-hinder.png"), VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER.getWidth(), VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER.getHeight(), false, false);
         VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER.getImages().add(Hhinder);
-        Image Vhinder = new Image(getClass().getResourceAsStream("hinder.png"), VisibleObjects.VERTICAL_FULLSCREEN_HINDER.getWidth(), VisibleObjects.VERTICAL_FULLSCREEN_HINDER.getHeight(), false, false);
+        Image Vhinder = new Image(getClass().getResourceAsStream("vertical-hinder.png"), VisibleObjects.VERTICAL_FULLSCREEN_HINDER.getWidth(), VisibleObjects.VERTICAL_FULLSCREEN_HINDER.getHeight(), false, false);
         VisibleObjects.VERTICAL_FULLSCREEN_HINDER.getImages().add(Vhinder);
     }
 

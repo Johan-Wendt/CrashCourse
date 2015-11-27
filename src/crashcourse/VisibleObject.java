@@ -125,6 +125,7 @@ public abstract class VisibleObject {
     
     public int crashedInto(VisibleObject crasher) {
         if(crasher.getBorders().getBoundsInParent().intersects(borders.getBoundsInParent()) && !this.equals(crasher)) { 
+        //    if(!this.equals(crasher)) { 
 
             if(crasher.getBorders().getBoundsInParent().intersects(upBorder.getBoundsInParent())) {
                 return CRASH_UP;
