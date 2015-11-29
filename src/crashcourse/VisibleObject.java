@@ -167,7 +167,7 @@ public abstract class VisibleObject {
         leftBorder.setRotate(rotation);
     }
     protected float getFacingRotation() {
-        return rotation % 360;
+        return rotation;
     }
     public float getBounciness() {
         return details.getBounciness();

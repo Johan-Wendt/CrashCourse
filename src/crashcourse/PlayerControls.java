@@ -13,4 +13,5 @@ public class PlayerControls {
     public static final int MOVE_FORWARD = 0;
     public static final int TURN_LEFT = 1;
     public static final int TURN_RIGHT = 2;
+    public static final int REVERSE = 3;
 }
