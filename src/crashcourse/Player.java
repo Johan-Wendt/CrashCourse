@@ -16,7 +16,7 @@ public class Player extends MovingObject{
     private Players playerDetails;
     private boolean isTurningRight, isTurningLeft, isMovingForward, isSliding;
     private HashMap<KeyCode, Integer> controls = new HashMap<>();
-    private int turningSpeed, slideCounter, baseRotate;
+    private int turningSpeed, slideCounter, baseRotate, slideDeactivationFrequency;
     private float retardation, slippeyTires, slideX, slideY, slideFactor, steepTurning;
         
 
@@ -34,8 +34,9 @@ public class Player extends MovingObject{
         setControls(KeyCode.UP, KeyCode.RIGHT, KeyCode.LEFT);
         retardation = playerDetails.getStartRetardation();
         slippeyTires = playerDetails.getSlipperyTires();
-        slideX = slideY = slideFactor = 0;
-        slideCounter = 0;
+        slideX = slideY = slideFactor = slideCounter = 0;
+        slideDeactivationFrequency = playerDetails.getStandardDesliding();
+        
     }
     /**
     public Player(CrashCourse crashCourse, VisibleObjects deatils, Players playerDetails, float xLocation, float yLocation, float startSpeed, float acceleration, float retardation) {
@@ -55,13 +56,12 @@ public class Player extends MovingObject{
         setLocation();
         setPosition();
         checkCollision();
+        deSlide();
         slideCounter ++;
     }
     private void setLocation() {
         float noSlidePart = (float) (1.0 - slideFactor);
-    //    System.out.println("noslide" + (noSlidePart * getXMovingDirection()));
-    //    System.out.println(("Sssslide" + slideFactor * slideX));
-    //    System.out.println(("SssslideFactor" + slideFactor));
+
         if(isMovingForward) {
             setxLocation(getxLocation() + getCurrentSpeed() * (noSlidePart * getXMovingDirection() + slideFactor * slideX));
             setyLocation(getyLocation() + getCurrentSpeed() * (noSlidePart * getYMovingDirection() + slideFactor * slideY));
@@ -72,7 +72,7 @@ public class Player extends MovingObject{
             setyLocation(getyLocation() + getCurrentSpeed() * (noSlidePart * getYMovingDirection() + slideFactor * slideY));
             retardate();
         }
-        deSlide();
+        
     }
     private void accelerate() {
         if(getCurrentSpeed() < getMaxSpeed()) setCurrentSpeed(getCurrentSpeed() + getAcceleration());
@@ -120,12 +120,12 @@ public class Player extends MovingObject{
     private void turn() {
         boolean turned = false;
         float speedFactor = getCurrentSpeed() / getMaxSpeed();
-        if(isTurningLeft && mayTurn(getRotation() - turningSpeed)) {
-            setRotation(getRotation() - turningSpeed);
+        if(isTurningLeft && mayTurn(getFacingRotation() - turningSpeed)) {
+            setRotation(getFacingRotation() - turningSpeed);
             turned = true;
         }
-        if(isTurningRight && mayTurn(getRotation() + turningSpeed)) {
-            setRotation(getRotation() + turningSpeed);
+        if(isTurningRight && mayTurn(getFacingRotation() + turningSpeed)) {
+            setRotation(getFacingRotation() + turningSpeed);
             turned = true;
         }
         if(turned && !isSliding) {
@@ -134,62 +134,56 @@ public class Player extends MovingObject{
         else if (steepTurning > 0) {
             steepTurning -= turningSpeed;
         }
-        if(speedFactor * steepTurning > 10 * turningSpeed) {
+
+        if(speedFactor * steepTurning > 50 * turningSpeed) {
             slide(speedFactor);
         }
         if(!isSliding) {
-            setXMovingDirection((float) Math.sin(Math.toRadians(getRotation())));
-            setYMovingDirection((float) - Math.cos(Math.toRadians(getRotation())));
+            setXMovingDirection((float) Math.sin(Math.toRadians(getFacingRotation())));
+            setYMovingDirection((float) - Math.cos(Math.toRadians(getFacingRotation())));
         }
 
-        
-       // getAppearance().setRotate(baseRotate + facing);
-        /**
-        if(checkTurnCollision()) {
-            System.out.println("turncollide");
-            facing = beforeTurn;
-            setXMovingDirection((float) Math.sin(Math.toRadians(facing)));
-            setYMovingDirection((float) - Math.cos(Math.toRadians(facing)));
-
-
-            getAppearance().setRotate(baseRotate + facing);
-        }
-        * **/
     }
     private void slide(float speedFactor) {
         if(!isSliding) {
-            slideX = speedFactor * ((float) Math.sin(Math.toRadians(getRotation())));
-            slideY =speedFactor * ((float) - Math.cos(Math.toRadians(getRotation())));
+            slideDeactivationFrequency = playerDetails.getStandardDesliding();
+            slideX = speedFactor * ((float) Math.sin(Math.toRadians(getFacingRotation())));
+            slideY =speedFactor * ((float) - Math.cos(Math.toRadians(getFacingRotation())));
             isSliding = true;
             slideFactor = (float) 1.0;
             slideCounter = 0;
-            setXMovingDirection((float) Math.sin(Math.toRadians(getRotation())));
-            setYMovingDirection((float) - Math.cos(Math.toRadians(getRotation())));
+            setXMovingDirection((float) Math.sin(Math.toRadians(getFacingRotation())));
+            setYMovingDirection((float) - Math.cos(Math.toRadians(getFacingRotation())));
+            
             steepTurning = 0;
         }
     }
     
-    private void wallCollide(float movingXDirection, float movingYDirection) {
-     //   System.out.println("x" + movingXDirection);
-     //   System.out.println("y" + movingYDirection);
-     //   System.out.println("xBefore" + getXMovingDirection());
-     //   System.out.println("yBefore" + getXMovingDirection());
+    private void wallCollide(float movingXDirection, float movingYDirection, VisibleObject crashe) {
+
+        setCurrentSpeed(crashe.getBounciness() * getCurrentSpeed());
+        slideDeactivationFrequency = (int) (Math.min(crashe.getBounciness(), this.getBounciness()) * playerDetails.getStandardDesliding());
         slideX = movingXDirection;
         slideY = movingYDirection;
         isSliding = true;
         slideFactor = (float) 1.0;
         slideCounter = 0;
         setXMovingDirection(movingXDirection);
-        setYMovingDirection(movingYDirection);
+        setYMovingDirection(movingYDirection);        
+
         steepTurning = 0;
     }
 
     private void deSlide() {
-        if(slideCounter % 20 == 0) {
+        if(slideCounter % slideDeactivationFrequency == 0) {
             if(slideFactor > 0) slideFactor -= slippeyTires;
             if(slideFactor < 0) {
                 slideFactor = 0;
                 isSliding = false;
+                float speedReductionFactor = Math.abs(180 - (Math.abs(getFacingRotation() - getMovingRotation()))) / 180;
+          //      System.out.println("facing minus moving: " + Math.abs(getFacingRotation() - getMovingRotation()));
+            //    System.out.println(speedReductionFactor);
+                setCurrentSpeed(speedReductionFactor * getCurrentSpeed());
             }
         }
     }
@@ -198,7 +192,7 @@ public class Player extends MovingObject{
         loop: for(VisibleObject object : ObjectHandler.getCurrentObjects()) {
             int crashSort = object.crashedInto(this);
             if(crashSort >= 0 ) {
-                handleCrash(crashSort);
+                handleCrash(crashSort, object);
                 break loop;
             }
         }
@@ -215,14 +209,12 @@ public class Player extends MovingObject{
     * **/
 
 
-    private void handleCrash(int crashSort) {
+    private void handleCrash(int crashSort, VisibleObject crashe) {
         if(crashSort == VisibleObject.CRASH_UP || crashSort == VisibleObject.CRASH_DOWN) {
-            //invertYDirection();
-            wallCollide(getXMovingDirection(), getInvertYDirection());
+            wallCollide(getXMovingDirection(), getInvertYDirection(), crashe);
         }
         else if(crashSort == VisibleObject.CRASH_RIGHT || crashSort == VisibleObject.CRASH_LEFT) {
-         //   invertXDirection();
-            wallCollide(getInvertXDirection(), getYMovingDirection());
+            wallCollide(getInvertXDirection(), getYMovingDirection(), crashe);
         }
     }
     

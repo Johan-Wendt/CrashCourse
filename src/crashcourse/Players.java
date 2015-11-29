@@ -13,12 +13,12 @@ import javafx.scene.image.Image;
  * @author johanwendt
  */
 public enum Players {
-    PLAYER_ONE(0, 100, 100, 12, (float) 0.4, (float) 0.04, 2, 0, (float) 0.4);
+    PLAYER_ONE(0, 100, 100, 12, (float) 0.1, (float) 0.04, 3, 0, (float) 0.4, 20);
     
-    private final int startDirection, startTurningSpeed, baseRotate;
+    private final int startDirection, startTurningSpeed, baseRotate, standardDesliding;
     private final float startXLocation, startYLocation, startSpeed, startAcceleration, startRetardation, slipperyTires;
     
-    Players(int startDirection, float startXLocation, float startYLocation, float startSpeed, float startAcceleration, float startRetardation, int startTurningSpeed, int baseRotate, float slipperyTires) {
+    Players(int startDirection, float startXLocation, float startYLocation, float startSpeed, float startAcceleration, float startRetardation, int startTurningSpeed, int baseRotate, float slipperyTires, int standardDesliding) {
         this.startDirection = startDirection;
         this.startXLocation = startXLocation;
         this.startYLocation = startYLocation;
@@ -28,6 +28,7 @@ public enum Players {
         this.startTurningSpeed = startTurningSpeed;
         this.baseRotate = baseRotate;
         this.slipperyTires = slipperyTires;
+        this.standardDesliding = standardDesliding;
     }
 
     public int getStartDirection() {
@@ -64,6 +65,9 @@ public enum Players {
 
     public float getSlipperyTires() {
         return slipperyTires;
+    }
+    public int getStandardDesliding() {
+        return standardDesliding;
     }
     
 }

@@ -24,8 +24,8 @@ public class TrackBuilder {
        // createLeftboundary(); 
        // createRightboundary(); 
         HorizontalFullscreenHinder hinderUp = new HorizontalFullscreenHinder(crashCourse, VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER, 0, 0);
-        HorizontalFullscreenHinder hinderDown = new HorizontalFullscreenHinder(crashCourse, VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER, 0,560);
-        VerticalFullscreenHinder hinderRight = new VerticalFullscreenHinder(crashCourse, VisibleObjects.VERTICAL_FULLSCREEN_HINDER, 960, 40);
+        HorizontalFullscreenHinder hinderDown = new HorizontalFullscreenHinder(crashCourse, VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER, 0,660);
+        VerticalFullscreenHinder hinderRight = new VerticalFullscreenHinder(crashCourse, VisibleObjects.VERTICAL_FULLSCREEN_HINDER, 1160, 40);
         VerticalFullscreenHinder hinderLeft = new VerticalFullscreenHinder(crashCourse, VisibleObjects.VERTICAL_FULLSCREEN_HINDER, 0, 40);
     }
     

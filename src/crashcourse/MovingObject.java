@@ -63,4 +63,9 @@ public abstract class MovingObject extends VisibleObject {
     protected float getInvertYDirection() {
         return - yMovingDirection;
     }
+    protected float getMovingRotation() {
+        float slideDirection = (float) Math.toDegrees(Math.atan2(getXMovingDirection(), getYMovingDirection()));
+        slideDirection = 180 - slideDirection;
+        return slideDirection;
+    }
 }

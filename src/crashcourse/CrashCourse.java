@@ -28,8 +28,8 @@ public class CrashCourse extends Application {
     private Scene scene;
     private TrackBuilder trackBuilder;
     
-    public static final int GAME_WIDTH = 1000;
-    public static final int GAME_HEIGHT = 600;
+    public static final int GAME_WIDTH = 1200;
+    public static final int GAME_HEIGHT = 700;
     
     @Override
     public void start(Stage primaryStage) {
