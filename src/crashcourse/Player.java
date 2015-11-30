@@ -39,7 +39,7 @@ public class Player extends MovingObject{
         slideX = slideY = slideFactor = wheelAngle = slideCounter = 0;
         slideDeactivationFrequency = playerDetails.getStandardDesliding();
         wheelRotation = playerDetails.getBaseRotate();
-        
+        Slide och deslide behöver ses över! Kolla lagg!
     }
     /**
     public Player(CrashCourse crashCourse, VisibleObjects deatils, Players playerDetails, float xLocation, float yLocation, float startSpeed, float acceleration, float retardation) {
@@ -57,14 +57,14 @@ public class Player extends MovingObject{
     public void act() {
         turnWheels();
         turn();
-        setLocation();
+        takeAction();
         setPosition();
         checkCollision();
         deSlide();
         slideCounter ++;
       //  System.out.println(getCurrentSpeed());
     }
-    private void setLocation() {
+    private void takeAction() {
         beforeMoveX = getxLocation();
         beforeMoveY = getyLocation();      
         
@@ -92,6 +92,8 @@ public class Player extends MovingObject{
         float noSlidePart = (float) (1.0 - slideFactor);
         setxLocation(getxLocation() + getCurrentSpeed() * (noSlidePart * getXMovingDirection() + slideFactor * slideX));
         setyLocation(getyLocation() + getCurrentSpeed() * (noSlidePart * getYMovingDirection() + slideFactor * slideY));
+      //  setxLocation(getxLocation() + getCurrentSpeed() * getXMovingDirection());
+      //  setyLocation(getyLocation() + getCurrentSpeed() * getYMovingDirection());
     }
     private void moveBackWards() {
         setxLocation(getxLocation() + getInvertXDirection());
@@ -150,13 +152,13 @@ public class Player extends MovingObject{
         if(isTurningLeft) {
             wheelAngle -= turningSpeed;
             if(Math.abs(wheelAngle) > playerDetails.getMaximumWheelTurnangle()) {
-                wheelAngle = -30;
+                wheelAngle = -playerDetails.getMaximumWheelTurnangle();
             }
         }
         if(isTurningRight) {
             wheelAngle += turningSpeed;
             if(Math.abs(wheelAngle) > playerDetails.getMaximumWheelTurnangle()) {
-                wheelAngle = 30;
+                wheelAngle = playerDetails.getMaximumWheelTurnangle();
             }
         }
         wheelRotation += wheelAngle - wheelAngleBefore;
@@ -190,8 +192,7 @@ public class Player extends MovingObject{
                 steepTurning -= turningSpeed;
             }
 
-            if(speedFactor * steepTurning > 50 * turningSpeed) {
-                System.out.println("sliding");
+            if(speedFactor * steepTurning > 20 * turningSpeed) {
                 slide(speedFactor);
             }
             setXMovingDirection((float) Math.sin(Math.toRadians(getFacingRotation())));
@@ -201,11 +202,12 @@ public class Player extends MovingObject{
     }
     private void slide(float speedFactor) {
         if(!isSliding) {
+            System.out.println("is sliding");
             slideDeactivationFrequency = playerDetails.getStandardDesliding();
             slideX = speedFactor * ((float) Math.sin(Math.toRadians(getFacingRotation())));
             slideY =speedFactor * ((float) - Math.cos(Math.toRadians(getFacingRotation())));
             isSliding = true;
-            slideFactor = (float) 1.0;
+            slideFactor = (float) 0.6;
             slideCounter = 0;
             setXMovingDirection((float) Math.sin(Math.toRadians(getFacingRotation())));
             setYMovingDirection((float) - Math.cos(Math.toRadians(getFacingRotation())));
@@ -230,7 +232,7 @@ public class Player extends MovingObject{
     }
 
     private void deSlide() {
-        if(slideCounter % slideDeactivationFrequency == 0) {
+        if(isSliding && slideCounter % slideDeactivationFrequency == 0) {
             if(slideFactor > 0) slideFactor -= slippeyTires;
             if(slideFactor < 0) {
                 slideFactor = 0;

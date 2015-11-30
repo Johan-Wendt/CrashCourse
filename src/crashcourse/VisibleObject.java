@@ -158,6 +158,14 @@ public abstract class VisibleObject {
         return true;
     }
     protected void setRotation(float degrees) {
+        if(degrees < 0) {
+            degrees = 360 + degrees;
+            setRotation(degrees);
+        }
+        if(degrees > 360) {
+            degrees = degrees - 360;
+            setRotation(degrees);
+        }
         rotation = degrees;
         appearance.setRotate(rotation);
         borders.setRotate(rotation);

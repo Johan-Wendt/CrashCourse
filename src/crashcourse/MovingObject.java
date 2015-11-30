@@ -62,8 +62,6 @@ public abstract class MovingObject extends VisibleObject {
         if(currentSpeed > maxSpeed) {
             this.currentSpeed = maxSpeed;
         }
-        System.out.println(getCurrentSpeed());
-        System.out.println(maxSpeed);
     }
     protected float  getInvertXDirection() {
         return - xMovingDirection;
