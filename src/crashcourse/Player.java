@@ -14,16 +14,16 @@ import javafx.scene.input.KeyCode;
  */
 public class Player extends MovingObject{
     private Players playerDetails;
-    private boolean isTurningRight, isTurningLeft, isMovingForward, isReversing, isSliding;
+    private boolean isTurningRight, isTurningLeft, isMovingForward, isReversing, hasBumbed;
     private HashMap<KeyCode, Integer> controls = new HashMap<>();
-    private int turningSpeed, slideCounter, baseRotate, slideDeactivationFrequency;
-    private float retardation, slippeyTires, slideX, slideY, slideFactor, steepTurning, wheelAngle, wheelRotation, beforeMoveX, beforeMoveY;
+    private int turningSpeed, bumpCounter, baseRotate, bumpDeactivationFrequency;
+    private float retardation, slippeyTires, bumpX, bumpY, bumpFactor, steepTurning, wheelAngle, wheelRotation, beforeMoveX, beforeMoveY;
         
 
     public Player(CrashCourse crashCourse, VisibleObjects deatils, Players playerDetails) {
         super(crashCourse, deatils);
         this.playerDetails = playerDetails;
-        isTurningLeft = isTurningRight = isMovingForward = isSliding= false;
+        isTurningLeft = isTurningRight = isMovingForward = hasBumbed= false;
         setRotation(playerDetails.getStartDirection());
         turningSpeed = playerDetails.getStartTurningSpeed();
         baseRotate = playerDetails.getBaseRotate();
@@ -36,10 +36,9 @@ public class Player extends MovingObject{
         setYMovingDirection((float) - Math.cos(Math.toRadians(getFacingRotation())));
         retardation = playerDetails.getStartRetardation();
         slippeyTires = playerDetails.getSlipperyTires();
-        slideX = slideY = slideFactor = wheelAngle = slideCounter = 0;
-        slideDeactivationFrequency = playerDetails.getStandardDesliding();
+        bumpX = bumpY = bumpFactor = wheelAngle = bumpCounter = 0;
+        bumpDeactivationFrequency = playerDetails.getStandardDesliding();
         wheelRotation = playerDetails.getBaseRotate();
-        Slide och deslide behöver ses över! Kolla lagg!
     }
     /**
     public Player(CrashCourse crashCourse, VisibleObjects deatils, Players playerDetails, float xLocation, float yLocation, float startSpeed, float acceleration, float retardation) {
@@ -48,7 +47,7 @@ public class Player extends MovingObject{
         isTurningLeft = isTurningRight = isMovingForward = false;
         facing = 0;
         turningSpeed = 8;
-        slideCounter = 0;
+        bumpCounter = 0;
         baseRotate = 90;
         this.retardation = retardation;
     }
@@ -60,8 +59,8 @@ public class Player extends MovingObject{
         takeAction();
         setPosition();
         checkCollision();
-        deSlide();
-        slideCounter ++;
+        deBump();
+        bumpCounter ++;
       //  System.out.println(getCurrentSpeed());
     }
     private void takeAction() {
@@ -89,9 +88,9 @@ public class Player extends MovingObject{
         
     }
     private void moveForward() {
-        float noSlidePart = (float) (1.0 - slideFactor);
-        setxLocation(getxLocation() + getCurrentSpeed() * (noSlidePart * getXMovingDirection() + slideFactor * slideX));
-        setyLocation(getyLocation() + getCurrentSpeed() * (noSlidePart * getYMovingDirection() + slideFactor * slideY));
+        float noSlidePart = (float) (1.0 - bumpFactor);
+        setxLocation(getxLocation() + getCurrentSpeed() * (noSlidePart * getXMovingDirection() + bumpFactor * bumpX));
+        setyLocation(getyLocation() + getCurrentSpeed() * (noSlidePart * getYMovingDirection() + bumpFactor * bumpY));
       //  setxLocation(getxLocation() + getCurrentSpeed() * getXMovingDirection());
       //  setyLocation(getyLocation() + getCurrentSpeed() * getYMovingDirection());
     }
@@ -165,7 +164,7 @@ public class Player extends MovingObject{
     }
 
     private void turn() {
-        if(!isSliding && getCurrentSpeed() > 0 || isReversing) {
+        if(!hasBumbed && getCurrentSpeed() > 0 || isReversing) {
             boolean turned = false;
             float speedFactor = getCurrentSpeed() / getMaxSpeed();
             if(isReversing && getCurrentSpeed() == 0) speedFactor = (float) 0.1;
@@ -185,7 +184,7 @@ public class Player extends MovingObject{
             
 
 
-            if(turned && !isSliding && speedFactor > 0.5) {
+            if(turned && !hasBumbed && speedFactor > 0.5) {
                 steepTurning += turningSpeed;
             }
             else if (steepTurning > 0) {
@@ -201,14 +200,14 @@ public class Player extends MovingObject{
 
     }
     private void slide(float speedFactor) {
-        if(!isSliding) {
+        if(!hasBumbed) {
             System.out.println("is sliding");
-            slideDeactivationFrequency = playerDetails.getStandardDesliding();
-            slideX = speedFactor * ((float) Math.sin(Math.toRadians(getFacingRotation())));
-            slideY =speedFactor * ((float) - Math.cos(Math.toRadians(getFacingRotation())));
-            isSliding = true;
-            slideFactor = (float) 0.6;
-            slideCounter = 0;
+            bumpDeactivationFrequency = playerDetails.getStandardDesliding();
+            bumpX = speedFactor * ((float) Math.sin(Math.toRadians(getFacingRotation())));
+            bumpY =speedFactor * ((float) - Math.cos(Math.toRadians(getFacingRotation())));
+            hasBumbed = true;
+            bumpFactor = (float) 0.6;
+            bumpCounter = 0;
             setXMovingDirection((float) Math.sin(Math.toRadians(getFacingRotation())));
             setYMovingDirection((float) - Math.cos(Math.toRadians(getFacingRotation())));
             
@@ -219,24 +218,24 @@ public class Player extends MovingObject{
     private void wallCollide(float movingXDirection, float movingYDirection, VisibleObject crashe) {
 
         setCurrentSpeed(crashe.getBounciness() * getCurrentSpeed());
-        slideDeactivationFrequency = (int) (Math.min(crashe.getBounciness(), this.getBounciness()) * playerDetails.getStandardDesliding());
-        slideX = movingXDirection;
-        slideY = movingYDirection;
-        isSliding = true;
-        slideFactor = (float) 1.0;
-        slideCounter = 0;
+        bumpDeactivationFrequency = (int) (Math.min(crashe.getBounciness(), this.getBounciness()) * playerDetails.getStandardDesliding());
+        bumpX = movingXDirection;
+        bumpY = movingYDirection;
+        hasBumbed = true;
+        bumpFactor = (float) 1.0;
+        bumpCounter = 0;
         setXMovingDirection(movingXDirection);
         setYMovingDirection(movingYDirection);        
 
         steepTurning = 0;
     }
 
-    private void deSlide() {
-        if(isSliding && slideCounter % slideDeactivationFrequency == 0) {
-            if(slideFactor > 0) slideFactor -= slippeyTires;
-            if(slideFactor < 0) {
-                slideFactor = 0;
-                isSliding = false;
+    private void deBump() {
+        if(hasBumbed && bumpCounter % bumpDeactivationFrequency == 0) {
+            if(bumpFactor > 0) bumpFactor -= slippeyTires;
+            if(bumpFactor < 0) {
+                bumpFactor = 0;
+                hasBumbed = false;
                 float speedReductionFactor = Math.abs(180 - (Math.abs(getFacingRotation() - getMovingRotation()))) / 180;
                 setCurrentSpeed(speedReductionFactor * getCurrentSpeed());
             }
