@@ -89,6 +89,13 @@ public class Player extends MovingObject{
     }
     private void moveForward() {
         float noSlidePart = (float) (1.0 - bumpFactor);
+        
+        System.out.println("x_: " + getxLocation());
+        System.out.println("y: " + getyLocation());
+        System.out.println("noSlidePart: " + noSlidePart);
+        System.out.println("getXMovingDirection(): " + getXMovingDirection());
+        System.out.println("getYMovingDirection(): " + getYMovingDirection());
+        System.out.println("bumpFactor: " + bumpFactor);
         setxLocation(getxLocation() + getCurrentSpeed() * (noSlidePart * getXMovingDirection() + bumpFactor * bumpX));
         setyLocation(getyLocation() + getCurrentSpeed() * (noSlidePart * getYMovingDirection() + bumpFactor * bumpY));
       //  setxLocation(getxLocation() + getCurrentSpeed() * getXMovingDirection());
@@ -168,7 +175,15 @@ public class Player extends MovingObject{
             boolean turned = false;
             float speedFactor = getCurrentSpeed() / getMaxSpeed();
             if(isReversing && getCurrentSpeed() == 0) speedFactor = (float) 0.1;
-            float angleToTurn = speedFactor * turningSpeed * 2;
+            float angleToTurn = speedFactor * turningSpeed * 2 * (wheelAngle/(Math.abs(wheelAngle)));
+            if(angleToTurn != 0) {
+                if(Math.abs(angleToTurn) > Math.abs(wheelAngle)) angleToTurn = wheelAngle;
+                setRotation(getFacingRotation() + angleToTurn);
+                wheelAngle -= angleToTurn;
+                turned = true;
+            }
+            
+            /**
             if(wheelAngle < 0) {
                 if(wheelAngle + angleToTurn > 0) angleToTurn = -wheelAngle;
                 setRotation(getFacingRotation() - angleToTurn);
@@ -181,7 +196,7 @@ public class Player extends MovingObject{
                 wheelAngle -= angleToTurn;
                 turned = true;
             }
-            
+            **/
 
 
             if(turned && !hasBumbed && speedFactor > 0.5) {
@@ -191,9 +206,9 @@ public class Player extends MovingObject{
                 steepTurning -= turningSpeed;
             }
 
-            if(speedFactor * steepTurning > 20 * turningSpeed) {
-                slide(speedFactor);
-            }
+         //   if(speedFactor * steepTurning > 20 * turningSpeed) {
+         //       slide(speedFactor);
+         //   }
             setXMovingDirection((float) Math.sin(Math.toRadians(getFacingRotation())));
             setYMovingDirection((float) - Math.cos(Math.toRadians(getFacingRotation())));
         }
