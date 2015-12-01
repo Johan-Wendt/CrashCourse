@@ -27,6 +27,7 @@ public class Player extends MovingObject{
         setRotation(playerDetails.getStartDirection());
         turningSpeed = playerDetails.getStartTurningSpeed();
         baseRotate = playerDetails.getBaseRotate();
+        Fixa med SET ROTATION !!!
         setAcceleration(playerDetails.getStartAcceleration());
         setMaxSpeed(playerDetails.getStartSpeed());
         setxLocation(playerDetails.getStartXLocation());
@@ -96,6 +97,8 @@ public class Player extends MovingObject{
         System.out.println("getXMovingDirection(): " + getXMovingDirection());
         System.out.println("getYMovingDirection(): " + getYMovingDirection());
         System.out.println("bumpFactor: " + bumpFactor);
+        System.out.println("bumpX: " + bumpX);
+        System.out.println("bumpY: " + bumpY);
         setxLocation(getxLocation() + getCurrentSpeed() * (noSlidePart * getXMovingDirection() + bumpFactor * bumpX));
         setyLocation(getyLocation() + getCurrentSpeed() * (noSlidePart * getYMovingDirection() + bumpFactor * bumpY));
       //  setxLocation(getxLocation() + getCurrentSpeed() * getXMovingDirection());
