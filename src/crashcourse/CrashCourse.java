@@ -23,7 +23,7 @@ import javafx.stage.Stage;
 public class CrashCourse extends Application {
     private MainPopup mainPopup;
     private Group root = new Group();
-    private Player playerOne;
+    private Player playerOne, playerTwo;
     private GameLoop gameLoop;
     private Scene scene;
     private TrackBuilder trackBuilder;
@@ -42,7 +42,7 @@ public class CrashCourse extends Application {
         AudioHandler audioHandler = new AudioHandler();
         createPlayers();
         createTrack();
-     //   setPlayerStartControls();
+        setPlayerStartControls();
         createEventHandling();
         startGameLoop();
     }
@@ -63,8 +63,18 @@ public class CrashCourse extends Application {
     }
 
     private void loadImages() {
-        Image playerOne = new Image(getClass().getResourceAsStream("player-one1.png"), VisibleObjects.PLAYER_ONE.getWidth(), VisibleObjects.PLAYER_ONE.getHeight(), true, false);
-        VisibleObjects.PLAYER_ONE.getImages().add(playerOne);
+        Image playerOne1 = new Image(getClass().getResourceAsStream("player-one1.png"), VisibleObjects.PLAYER_ONE.getWidth(), VisibleObjects.PLAYER_ONE.getHeight(), true, false);
+        Image playerOne2 = new Image(getClass().getResourceAsStream("player-one2.png"), VisibleObjects.PLAYER_ONE.getWidth(), VisibleObjects.PLAYER_ONE.getHeight(), true, false);
+        Image playerOne3 = new Image(getClass().getResourceAsStream("player-one3.png"), VisibleObjects.PLAYER_ONE.getWidth(), VisibleObjects.PLAYER_ONE.getHeight(), true, false);
+        Image playerOne4 = new Image(getClass().getResourceAsStream("player-one4.png"), VisibleObjects.PLAYER_ONE.getWidth(), VisibleObjects.PLAYER_ONE.getHeight(), true, false);
+        Image playerOne5 = new Image(getClass().getResourceAsStream("player-one5.png"), VisibleObjects.PLAYER_ONE.getWidth(), VisibleObjects.PLAYER_ONE.getHeight(), true, false);
+        VisibleObjects.PLAYER_ONE.getImages().add(playerOne1);
+        VisibleObjects.PLAYER_ONE.getImages().add(playerOne2);
+        VisibleObjects.PLAYER_ONE.getImages().add(playerOne3);
+        VisibleObjects.PLAYER_ONE.getImages().add(playerOne4);
+        VisibleObjects.PLAYER_ONE.getImages().add(playerOne5);
+        Image playerTwo = new Image(getClass().getResourceAsStream("player-one1.png"), VisibleObjects.PLAYER_TWO.getWidth(), VisibleObjects.PLAYER_TWO.getHeight(), true, false);
+        VisibleObjects.PLAYER_TWO.getImages().add(playerTwo);
         Image hinder = new Image(getClass().getResourceAsStream("hinder.png"), VisibleObjects.SMALL_HINDER.getWidth(), VisibleObjects.SMALL_HINDER.getHeight(), true, false);
         VisibleObjects.SMALL_HINDER.getImages().add(hinder);
         Image Hhinder = new Image(getClass().getResourceAsStream("horizontal-hinder.png"), VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER.getWidth(), VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER.getHeight(), false, false);
@@ -76,9 +86,13 @@ public class CrashCourse extends Application {
     private void createPlayers() {
         //CrashCourse crashCourse, VisibleObjects deatils, Players playerDetails, int xLocation, int yLocation, int startSpeed
         playerOne = new Player(this, VisibleObjects.PLAYER_ONE, Players.PLAYER_ONE);
+        playerTwo = new Player(this, VisibleObjects.PLAYER_TWO, Players.PLAYER_TWO);
     }
-    public Player getPlayer() {
+    public Player getPlayerOne() {
         return playerOne;
+    }
+    public Player getPlayerTwo() {
+        return playerTwo;
     }
 
     private void startGameLoop() {
@@ -86,21 +100,24 @@ public class CrashCourse extends Application {
         gameLoop.start();
     }
 
-    /**
+    
     private void setPlayerStartControls() {
-        playerOne.setControls(KeyCode.UP, KeyCode.LEFT, KeyCode.RIGHT);
+        playerOne.setControls(KeyCode.UP, KeyCode.RIGHT, KeyCode.LEFT, KeyCode.DOWN);
+        playerTwo.setControls(KeyCode.W, KeyCode.D, KeyCode.A, KeyCode.S);
     }
-    * **/
+    
 
     private void createEventHandling() {
         scene.setOnKeyPressed(e -> {
             playerOne.takeKeyPressed(e.getCode());
+            playerTwo.takeKeyPressed(e.getCode());
             if(e.getCode().equals(KeyCode.R)) {
                 reStart();
             }
         });
         scene.setOnKeyReleased(e -> {
             playerOne.takeKeyReleased(e.getCode());
+            playerTwo.takeKeyReleased(e.getCode());
         });
     }
 
@@ -118,7 +135,9 @@ public class CrashCourse extends Application {
     }
     private void reStart() {
         playerOne.removePlayer(this);
+        playerTwo.removePlayer(this);
         createPlayers();
+        setPlayerStartControls();
     }
     public void removeFromScreen(Node toRemove) {
         root.getChildren().remove(toRemove);

@@ -31,7 +31,7 @@ public class Player extends MovingObject{
         setMaxSpeed(playerDetails.getStartSpeed());
         setxLocation(playerDetails.getStartXLocation());
         setyLocation(playerDetails.getStartYLocation());
-        setControls(KeyCode.UP, KeyCode.RIGHT, KeyCode.LEFT, KeyCode.DOWN);
+       // setControls(KeyCode.UP, KeyCode.RIGHT, KeyCode.LEFT, KeyCode.DOWN);
         setXMovingDirection((float) Math.sin(Math.toRadians(getFacingRotation())));
         setYMovingDirection((float) - Math.cos(Math.toRadians(getFacingRotation())));
         retardation = playerDetails.getStartRetardation();
@@ -210,7 +210,6 @@ public class Player extends MovingObject{
         controls.put(right, PlayerControls.TURN_RIGHT);
         controls.put(left, PlayerControls.TURN_LEFT);
         controls.put(reverse, PlayerControls.REVERSE);
-        
     }
     public void takeKeyPressed(KeyCode key) {
         if(controls.containsKey(key)) {

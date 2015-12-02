@@ -17,6 +17,10 @@ public class AudioHandler {
     public AudioHandler() {
         thud = new AudioClip(getClass().getResource("thud.wav").toExternalForm());
         squeek = new AudioClip(getClass().getResource("squeek.wav").toExternalForm());
+        
+        
+        thud.play(0);
+        squeek.play(0);
     }
     public static void playThud() {
         thud.play();

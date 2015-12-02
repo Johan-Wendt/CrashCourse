@@ -20,7 +20,8 @@ public class GameLoop extends AnimationTimer {
 
     @Override
     public void handle(long now) {
-        crashCourse.getPlayer().act();
+        crashCourse.getPlayerOne().act();
+        crashCourse.getPlayerTwo().act();
     }
     @Override
     public void start() {

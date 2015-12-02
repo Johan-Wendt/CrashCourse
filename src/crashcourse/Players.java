@@ -13,7 +13,8 @@ import javafx.scene.image.Image;
  * @author johanwendt
  */
 public enum Players {
-    PLAYER_ONE(0, 400, 400, 8, (float) 0.1, (float) 0.04, 3, 0, (float) 0.4, 20, 45);
+    PLAYER_ONE(0, 400, 400, 8, (float) 0.1, (float) 0.04, 3, 0, (float) 0.4, 20, 45),
+    PLAYER_TWO(0, 500, 200, 8, (float) 0.1, (float) 0.04, 3, 0, (float) 0.4, 20, 45);
     
     private final int startDirection, startTurningSpeed, baseRotate, standardDesliding, maximumWheelTurnangle;
     private final float startXLocation, startYLocation, startSpeed, startAcceleration, startRetardation, slipperyTires;
