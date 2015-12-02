@@ -14,10 +14,10 @@ import javafx.scene.input.KeyCode;
  */
 public class Player extends MovingObject{
     private Players playerDetails;
-    private boolean isTurningRight, isTurningLeft, isMovingForward, isReversing, hasBumbed;
+    private boolean isTurningRight, isTurningLeft, isMovingForward, isReversing, hasBumbed, isSliding;
     private HashMap<KeyCode, Integer> controls = new HashMap<>();
-    private int turningSpeed, bumpCounter, baseRotate, bumpDeactivationFrequency;
-    private float retardation, slippeyTires, bumpX, bumpY, bumpFactor, steepTurning, wheelAngle, wheelRotation, beforeMoveX, beforeMoveY;
+    private int turningSpeed, bumpCounter, baseRotate, bumpDeactivationFrequency, slideTimer, rockGrip;
+    private float retardation, slippeyTires, bumpX, bumpY, bumpFactor, steepTurning, wheelAngle, wheelRotation, beforeMoveX, beforeMoveY, slidingXDirection, slidingYDirection, slideRotationMultiplicator, beforeTurn;
         
 
     public Player(CrashCourse crashCourse, VisibleObjects deatils, Players playerDetails) {
@@ -27,7 +27,6 @@ public class Player extends MovingObject{
         setRotation(playerDetails.getStartDirection());
         turningSpeed = playerDetails.getStartTurningSpeed();
         baseRotate = playerDetails.getBaseRotate();
-        Fixa med SET ROTATION !!!
         setAcceleration(playerDetails.getStartAcceleration());
         setMaxSpeed(playerDetails.getStartSpeed());
         setxLocation(playerDetails.getStartXLocation());
@@ -41,18 +40,7 @@ public class Player extends MovingObject{
         bumpDeactivationFrequency = playerDetails.getStandardDesliding();
         wheelRotation = playerDetails.getBaseRotate();
     }
-    /**
-    public Player(CrashCourse crashCourse, VisibleObjects deatils, Players playerDetails, float xLocation, float yLocation, float startSpeed, float acceleration, float retardation) {
-        super(crashCourse, deatils, xLocation, yLocation, startSpeed, acceleration);
-        this.playerDetails = playerDetails;
-        isTurningLeft = isTurningRight = isMovingForward = false;
-        facing = 0;
-        turningSpeed = 8;
-        bumpCounter = 0;
-        baseRotate = 90;
-        this.retardation = retardation;
-    }
-**/
+
     @Override
     public void act() {
         turnWheels();
@@ -62,14 +50,63 @@ public class Player extends MovingObject{
         checkCollision();
         deBump();
         bumpCounter ++;
-      //  System.out.println(getCurrentSpeed());
     }
+    private void turnWheels() {
+        float wheelAngleBefore = wheelAngle;
+        if(isTurningLeft) {
+            wheelAngle -= turningSpeed;
+            if(Math.abs(wheelAngle) > playerDetails.getMaximumWheelTurnangle()) {
+                wheelAngle = -playerDetails.getMaximumWheelTurnangle();
+            }
+        }
+        if(isTurningRight) {
+            wheelAngle += turningSpeed;
+            if(Math.abs(wheelAngle) > playerDetails.getMaximumWheelTurnangle()) {
+                wheelAngle = playerDetails.getMaximumWheelTurnangle();
+            }
+        }
+        wheelRotation += wheelAngle - wheelAngleBefore;
+    }
+        
+    private void turn() {
+        beforeTurn = getFacingRotation();
+        if((!hasBumbed && !isSliding && getCurrentSpeed() > 0) || (isReversing && getCurrentSpeed() == 0)) {
+            
+            float speedFactor = getCurrentSpeed() / getMaxSpeed();
+            if(isReversing && getCurrentSpeed() == 0) speedFactor = (float) 0.1;
+            float angleToTurn = 0;
+            if(wheelAngle != 0) {
+                angleToTurn = speedFactor * turningSpeed * 2 * (wheelAngle/(Math.abs(wheelAngle)));
+                if(Math.abs(angleToTurn) > Math.abs(wheelAngle)) angleToTurn = wheelAngle;
+                setRotation(getFacingRotation() + angleToTurn);
+                wheelAngle -= angleToTurn;
+            }
+
+
+            if(speedFactor >= 0.9 && rockGrip < 0) {
+                steepTurning += Math.abs(angleToTurn);
+                if(steepTurning >= 35) startSlide(angleToTurn);
+            }
+            else {
+                steepTurning = 0;
+            }
+
+            setXMovingDirection((float) Math.sin(Math.toRadians(getFacingRotation())));
+            setYMovingDirection((float) - Math.cos(Math.toRadians(getFacingRotation())));
+            
+            rockGrip --;
+        }
+
+    }    
     private void takeAction() {
         beforeMoveX = getxLocation();
         beforeMoveY = getyLocation();      
         
 
-        if(isMovingForward) {
+        if(isSliding) {
+            slide();
+        }
+        else if(isMovingForward) {
             moveForward();
             accelerate();
         }
@@ -86,19 +123,55 @@ public class Player extends MovingObject{
             moveForward();
             retardate();
         }
+    }
+    
+    private void checkCollision() {
+        loop: for(VisibleObject object : ObjectHandler.getCurrentObjects()) {
+            int crashSort = object.crashedInto(this);
+            if(crashSort >= 0 ) {
+                rePosition();
+                handleCrash(crashSort, object);
+                break loop;
+            }
+        }
+    }
+    
+    private void deBump() {
+        if(hasBumbed && bumpCounter % bumpDeactivationFrequency == 0) {
+            if(bumpFactor > 0) bumpFactor -= slippeyTires;
+            if(bumpFactor < 0) {
+                bumpFactor = 0;
+                hasBumbed = false;
+                float speedReductionFactor = Math.abs(180 - (Math.abs(getFacingRotation() - getMovingRotation()))) / 180;
+                setCurrentSpeed(speedReductionFactor * getCurrentSpeed());
+            }
+        }
+    }
+    
+    private void slide() {
+        setRotation(getFacingRotation() + slideRotationMultiplicator);
+        setXMovingDirection((float) Math.sin(Math.toRadians(getFacingRotation())));
+        setYMovingDirection((float) - Math.cos(Math.toRadians(getFacingRotation())));
+        
+        setxLocation(getxLocation() + getCurrentSpeed() * slidingXDirection);
+        setyLocation(getyLocation() + getCurrentSpeed() * slidingYDirection);
+        
+        slideTimer --;
+        if(slideTimer < 1) stopSlide();
         
     }
+    
     private void moveForward() {
         float noSlidePart = (float) (1.0 - bumpFactor);
         
-        System.out.println("x_: " + getxLocation());
-        System.out.println("y: " + getyLocation());
-        System.out.println("noSlidePart: " + noSlidePart);
-        System.out.println("getXMovingDirection(): " + getXMovingDirection());
-        System.out.println("getYMovingDirection(): " + getYMovingDirection());
-        System.out.println("bumpFactor: " + bumpFactor);
-        System.out.println("bumpX: " + bumpX);
-        System.out.println("bumpY: " + bumpY);
+      //  System.out.println("x_: " + getxLocation());
+      //  System.out.println("y: " + getyLocation());
+     //   System.out.println("noSlidePart: " + noSlidePart);
+     //   System.out.println("getXMovingDirection(): " + getXMovingDirection());
+     //   System.out.println("getYMovingDirection(): " + getYMovingDirection());
+     //   System.out.println("bumpFactor: " + bumpFactor);
+     //   System.out.println("bumpX: " + bumpX);
+     //   System.out.println("bumpY: " + bumpY);
         setxLocation(getxLocation() + getCurrentSpeed() * (noSlidePart * getXMovingDirection() + bumpFactor * bumpX));
         setyLocation(getyLocation() + getCurrentSpeed() * (noSlidePart * getYMovingDirection() + bumpFactor * bumpY));
       //  setxLocation(getxLocation() + getCurrentSpeed() * getXMovingDirection());
@@ -116,6 +189,18 @@ public class Player extends MovingObject{
     }
     private void retardate(float multiplicator) {
         if(getCurrentSpeed() > 0) setCurrentSpeed(getCurrentSpeed() - multiplicator * retardation);
+    }
+    private void startSlide(float multiplicator) {
+        steepTurning = 0;
+        isSliding = true;
+        slideRotationMultiplicator = multiplicator;
+        slidingXDirection = getXMovingDirection();
+        slidingYDirection = getYMovingDirection();
+        slideTimer = 20;
+    }
+    private void stopSlide() {
+        isSliding = false;
+        rockGrip = 50;
     }
 
     public void setControls(KeyCode gas, KeyCode right, KeyCode left, KeyCode reverse) {
@@ -156,67 +241,7 @@ public class Player extends MovingObject{
             }
         }
     }
-    private void turnWheels() {
-        float wheelAngleBefore = wheelAngle;
-        if(isTurningLeft) {
-            wheelAngle -= turningSpeed;
-            if(Math.abs(wheelAngle) > playerDetails.getMaximumWheelTurnangle()) {
-                wheelAngle = -playerDetails.getMaximumWheelTurnangle();
-            }
-        }
-        if(isTurningRight) {
-            wheelAngle += turningSpeed;
-            if(Math.abs(wheelAngle) > playerDetails.getMaximumWheelTurnangle()) {
-                wheelAngle = playerDetails.getMaximumWheelTurnangle();
-            }
-        }
-        wheelRotation += wheelAngle - wheelAngleBefore;
-    }
-
-    private void turn() {
-        if(!hasBumbed && getCurrentSpeed() > 0 || isReversing) {
-            boolean turned = false;
-            float speedFactor = getCurrentSpeed() / getMaxSpeed();
-            if(isReversing && getCurrentSpeed() == 0) speedFactor = (float) 0.1;
-            float angleToTurn = speedFactor * turningSpeed * 2 * (wheelAngle/(Math.abs(wheelAngle)));
-            if(angleToTurn != 0) {
-                if(Math.abs(angleToTurn) > Math.abs(wheelAngle)) angleToTurn = wheelAngle;
-                setRotation(getFacingRotation() + angleToTurn);
-                wheelAngle -= angleToTurn;
-                turned = true;
-            }
-            
-            /**
-            if(wheelAngle < 0) {
-                if(wheelAngle + angleToTurn > 0) angleToTurn = -wheelAngle;
-                setRotation(getFacingRotation() - angleToTurn);
-                wheelAngle += angleToTurn;
-                turned = true;
-            }
-            else if(wheelAngle > 0) {
-                if(wheelAngle + angleToTurn < 0) angleToTurn = wheelAngle;
-                setRotation(getFacingRotation() + angleToTurn);
-                wheelAngle -= angleToTurn;
-                turned = true;
-            }
-            **/
-
-
-            if(turned && !hasBumbed && speedFactor > 0.5) {
-                steepTurning += turningSpeed;
-            }
-            else if (steepTurning > 0) {
-                steepTurning -= turningSpeed;
-            }
-
-         //   if(speedFactor * steepTurning > 20 * turningSpeed) {
-         //       slide(speedFactor);
-         //   }
-            setXMovingDirection((float) Math.sin(Math.toRadians(getFacingRotation())));
-            setYMovingDirection((float) - Math.cos(Math.toRadians(getFacingRotation())));
-        }
-
-    }
+/**
     private void slide(float speedFactor) {
         if(!hasBumbed) {
             System.out.println("is sliding");
@@ -232,7 +257,7 @@ public class Player extends MovingObject{
             steepTurning = 0;
         }
     }
-    
+    **/
     private void wallCollide(float movingXDirection, float movingYDirection, VisibleObject crashe) {
 
         setCurrentSpeed(crashe.getBounciness() * getCurrentSpeed());
@@ -247,31 +272,6 @@ public class Player extends MovingObject{
 
         steepTurning = 0;
     }
-
-    private void deBump() {
-        if(hasBumbed && bumpCounter % bumpDeactivationFrequency == 0) {
-            if(bumpFactor > 0) bumpFactor -= slippeyTires;
-            if(bumpFactor < 0) {
-                bumpFactor = 0;
-                hasBumbed = false;
-                float speedReductionFactor = Math.abs(180 - (Math.abs(getFacingRotation() - getMovingRotation()))) / 180;
-                setCurrentSpeed(speedReductionFactor * getCurrentSpeed());
-            }
-        }
-    }
-
-    private void checkCollision() {
-        loop: for(VisibleObject object : ObjectHandler.getCurrentObjects()) {
-            int crashSort = object.crashedInto(this);
-            if(crashSort >= 0 ) {
-                rePosition();
-                handleCrash(crashSort, object);
-                break loop;
-            }
-        }
-    }
-
-
 
     private void handleCrash(int crashSort, VisibleObject crashe) {
         if(crashSort == VisibleObject.CRASH_UP || crashSort == VisibleObject.CRASH_DOWN) {
@@ -292,6 +292,7 @@ public class Player extends MovingObject{
     }
 
     private void rePosition() {
+        setRotation(beforeTurn);
         setxLocation(beforeMoveX);
         setyLocation(beforeMoveY);
     }
