@@ -191,6 +191,7 @@ public class Player extends MovingObject{
         if(getCurrentSpeed() > 0) setCurrentSpeed(getCurrentSpeed() - multiplicator * retardation);
     }
     private void startSlide(float multiplicator) {
+        AudioHandler.playSqueek();
         steepTurning = 0;
         isSliding = true;
         slideRotationMultiplicator = multiplicator;
@@ -241,25 +242,10 @@ public class Player extends MovingObject{
             }
         }
     }
-/**
-    private void slide(float speedFactor) {
-        if(!hasBumbed) {
-            System.out.println("is sliding");
-            bumpDeactivationFrequency = playerDetails.getStandardDesliding();
-            bumpX = speedFactor * ((float) Math.sin(Math.toRadians(getFacingRotation())));
-            bumpY =speedFactor * ((float) - Math.cos(Math.toRadians(getFacingRotation())));
-            hasBumbed = true;
-            bumpFactor = (float) 0.6;
-            bumpCounter = 0;
-            setXMovingDirection((float) Math.sin(Math.toRadians(getFacingRotation())));
-            setYMovingDirection((float) - Math.cos(Math.toRadians(getFacingRotation())));
-            
-            steepTurning = 0;
-        }
-    }
-    **/
-    private void wallCollide(float movingXDirection, float movingYDirection, VisibleObject crashe) {
 
+    private void wallCollide(float movingXDirection, float movingYDirection, VisibleObject crashe) {
+        float relativeSpeed = (getCurrentSpeed() / getMaxSpeed());
+        if(relativeSpeed > 0.3) AudioHandler.playThud(relativeSpeed);
         setCurrentSpeed(crashe.getBounciness() * getCurrentSpeed());
         bumpDeactivationFrequency = (int) (Math.min(crashe.getBounciness(), this.getBounciness()) * playerDetails.getStandardDesliding());
         bumpX = movingXDirection;

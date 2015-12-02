@@ -39,6 +39,7 @@ public class CrashCourse extends Application {
         primaryStage.show();
         createPopup();
         loadImages();
+        AudioHandler audioHandler = new AudioHandler();
         createPlayers();
         createTrack();
      //   setPlayerStartControls();
