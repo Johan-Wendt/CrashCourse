@@ -6,6 +6,7 @@
 package crashcourse;
 
 import javafx.geometry.Bounds;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
@@ -24,6 +25,8 @@ public abstract class VisibleObject {
     public static int CRASH_RIGHT = 1;
     public static int CRASH_DOWN = 2;
     public static int CRASH_LEFT = 3;
+    public static int CRASH_DAMAGING = 4;
+    public static int CRASH_HARMLESS = 5;
     
     
     
@@ -36,7 +39,7 @@ public abstract class VisibleObject {
         
         ObjectHandler.addToCurrentObjects(this);
         
-        borderTesting(crashCourse);
+      //  borderTesting(crashCourse);
     }
     
     public VisibleObject(CrashCourse crashCourse, VisibleObjects deatils, float xLocation, float yLocation) {
@@ -144,6 +147,7 @@ public abstract class VisibleObject {
             if(crasher.getBorders().getBoundsInParent().intersects(leftBorder.getBoundsInParent())) {
                 return CRASH_LEFT;
             }
+            return CRASH_HARMLESS;
         
         }
         return -1;
@@ -189,9 +193,17 @@ public abstract class VisibleObject {
         rightBorder.setStroke(Color.GREEN);
         downBorder.setStroke(Color.PINK);
         leftBorder.setStroke(Color.GREENYELLOW);
-        upBorder.setStrokeWidth(10);
+        upBorder.setStrokeWidth(2);
        // rightBorder.setStrokeWidth(10);
        // downBorder.setStrokeWidth(10);
        // leftBorder.setStrokeWidth(10);
+    }
+
+    protected VisibleObjects getDetails() {
+        return details;
+    }
+    
+    protected void changeAppearance(Image image) {
+        appearance.setImage(image);
     }
 }

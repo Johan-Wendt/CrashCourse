@@ -7,6 +7,7 @@ package crashcourse;
 
 import java.util.HashMap;
 import javafx.scene.input.KeyCode;
+import javafx.scene.shape.Shape;
 
 /**
  *
@@ -16,8 +17,8 @@ public class Player extends MovingObject{
     private Players playerDetails;
     private boolean isTurningRight, isTurningLeft, isMovingForward, isReversing, hasBumbed, isSliding;
     private HashMap<KeyCode, Integer> controls = new HashMap<>();
-    private int turningSpeed, bumpCounter, baseRotate, bumpDeactivationFrequency, slideTimer, rockGrip;
-    private float retardation, slippeyTires, bumpX, bumpY, bumpFactor, steepTurning, wheelAngle, wheelRotation, beforeMoveX, beforeMoveY, slidingXDirection, slidingYDirection, slideRotationMultiplicator, beforeTurn;
+    private int turningSpeed, bumpCounter, baseRotate, bumpDeactivationFrequency, slideTimer, rockGrip, damageLevel;
+    private float retardation, slippeyTires, bumpX, bumpY, bumpFactor, steepTurning, wheelAngle, wheelRotation, beforeMoveX, beforeMoveY, slidingXDirection, slidingYDirection, slideRotationMultiplicator, beforeTurn, speedBeforeMove;
         
 
     public Player(CrashCourse crashCourse, VisibleObjects deatils, Players playerDetails) {
@@ -35,7 +36,7 @@ public class Player extends MovingObject{
         setYMovingDirection((float) - Math.cos(Math.toRadians(getFacingRotation())));
         retardation = playerDetails.getStartRetardation();
         slippeyTires = playerDetails.getSlipperyTires();
-        bumpX = bumpY = bumpFactor = wheelAngle = bumpCounter = 0;
+        bumpX = bumpY = bumpFactor = wheelAngle = bumpCounter = damageLevel = 0;
         bumpDeactivationFrequency = playerDetails.getStandardDesliding();
         wheelRotation = playerDetails.getBaseRotate();
     }
@@ -47,7 +48,7 @@ public class Player extends MovingObject{
         takeAction();
         setPosition();
         checkCollision();
-        deBump();
+       // deBump();
         bumpCounter ++;
     }
     private void turnWheels() {
@@ -99,7 +100,8 @@ public class Player extends MovingObject{
     }    
     private void takeAction() {
         beforeMoveX = getxLocation();
-        beforeMoveY = getyLocation();      
+        beforeMoveY = getyLocation();
+        speedBeforeMove = getCurrentSpeed();
         
 
         if(isSliding) {
@@ -107,6 +109,7 @@ public class Player extends MovingObject{
         }
         else if(isMovingForward) {
             moveForward();
+            deBump();
             accelerate();
         }
         else if(isReversing) {
@@ -117,10 +120,16 @@ public class Player extends MovingObject{
             else {
                 moveBackWards();
             }
+            deBump();
         }
         else {
             moveForward();
-            retardate();
+            if(hasBumbed) retardate(3);
+            else retardate();
+        }
+        if(speedBeforeMove != 0) {
+            setDriftingXDirection((getxLocation() - beforeMoveX) / speedBeforeMove);
+            setDriftingYDirection((getyLocation() - beforeMoveY) / speedBeforeMove);
         }
     }
     
@@ -129,7 +138,7 @@ public class Player extends MovingObject{
             int crashSort = object.crashedInto(this);
             if(crashSort >= 0 ) {
                 rePosition();
-                handleCrash(crashSort, object);
+                if(crashSort != VisibleObject.CRASH_HARMLESS) handleCrash(crashSort, object);
                 break loop;
             }
         }
@@ -173,12 +182,17 @@ public class Player extends MovingObject{
      //   System.out.println("bumpY: " + bumpY);
         setxLocation(getxLocation() + getCurrentSpeed() * (noSlidePart * getXMovingDirection() + bumpFactor * bumpX));
         setyLocation(getyLocation() + getCurrentSpeed() * (noSlidePart * getYMovingDirection() + bumpFactor * bumpY));
+
       //  setxLocation(getxLocation() + getCurrentSpeed() * getXMovingDirection());
       //  setyLocation(getyLocation() + getCurrentSpeed() * getYMovingDirection());
     }
     private void moveBackWards() {
         setxLocation(getxLocation() + getInvertXDirection());
         setyLocation(getyLocation() + getInvertYDirection());
+    }
+    private void goWithTheFlow() {
+        setxLocation(getxLocation() + getCurrentSpeed() * getDriftingXDirection());
+        setyLocation(getyLocation() + getCurrentSpeed() * getDriftingYDirection());
     }
     private void accelerate() {
         if(getCurrentSpeed() < getMaxSpeed()) setCurrentSpeed(getCurrentSpeed() + getAcceleration());
@@ -243,8 +257,7 @@ public class Player extends MovingObject{
 
     private void wallCollide(float movingXDirection, float movingYDirection, VisibleObject crashe) {
         float relativeSpeed = (getCurrentSpeed() / getMaxSpeed());
-        if(relativeSpeed > 0.3) AudioHandler.playThud(relativeSpeed);
-        setCurrentSpeed(crashe.getBounciness() * getCurrentSpeed());
+        if(crashe instanceof Hinder) setCurrentSpeed(crashe.getBounciness() * getCurrentSpeed());
         bumpDeactivationFrequency = (int) (Math.min(crashe.getBounciness(), this.getBounciness()) * playerDetails.getStandardDesliding());
         bumpX = movingXDirection;
         bumpY = movingYDirection;
@@ -252,13 +265,14 @@ public class Player extends MovingObject{
         bumpFactor = (float) 1.0;
         bumpCounter = 0;
         setXMovingDirection(movingXDirection);
-        setYMovingDirection(movingYDirection);        
+        setYMovingDirection(movingYDirection);
+        setDriftingXDirection(movingXDirection);
+        setDriftingYDirection(movingYDirection);
 
         steepTurning = 0;
     }
 
     private void handleCrash(int crashSort, VisibleObject crashe) {
-        System.out.println(crashSort);
         if(crashe instanceof Player) {
             if(crashSort == VisibleObject.CRASH_UP) {
                 wallCollide(getXMovingDirection(), getInvertYDirection(), crashe);
@@ -268,6 +282,7 @@ public class Player extends MovingObject{
             }
         }
         else {
+            if(getRelativeSpeed() > 0.3) AudioHandler.playThud(getRelativeSpeed());
             if(crashSort == VisibleObject.CRASH_UP || crashSort == VisibleObject.CRASH_DOWN) {
                 wallCollide(getXMovingDirection(), getInvertYDirection(), crashe);
             }
@@ -276,10 +291,20 @@ public class Player extends MovingObject{
             }
         }
     }
-    
-    public void getCrachedInto() {
-        
+    public void handleCrashedInto(int crashSort, MovingObject crashe) {
+        if(crashSort == VisibleObject.CRASH_DAMAGING) {
+            if(crashe.getRelativeSpeed() > 0.8) {
+                getHurt();
+                AudioHandler.playCrash(crashe.getRelativeSpeed());
+            }
+        }
+        else if (crashSort == VisibleObject.CRASH_HARMLESS) {
+            if(getRelativeSpeed() > 0.3) AudioHandler.playThud(crashe.getRelativeSpeed());
+        }
+        setCurrentSpeed(crashe.getCurrentSpeed());
+        wallCollide(crashe.getXMovingDirection(), crashe.getYMovingDirection(), crashe);
     }
+
     
     public void removePlayer(CrashCourse crashCourse) {
         crashCourse.removeFromScreen(getAppearance());
@@ -294,5 +319,33 @@ public class Player extends MovingObject{
         setRotation(beforeTurn);
         setxLocation(beforeMoveX);
         setyLocation(beforeMoveY);
+    }
+    
+    @Override
+    public int crashedInto(VisibleObject crasher) {
+        int crashSort = -1;
+        Shape intersects = Shape.intersect(crasher.getBorders(), getBorders());
+        if(intersects.getBoundsInLocal().getWidth() != -1 && !this.equals(crasher)) {
+            Shape intersectsFront = Shape.intersect(crasher.getBorders(), getUpBorders());
+            Shape frontIntersector = Shape.intersect(crasher.getUpBorders(), getBorders());
+            if(intersectsFront.getBoundsInLocal().getWidth() == -1 && frontIntersector.getBoundsInLocal().getWidth() != -1) {
+                crashSort = VisibleObject.CRASH_DAMAGING;
+                handleCrashedInto(crashSort, (MovingObject) crasher);
+                return crashSort;
+            }
+            else {
+                crashSort = VisibleObject.CRASH_HARMLESS;
+                handleCrashedInto(crashSort, (MovingObject) crasher);
+                return crashSort;
+            }
+        }
+        return crashSort;
+    }
+    private void getHurt() {
+        damageLevel ++;
+        if(damageLevel < getDetails().getImages().size()) {
+            changeAppearance(getDetails().getImages().get(damageLevel));
+        }
+        
     }
 }

@@ -10,7 +10,7 @@ package crashcourse;
  * @author johanwendt
  */
 public abstract class MovingObject extends VisibleObject {
-    private float yMovingDirection, xMovingDirection, maxSpeed, currentSpeed, acceleration;
+    private float yMovingDirection, xMovingDirection, maxSpeed, currentSpeed, acceleration, driftingXDirection, driftingYDirection;
     
     public MovingObject(CrashCourse crashCourse, VisibleObjects deatils) {
         super(crashCourse, deatils);
@@ -23,10 +23,10 @@ public abstract class MovingObject extends VisibleObject {
         this.acceleration = acceleration;
         currentSpeed = 0;
     }
-    protected float getXMovingDirection() {
+    public float getXMovingDirection() {
         return xMovingDirection;
     }
-    protected float getYMovingDirection() {
+    public float getYMovingDirection() {
         return yMovingDirection;
     }
     protected void setXMovingDirection(float newDirection) {
@@ -73,5 +73,40 @@ public abstract class MovingObject extends VisibleObject {
         float slideDirection = (float) Math.toDegrees(Math.atan2(getXMovingDirection(), getYMovingDirection()));
         slideDirection = 180 - slideDirection;
         return slideDirection;
+    }
+
+    public float getyMovingDirection() {
+        return yMovingDirection;
+    }
+
+    public void setyMovingDirection(float yMovingDirection) {
+        this.yMovingDirection = yMovingDirection;
+    }
+
+    public float getxMovingDirection() {
+        return xMovingDirection;
+    }
+
+    public void setxMovingDirection(float xMovingDirection) {
+        this.xMovingDirection = xMovingDirection;
+    }
+
+    public float getDriftingXDirection() {
+        return driftingXDirection;
+    }
+
+    public void setDriftingXDirection(float driftingXDirection) {
+        this.driftingXDirection = driftingXDirection;
+    }
+
+    public float getDriftingYDirection() {
+        return driftingYDirection;
+    }
+
+    public void setDriftingYDirection(float driftingYDirection) {
+        this.driftingYDirection = driftingYDirection;
+    }
+    public float getRelativeSpeed() {
+        return getCurrentSpeed() / getMaxSpeed();
     }
 }
