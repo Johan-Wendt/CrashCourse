@@ -31,7 +31,6 @@ public class Player extends MovingObject{
         setMaxSpeed(playerDetails.getStartSpeed());
         setxLocation(playerDetails.getStartXLocation());
         setyLocation(playerDetails.getStartYLocation());
-       // setControls(KeyCode.UP, KeyCode.RIGHT, KeyCode.LEFT, KeyCode.DOWN);
         setXMovingDirection((float) Math.sin(Math.toRadians(getFacingRotation())));
         setYMovingDirection((float) - Math.cos(Math.toRadians(getFacingRotation())));
         retardation = playerDetails.getStartRetardation();
@@ -259,12 +258,29 @@ public class Player extends MovingObject{
     }
 
     private void handleCrash(int crashSort, VisibleObject crashe) {
-        if(crashSort == VisibleObject.CRASH_UP || crashSort == VisibleObject.CRASH_DOWN) {
-            wallCollide(getXMovingDirection(), getInvertYDirection(), crashe);
+        if(crashe instanceof Player) {
+            if(crashSort == VisibleObject.CRASH_UP) {
+                wallCollide(getXMovingDirection(), getInvertYDirection(), crashe);
+            }
+            if(crashSort == VisibleObject.CRASH_DOWN) {
+                wallCollide(getXMovingDirection(), getInvertYDirection(), crashe);
+            }
+            else {
+                wallCollide(getInvertXDirection(), getYMovingDirection(), crashe);
+            }
         }
-        else if(crashSort == VisibleObject.CRASH_RIGHT || crashSort == VisibleObject.CRASH_LEFT) {
-            wallCollide(getInvertXDirection(), getYMovingDirection(), crashe);
+        else {
+            if(crashSort == VisibleObject.CRASH_UP || crashSort == VisibleObject.CRASH_DOWN) {
+                wallCollide(getXMovingDirection(), getInvertYDirection(), crashe);
+            }
+            else if(crashSort == VisibleObject.CRASH_RIGHT || crashSort == VisibleObject.CRASH_LEFT) {
+                wallCollide(getInvertXDirection(), getYMovingDirection(), crashe);
+            }
         }
+    }
+    
+    public void getCrachedInto() {
+        
     }
     
     public void removePlayer(CrashCourse crashCourse) {

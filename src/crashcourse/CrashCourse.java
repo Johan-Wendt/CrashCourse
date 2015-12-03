@@ -73,8 +73,16 @@ public class CrashCourse extends Application {
         VisibleObjects.PLAYER_ONE.getImages().add(playerOne3);
         VisibleObjects.PLAYER_ONE.getImages().add(playerOne4);
         VisibleObjects.PLAYER_ONE.getImages().add(playerOne5);
-        Image playerTwo = new Image(getClass().getResourceAsStream("player-one1.png"), VisibleObjects.PLAYER_TWO.getWidth(), VisibleObjects.PLAYER_TWO.getHeight(), true, false);
-        VisibleObjects.PLAYER_TWO.getImages().add(playerTwo);
+        Image playerTwo1 = new Image(getClass().getResourceAsStream("player-two1.png"), VisibleObjects.PLAYER_TWO.getWidth(), VisibleObjects.PLAYER_TWO.getHeight(), true, false);
+        Image playerTwo2 = new Image(getClass().getResourceAsStream("player-two2.png"), VisibleObjects.PLAYER_TWO.getWidth(), VisibleObjects.PLAYER_TWO.getHeight(), true, false);
+        Image playerTwo3 = new Image(getClass().getResourceAsStream("player-two3.png"), VisibleObjects.PLAYER_TWO.getWidth(), VisibleObjects.PLAYER_TWO.getHeight(), true, false);
+        Image playerTwo4 = new Image(getClass().getResourceAsStream("player-two4.png"), VisibleObjects.PLAYER_TWO.getWidth(), VisibleObjects.PLAYER_TWO.getHeight(), true, false);
+        Image playerTwo5 = new Image(getClass().getResourceAsStream("player-two5.png"), VisibleObjects.PLAYER_TWO.getWidth(), VisibleObjects.PLAYER_TWO.getHeight(), true, false);
+        VisibleObjects.PLAYER_TWO.getImages().add(playerTwo1);
+        VisibleObjects.PLAYER_TWO.getImages().add(playerTwo2);
+        VisibleObjects.PLAYER_TWO.getImages().add(playerTwo3);
+        VisibleObjects.PLAYER_TWO.getImages().add(playerTwo4);
+        VisibleObjects.PLAYER_TWO.getImages().add(playerTwo5);
         Image hinder = new Image(getClass().getResourceAsStream("hinder.png"), VisibleObjects.SMALL_HINDER.getWidth(), VisibleObjects.SMALL_HINDER.getHeight(), true, false);
         VisibleObjects.SMALL_HINDER.getImages().add(hinder);
         Image Hhinder = new Image(getClass().getResourceAsStream("horizontal-hinder.png"), VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER.getWidth(), VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER.getHeight(), false, false);
