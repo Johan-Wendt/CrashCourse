@@ -258,11 +258,9 @@ public class Player extends MovingObject{
     }
 
     private void handleCrash(int crashSort, VisibleObject crashe) {
+        System.out.println(crashSort);
         if(crashe instanceof Player) {
             if(crashSort == VisibleObject.CRASH_UP) {
-                wallCollide(getXMovingDirection(), getInvertYDirection(), crashe);
-            }
-            if(crashSort == VisibleObject.CRASH_DOWN) {
                 wallCollide(getXMovingDirection(), getInvertYDirection(), crashe);
             }
             else {

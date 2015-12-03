@@ -35,6 +35,8 @@ public abstract class VisibleObject {
         setBorders(crashCourse);
         
         ObjectHandler.addToCurrentObjects(this);
+        
+        borderTesting(crashCourse);
     }
     
     public VisibleObject(CrashCourse crashCourse, VisibleObjects deatils, float xLocation, float yLocation) {
@@ -179,5 +181,17 @@ public abstract class VisibleObject {
     }
     public float getBounciness() {
         return details.getBounciness();
+    }
+    private void borderTesting(CrashCourse crashcourse) {
+        crashcourse.getRoot().getChildren().addAll(upBorder, rightBorder, downBorder, leftBorder);
+        borders.setStroke(Color.ORANGE);
+        upBorder.setStroke(Color.YELLOW);
+        rightBorder.setStroke(Color.GREEN);
+        downBorder.setStroke(Color.PINK);
+        leftBorder.setStroke(Color.GREENYELLOW);
+        upBorder.setStrokeWidth(10);
+       // rightBorder.setStrokeWidth(10);
+       // downBorder.setStrokeWidth(10);
+       // leftBorder.setStrokeWidth(10);
     }
 }
