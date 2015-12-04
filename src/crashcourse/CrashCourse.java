@@ -89,6 +89,8 @@ public class CrashCourse extends Application {
         VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER.getImages().add(Hhinder);
         Image Vhinder = new Image(getClass().getResourceAsStream("vertical-hinder.png"), VisibleObjects.VERTICAL_FULLSCREEN_HINDER.getWidth(), VisibleObjects.VERTICAL_FULLSCREEN_HINDER.getHeight(), false, false);
         VisibleObjects.VERTICAL_FULLSCREEN_HINDER.getImages().add(Vhinder);
+        Image makeFasterBonus = new Image(getClass().getResourceAsStream("hinder.png"), VisibleObjects.SMALL_HINDER.getWidth(), VisibleObjects.SMALL_HINDER.getHeight(), true, false);
+        VisibleObjects.MAKE_FASTER_BONUS.getImages().add(hinder);
     }
 
     private void createPlayers() {
@@ -142,8 +144,8 @@ public class CrashCourse extends Application {
         trackBuilder.buildStandardTrack();
     }
     private void reStart() {
-        playerOne.removePlayer(this);
-        playerTwo.removePlayer(this);
+        playerOne.removeObject(this);
+        playerTwo.removeObject(this);
         createPlayers();
         setPlayerStartControls();
     }

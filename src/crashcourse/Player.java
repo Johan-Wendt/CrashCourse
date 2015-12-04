@@ -304,12 +304,12 @@ public class Player extends MovingObject{
         wallCollide(crashe.getXMovingDirection(), crashe.getYMovingDirection(), crashe);
     }
 
-    
+/**    
     public void removePlayer(CrashCourse crashCourse) {
         crashCourse.removeFromScreen(getAppearance());
         ObjectHandler.removeFromCurrentObjects(this);
     }
-    
+    **/
     private float getWheelRotation() {
         return wheelRotation;
     }

@@ -206,4 +206,8 @@ public abstract class VisibleObject {
     protected void changeAppearance(Image image) {
         appearance.setImage(image);
     }
+    public void removeObject(CrashCourse crashCourse) {
+        crashCourse.removeFromScreen(getAppearance());
+        ObjectHandler.removeFromCurrentObjects(this);
+    }
 }
