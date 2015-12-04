@@ -256,7 +256,6 @@ public class Player extends MovingObject{
     }
 
     private void wallCollide(float movingXDirection, float movingYDirection, VisibleObject crashe) {
-        float relativeSpeed = (getCurrentSpeed() / getMaxSpeed());
         if(crashe instanceof Hinder) setCurrentSpeed(crashe.getBounciness() * getCurrentSpeed());
         bumpDeactivationFrequency = (int) (Math.min(crashe.getBounciness(), this.getBounciness()) * playerDetails.getStandardDesliding());
         bumpX = movingXDirection;
@@ -319,26 +318,30 @@ public class Player extends MovingObject{
         setRotation(beforeTurn);
         setxLocation(beforeMoveX);
         setyLocation(beforeMoveY);
+        setPosition();
     }
     
     @Override
     public int crashedInto(VisibleObject crasher) {
         int crashSort = -1;
-        Shape intersects = Shape.intersect(crasher.getBorders(), getBorders());
-        if(intersects.getBoundsInLocal().getWidth() != -1 && !this.equals(crasher)) {
-            Shape intersectsFront = Shape.intersect(crasher.getBorders(), getUpBorders());
-            Shape frontIntersector = Shape.intersect(crasher.getUpBorders(), getBorders());
-            if(intersectsFront.getBoundsInLocal().getWidth() == -1 && frontIntersector.getBoundsInLocal().getWidth() != -1) {
-                crashSort = VisibleObject.CRASH_DAMAGING;
-                handleCrashedInto(crashSort, (MovingObject) crasher);
-                return crashSort;
+      //  if(crasher.getBorders().getBoundsInParent().intersects(getBorders().getBoundsInParent()) && !this.equals(crasher)) {
+            Shape intersects = Shape.intersect(crasher.getBorders(), getBorders());
+            if(intersects.getBoundsInLocal().getWidth() != -1 && !this.equals(crasher)) {
+                Shape intersectsFront = Shape.intersect(crasher.getBorders(), getUpBorders());
+                Shape frontIntersector = Shape.intersect(crasher.getUpBorders(), getBorders());
+                if(intersectsFront.getBoundsInLocal().getWidth() == -1 && frontIntersector.getBoundsInLocal().getWidth() != -1) {
+                    crashSort = VisibleObject.CRASH_DAMAGING;
+                    handleCrashedInto(crashSort, (MovingObject) crasher);
+                    return crashSort;
+                }
+                else {
+                    crashSort = VisibleObject.CRASH_HARMLESS;
+                    handleCrashedInto(crashSort, (MovingObject) crasher);
+                    return crashSort;
+                }
             }
-            else {
-                crashSort = VisibleObject.CRASH_HARMLESS;
-                handleCrashedInto(crashSort, (MovingObject) crasher);
-                return crashSort;
-            }
-        }
+          //  crashSort = VisibleObject.CRASH_HARMLESS;
+      //  }
         return crashSort;
     }
     private void getHurt() {

@@ -147,7 +147,7 @@ public abstract class VisibleObject {
             if(crasher.getBorders().getBoundsInParent().intersects(leftBorder.getBoundsInParent())) {
                 return CRASH_LEFT;
             }
-            return CRASH_HARMLESS;
+           // return CRASH_HARMLESS;
         
         }
         return -1;
