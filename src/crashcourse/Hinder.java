@@ -11,13 +11,12 @@ package crashcourse;
  */
 public abstract class Hinder extends NeutralObject {
 
-    public Hinder(CrashCourse crashCourse, VisibleObjects deatils, float xLocation, float yLocation) {
-        super(crashCourse, deatils, xLocation, yLocation);
+    public Hinder(VisibleObjects deatils, double xLocation, double yLocation) {
+        super(deatils, xLocation, yLocation);
     }
 
     @Override
     public void act() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

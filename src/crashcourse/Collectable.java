@@ -5,22 +5,38 @@
  */
 package crashcourse;
 
+import java.util.Random;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
+
 /**
  *
  * @author johanwendt
  */
 public abstract class Collectable extends VisibleObject {
     private Collectables collectableDetails;
-    private static int Longevity;
+    private int longevity;
+    private float birth;
+    Timeline timeline;
+    
+    public static final int MAKE_FASTER_BONUS = 0;
+    public static final int BOMB_COLLECTABLE = 1;
 
-    public Collectable(CrashCourse crashCourse, VisibleObjects deatils, float xLocation, float yLocation, Collectables collectableDetails) {
-        super(crashCourse, deatils, xLocation, yLocation);
+    public Collectable(VisibleObjects deatils, double xLocation, double yLocation, Collectables collectableDetails, boolean removeOnCollision) {
+        super(deatils, xLocation, yLocation, removeOnCollision);
         this.collectableDetails = collectableDetails;
-        Longevity = Ransomiserat tal mellan min och max
+        Random random = new Random();
+        longevity = collectableDetails.getLongevityMin() + random.nextInt(collectableDetails.getLongevityMax() - collectableDetails.getLongevityMin());
+        CollectableHandler.addCollectable(this);
+        
+        timeline = new Timeline(new KeyFrame(Duration.millis(longevity),
+        ae -> removeObject()));
+        timeline.play();
     }
     @Override
     public void act() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
     }
 
     protected Collectables getCollectableDetails() {
@@ -28,5 +44,14 @@ public abstract class Collectable extends VisibleObject {
     }
     public int getCollectableNumber() {
         return collectableDetails.getCollectableNumber();
+    }
+    @Override
+    public void removeObject() {
+        super.removeObject();
+        if(timeline != null) timeline.stop();
+        //CrashCourse.removeFromScreen(getAppearance());
+       // ObjectHandler.removeFromCurrentObjects(this);
+        ObjectHandler.removeFromCollectables(this);
+        
     }
 }

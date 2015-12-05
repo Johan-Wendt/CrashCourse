@@ -11,8 +11,8 @@ package crashcourse;
  */
 public class VerticalFullscreenHinder extends Hinder {
 
-    public VerticalFullscreenHinder(CrashCourse crashCourse, VisibleObjects deatils, float xLocation, float yLocation) {
-        super(crashCourse, deatils, xLocation, yLocation);
+    public VerticalFullscreenHinder(VisibleObjects deatils, double xLocation, double yLocation) {
+        super(deatils, xLocation, yLocation);
     }
     
 }

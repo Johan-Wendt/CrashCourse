@@ -6,6 +6,7 @@
 package crashcourse;
 
 import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  *
@@ -13,6 +14,8 @@ import java.util.HashSet;
  */
 public class ObjectHandler {
     private static final HashSet<VisibleObject> currentObjects = new HashSet<>();
+    private static final HashSet<Collectable> currentCollectables = new HashSet<>();
+    private static final HashSet<MovingObject> currentMovingObjects = new HashSet<>();
     
     public ObjectHandler() {
         
@@ -24,8 +27,37 @@ public class ObjectHandler {
     public static HashSet<VisibleObject> getCurrentObjects() {
         return currentObjects;
     }
-    
     public static void removeFromCurrentObjects(VisibleObject object) {
         currentObjects.remove(object);
+    }
+    
+    public static void addToCurrentMovingObjects(MovingObject object) {
+        currentMovingObjects.add(object);
+    }
+    public static HashSet<MovingObject> getCurrentMovingObjects() {
+        return currentMovingObjects;
+    }
+    public static void removeFromCurrentMovingObjects(MovingObject object) {
+        currentMovingObjects.remove(object);
+    }
+    
+    public static void addToCollectables(Collectable collectable) {
+        currentCollectables.add(collectable);
+    }
+    public static void removeFromCollectables(Collectable collectable) {
+        currentCollectables.remove(collectable);
+    }
+    public static HashSet<Collectable> getCurrentCollectables() {
+        return currentCollectables;
+    }
+    
+    public static void resetAllObjects() {
+        HashSet<VisibleObject> toRemove = new HashSet<>(currentObjects);
+        for(VisibleObject object : toRemove) {
+            object.removeObject();
+        }
+        currentObjects.clear();
+        currentCollectables.clear();
+        currentMovingObjects.clear();
     }
 }

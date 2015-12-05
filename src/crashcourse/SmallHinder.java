@@ -11,8 +11,8 @@ package crashcourse;
  */
 public class SmallHinder extends Hinder {
 
-    public SmallHinder(CrashCourse crashCourse, VisibleObjects deatils, float xLocation, float yLocation) {
-        super(crashCourse, deatils, xLocation, yLocation);
+    public SmallHinder(VisibleObjects deatils, double xLocation, double yLocation) {
+        super(deatils, xLocation, yLocation);
     }
     
 }

@@ -9,9 +9,10 @@ package crashcourse;
  *
  * @author johanwendt
  */
-public abstract class UppgradeBonus extends Collectable {
+public class HappeningCollectable extends Collectable {
 
-    public UppgradeBonus(VisibleObjects deatils, double xLocation, double yLocation, Collectables collectableDetails, boolean removeOnCollision) {
+    public HappeningCollectable(VisibleObjects deatils, double xLocation, double yLocation, Collectables collectableDetails, boolean removeOnCollision) {
         super(deatils, xLocation, yLocation, collectableDetails, removeOnCollision);
     }
+    
 }

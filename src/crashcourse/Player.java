@@ -15,11 +15,11 @@ import javafx.scene.shape.Shape;
  */
 public class Player extends MovingObject{
     private Players playerDetails;
-    private boolean isTurningRight, isTurningLeft, isMovingForward, isReversing, hasBumbed, isSliding;
+    private boolean isTurningRight, isTurningLeft, isMovingForward, isReversing, hasBumbed, isSliding, hasBeenCrashedInto;
     private HashMap<KeyCode, Integer> controls = new HashMap<>();
-    private int turningSpeed, bumpCounter, baseRotate, bumpDeactivationFrequency, slideTimer, rockGrip, damageLevel;
-    private float retardation, slippeyTires, bumpX, bumpY, bumpFactor, steepTurning, wheelAngle, wheelRotation, beforeMoveX, beforeMoveY, slidingXDirection, slidingYDirection, slideRotationMultiplicator, beforeTurn, speedBeforeMove;
-        
+    private int turningSpeed, bumpCounter, baseRotate, bumpDeactivationFrequency, slideTimer, rockGrip, damageLevel, lastCrashSort;
+    private double retardation, slippeyTires, bumpX, bumpY, bumpFactor, steepTurning, wheelAngle, wheelRotation, beforeMoveX, beforeMoveY, slidingXDirection, slidingYDirection, slideRotationMultiplicator, beforeTurn, speedBeforeMove, crashXDirection, crashYDirection, crashSpeed, relativeCrashSpeed;
+    private MovingObject lastCrashe;
 
     public Player(CrashCourse crashCourse, VisibleObjects deatils, Players playerDetails) {
         super(crashCourse, deatils);
@@ -32,8 +32,8 @@ public class Player extends MovingObject{
         setMaxSpeed(playerDetails.getStartSpeed());
         setxLocation(playerDetails.getStartXLocation());
         setyLocation(playerDetails.getStartYLocation());
-        setXMovingDirection((float) Math.sin(Math.toRadians(getFacingRotation())));
-        setYMovingDirection((float) - Math.cos(Math.toRadians(getFacingRotation())));
+        setXMovingDirection(Math.sin(Math.toRadians(getFacingRotation())));
+        setYMovingDirection(- Math.cos(Math.toRadians(getFacingRotation())));
         retardation = playerDetails.getStartRetardation();
         slippeyTires = playerDetails.getSlipperyTires();
         bumpX = bumpY = bumpFactor = wheelAngle = bumpCounter = damageLevel = 0;
@@ -43,16 +43,17 @@ public class Player extends MovingObject{
 
     @Override
     public void act() {
+        handleCrashedInto();
         turnWheels();
         turn();
         takeAction();
         setPosition();
-        checkCollision();
+        hasCollided();
        // deBump();
         bumpCounter ++;
     }
     private void turnWheels() {
-        float wheelAngleBefore = wheelAngle;
+        double wheelAngleBefore = wheelAngle;
         if(isTurningLeft) {
             wheelAngle -= turningSpeed;
             if(Math.abs(wheelAngle) > playerDetails.getMaximumWheelTurnangle()) {
@@ -72,9 +73,9 @@ public class Player extends MovingObject{
         beforeTurn = getFacingRotation();
         if((!hasBumbed && !isSliding && getCurrentSpeed() > 0) || (isReversing && getCurrentSpeed() == 0)) {
             
-            float speedFactor = getCurrentSpeed() / getMaxSpeed();
-            if(isReversing && getCurrentSpeed() == 0) speedFactor = (float) 0.1;
-            float angleToTurn = 0;
+            double speedFactor = getCurrentSpeed() / getMaxSpeed();
+            if(isReversing && getCurrentSpeed() == 0) speedFactor = 0.1;
+            double angleToTurn = 0;
             if(wheelAngle != 0) {
                 angleToTurn = speedFactor * turningSpeed * 2 * (wheelAngle/(Math.abs(wheelAngle)));
                 if(Math.abs(angleToTurn) > Math.abs(wheelAngle)) angleToTurn = wheelAngle;
@@ -91,8 +92,8 @@ public class Player extends MovingObject{
                 steepTurning = 0;
             }
 
-            setXMovingDirection((float) Math.sin(Math.toRadians(getFacingRotation())));
-            setYMovingDirection((float) - Math.cos(Math.toRadians(getFacingRotation())));
+            setXMovingDirection(Math.sin(Math.toRadians(getFacingRotation())));
+            setYMovingDirection(- Math.cos(Math.toRadians(getFacingRotation())));
             
             rockGrip --;
         }
@@ -133,15 +134,16 @@ public class Player extends MovingObject{
         }
     }
     
-    private void checkCollision() {
-        loop: for(VisibleObject object : ObjectHandler.getCurrentObjects()) {
+    private boolean hasCollided() {
+        for(VisibleObject object : ObjectHandler.getCurrentObjects()) {
             int crashSort = object.crashedInto(this);
             if(crashSort >= 0 ) {
-                rePosition();
+                rePosition(object.getCrashRepositioningMultiplicator());
                 if(crashSort != VisibleObject.CRASH_HARMLESS) handleCrash(crashSort, object);
-                break loop;
+                return true;
             }
         }
+        return false;
     }
     
     private void deBump() {
@@ -150,7 +152,7 @@ public class Player extends MovingObject{
             if(bumpFactor < 0) {
                 bumpFactor = 0;
                 hasBumbed = false;
-                float speedReductionFactor = Math.abs(180 - (Math.abs(getFacingRotation() - getMovingRotation()))) / 180;
+                double speedReductionFactor = Math.abs(180 - (Math.abs(getFacingRotation() - getMovingRotation()))) / 180;
                 setCurrentSpeed(speedReductionFactor * getCurrentSpeed());
             }
         }
@@ -158,8 +160,8 @@ public class Player extends MovingObject{
     
     private void slide() {
         setRotation(getFacingRotation() + slideRotationMultiplicator);
-        setXMovingDirection((float) Math.sin(Math.toRadians(getFacingRotation())));
-        setYMovingDirection((float) - Math.cos(Math.toRadians(getFacingRotation())));
+        setXMovingDirection(Math.sin(Math.toRadians(getFacingRotation())));
+        setYMovingDirection(- Math.cos(Math.toRadians(getFacingRotation())));
         
         setxLocation(getxLocation() + getCurrentSpeed() * slidingXDirection);
         setyLocation(getyLocation() + getCurrentSpeed() * slidingYDirection);
@@ -171,20 +173,10 @@ public class Player extends MovingObject{
     
     private void moveForward() {
         float noSlidePart = (float) (1.0 - bumpFactor);
-        
-      //  System.out.println("x_: " + getxLocation());
-      //  System.out.println("y: " + getyLocation());
-     //   System.out.println("noSlidePart: " + noSlidePart);
-     //   System.out.println("getXMovingDirection(): " + getXMovingDirection());
-     //   System.out.println("getYMovingDirection(): " + getYMovingDirection());
-     //   System.out.println("bumpFactor: " + bumpFactor);
-     //   System.out.println("bumpX: " + bumpX);
-     //   System.out.println("bumpY: " + bumpY);
+
         setxLocation(getxLocation() + getCurrentSpeed() * (noSlidePart * getXMovingDirection() + bumpFactor * bumpX));
         setyLocation(getyLocation() + getCurrentSpeed() * (noSlidePart * getYMovingDirection() + bumpFactor * bumpY));
 
-      //  setxLocation(getxLocation() + getCurrentSpeed() * getXMovingDirection());
-      //  setyLocation(getyLocation() + getCurrentSpeed() * getYMovingDirection());
     }
     private void moveBackWards() {
         setxLocation(getxLocation() + getInvertXDirection());
@@ -200,11 +192,11 @@ public class Player extends MovingObject{
     private void retardate() {
         if(getCurrentSpeed() > 0) setCurrentSpeed(getCurrentSpeed() - retardation);
     }
-    private void retardate(float multiplicator) {
+    private void retardate(double multiplicator) {
         if(getCurrentSpeed() > 0) setCurrentSpeed(getCurrentSpeed() - multiplicator * retardation);
     }
-    private void startSlide(float multiplicator) {
-        AudioHandler.playSqueek();
+    private void startSlide(double multiplicator) {
+        AudioHandler.playSqueek(0.1);
         steepTurning = 0;
         isSliding = true;
         slideRotationMultiplicator = multiplicator;
@@ -254,14 +246,14 @@ public class Player extends MovingObject{
             }
         }
     }
-
-    private void wallCollide(float movingXDirection, float movingYDirection, VisibleObject crashe) {
+//Math.min(crashe.getBounciness(), this.getBounciness())
+    private void wallCollide(double movingXDirection, double movingYDirection, VisibleObject crashe) {
         if(crashe instanceof Hinder) setCurrentSpeed(crashe.getBounciness() * getCurrentSpeed());
-        bumpDeactivationFrequency = (int) (Math.min(crashe.getBounciness(), this.getBounciness()) * playerDetails.getStandardDesliding());
+        bumpDeactivationFrequency = (int) (crashe.getBounciness() * playerDetails.getStandardDesliding());
         bumpX = movingXDirection;
         bumpY = movingYDirection;
         hasBumbed = true;
-        bumpFactor = (float) 1.0;
+        bumpFactor = 1.0;
         bumpCounter = 0;
         setXMovingDirection(movingXDirection);
         setYMovingDirection(movingYDirection);
@@ -280,28 +272,52 @@ public class Player extends MovingObject{
                 wallCollide(getInvertXDirection(), getYMovingDirection(), crashe);
             }
         }
+        else if(crashe instanceof Collectable) {
+            handleCollectable((Collectable) crashe);
+            if(crashe instanceof Bomb) {
+                regularBump(crashSort, crashe);
+            }
+        }
         else {
-            if(getRelativeSpeed() > 0.3) AudioHandler.playThud(getRelativeSpeed());
-            if(crashSort == VisibleObject.CRASH_UP || crashSort == VisibleObject.CRASH_DOWN) {
+            regularBump(crashSort, crashe);
+        }
+    }
+    private void regularBump(int crashSort, VisibleObject crashe) {
+        if(getRelativeSpeed() > 0.3) {
+            AudioHandler.playThud(getRelativeSpeed());
+        }
+        if(crashSort == VisibleObject.CRASH_UP || crashSort == VisibleObject.CRASH_DOWN) {
                 wallCollide(getXMovingDirection(), getInvertYDirection(), crashe);
             }
             else if(crashSort == VisibleObject.CRASH_RIGHT || crashSort == VisibleObject.CRASH_LEFT) {
                 wallCollide(getInvertXDirection(), getYMovingDirection(), crashe);
             }
+    }
+    public void handleCrashedInto() {
+        if(hasBeenCrashedInto) {
+            if(lastCrashSort == VisibleObject.CRASH_DAMAGING) {
+                if(crashSpeed >= 6) {
+                    getHurt();
+                    AudioHandler.playCrash();
+                }
+            }
+            else if (lastCrashSort == VisibleObject.CRASH_HARMLESS) {
+                if(getRelativeSpeed() > 0.3) AudioHandler.playThud(relativeCrashSpeed);
+            }
+            setCurrentSpeed(crashSpeed);
+            wallCollide(crashXDirection, crashYDirection, lastCrashe);
+            hasBeenCrashedInto = false;
         }
     }
-    public void handleCrashedInto(int crashSort, MovingObject crashe) {
-        if(crashSort == VisibleObject.CRASH_DAMAGING) {
-            if(crashe.getRelativeSpeed() > 0.8) {
-                getHurt();
-                AudioHandler.playCrash(crashe.getRelativeSpeed());
-            }
-        }
-        else if (crashSort == VisibleObject.CRASH_HARMLESS) {
-            if(getRelativeSpeed() > 0.3) AudioHandler.playThud(crashe.getRelativeSpeed());
-        }
-        setCurrentSpeed(crashe.getCurrentSpeed());
-        wallCollide(crashe.getXMovingDirection(), crashe.getYMovingDirection(), crashe);
+    
+    public void setHasBeenCrashedInto(int crashSort, MovingObject crashe) {
+        lastCrashe = crashe;
+        lastCrashSort = crashSort;
+        crashXDirection = crashe.getXMovingDirection();
+        crashYDirection = crashe.getYMovingDirection();
+        crashSpeed = crashe.getCurrentSpeed();
+        relativeCrashSpeed = crashe.getRelativeSpeed();
+        hasBeenCrashedInto = true;
     }
 
 /**    
@@ -310,38 +326,50 @@ public class Player extends MovingObject{
         ObjectHandler.removeFromCurrentObjects(this);
     }
     **/
-    private float getWheelRotation() {
+    private double getWheelRotation() {
         return wheelRotation;
     }
 
+    private void rePosition(double distance) {
+        setRotation(beforeTurn);
+        setxLocation(getxLocation() - ((getxLocation() - beforeMoveX)) * distance);
+        setyLocation(getyLocation() - ((getyLocation() - beforeMoveY)) * distance);
+        setPosition();
+    }
+    /**
     private void rePosition() {
         setRotation(beforeTurn);
         setxLocation(beforeMoveX);
         setyLocation(beforeMoveY);
         setPosition();
     }
+    * **/
     
     @Override
     public int crashedInto(VisibleObject crasher) {
+        
         int crashSort = -1;
-      //  if(crasher.getBorders().getBoundsInParent().intersects(getBorders().getBoundsInParent()) && !this.equals(crasher)) {
+        //if(crasher.getBorders().getBoundsInParent().intersects(getBorders().getBoundsInParent()) && !this.equals(crasher)) {
             Shape intersects = Shape.intersect(crasher.getBorders(), getBorders());
             if(intersects.getBoundsInLocal().getWidth() != -1 && !this.equals(crasher)) {
+                if(!(crasher instanceof MovingObject)) {
+                    return VisibleObject.CRASH_HARMLESS;
+                }
                 Shape intersectsFront = Shape.intersect(crasher.getBorders(), getUpBorders());
                 Shape frontIntersector = Shape.intersect(crasher.getUpBorders(), getBorders());
                 if(intersectsFront.getBoundsInLocal().getWidth() == -1 && frontIntersector.getBoundsInLocal().getWidth() != -1) {
                     crashSort = VisibleObject.CRASH_DAMAGING;
-                    handleCrashedInto(crashSort, (MovingObject) crasher);
+                    setHasBeenCrashedInto(crashSort, (MovingObject) crasher);
                     return crashSort;
                 }
                 else {
                     crashSort = VisibleObject.CRASH_HARMLESS;
-                    handleCrashedInto(crashSort, (MovingObject) crasher);
+                    setHasBeenCrashedInto(crashSort, (MovingObject) crasher);
                     return crashSort;
                 }
             }
           //  crashSort = VisibleObject.CRASH_HARMLESS;
-      //  }
+       // }
         return crashSort;
     }
     private void getHurt() {
@@ -350,5 +378,37 @@ public class Player extends MovingObject{
             changeAppearance(getDetails().getImages().get(damageLevel));
         }
         
+    }
+    private void handleCollectable(Collectable collectable) {
+        collectable.removeObject();
+        if(collectable instanceof UppgradeBonus) {
+            collectUppbgradeBonus(collectable.getCollectableNumber());
+        }
+        if(collectable instanceof HappeningCollectable) {
+            handleHappeningCollectable(collectable);
+        }
+    }
+    private void collectUppbgradeBonus(int collectable) {
+        switch(collectable) {
+            case Collectable.MAKE_FASTER_BONUS: 
+                makeFaster();
+        }
+    }
+
+    private void makeFaster() {
+        setMaxSpeed(getMaxSpeed() + 0.5);
+    }
+
+    private void handleHappeningCollectable(Collectable collectable) {
+        switch(collectable.getCollectableNumber()) {
+            case Collectable.BOMB_COLLECTABLE: 
+                Bomb.setLastBombLocation(collectable.getxLocation(), collectable.getyLocation());
+                createBomb();
+        }
+    }
+
+    private void createBomb() {
+        //VisibleObjects deatils, double xLocation, double yLocation, double startSpeed, double movingXDirection, double movingYDirection
+        Bomb bomb = new Bomb(VisibleObjects.BOMB, Bomb.getLastBombXLocation(), Bomb.getLastBombYLocation(), getCurrentSpeed(), getXMovingDirection(), getYMovingDirection());
     }
 }

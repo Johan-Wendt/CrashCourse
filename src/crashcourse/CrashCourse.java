@@ -6,12 +6,9 @@
 package crashcourse;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
@@ -22,7 +19,7 @@ import javafx.stage.Stage;
  */
 public class CrashCourse extends Application {
     private MainPopup mainPopup;
-    private Group root = new Group();
+    private static Group root = new Group();
     private Player playerOne, playerTwo;
     private GameLoop gameLoop;
     private Scene scene;
@@ -40,6 +37,7 @@ public class CrashCourse extends Application {
         createPopup();
         loadImages();
         AudioHandler audioHandler = new AudioHandler();
+        CollectableHandler.setProbabilityFactors();
         createPlayers();
         createTrack();
         setPlayerStartControls();
@@ -89,8 +87,10 @@ public class CrashCourse extends Application {
         VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER.getImages().add(Hhinder);
         Image Vhinder = new Image(getClass().getResourceAsStream("vertical-hinder.png"), VisibleObjects.VERTICAL_FULLSCREEN_HINDER.getWidth(), VisibleObjects.VERTICAL_FULLSCREEN_HINDER.getHeight(), false, false);
         VisibleObjects.VERTICAL_FULLSCREEN_HINDER.getImages().add(Vhinder);
-        Image makeFasterBonus = new Image(getClass().getResourceAsStream("hinder.png"), VisibleObjects.SMALL_HINDER.getWidth(), VisibleObjects.SMALL_HINDER.getHeight(), true, false);
-        VisibleObjects.MAKE_FASTER_BONUS.getImages().add(hinder);
+        Image makeFasterBonus = new Image(getClass().getResourceAsStream("fuelpump.png"), VisibleObjects.MAKE_FASTER_BONUS.getWidth(), VisibleObjects.MAKE_FASTER_BONUS.getHeight(), true, false);
+        VisibleObjects.MAKE_FASTER_BONUS.getImages().add(makeFasterBonus);
+        Image bomb = new Image(getClass().getResourceAsStream("bomb.png"), VisibleObjects.BOMB.getWidth(), VisibleObjects.BOMB.getHeight(), true, false);
+        VisibleObjects.BOMB.getImages().add(bomb);
     }
 
     private void createPlayers() {
@@ -140,17 +140,20 @@ public class CrashCourse extends Application {
     }
 
     private void createTrack() {
-        trackBuilder = new TrackBuilder(this);
+        trackBuilder = new TrackBuilder();
         trackBuilder.buildStandardTrack();
     }
     private void reStart() {
-        playerOne.removeObject(this);
-        playerTwo.removeObject(this);
+        ObjectHandler.resetAllObjects();
+        trackBuilder.buildStandardTrack();
         createPlayers();
         setPlayerStartControls();
     }
-    public void removeFromScreen(Node toRemove) {
+    public static void removeFromScreen(Node toRemove) {
         root.getChildren().remove(toRemove);
+    }
+    public static void addToScreen(Node toAdd) {
+        root.getChildren().add(toAdd);
     }
     
 }

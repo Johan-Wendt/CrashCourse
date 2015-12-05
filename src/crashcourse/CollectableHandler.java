@@ -5,28 +5,56 @@
  */
 package crashcourse;
 
+import java.util.HashSet;
+
 /**
  *
  * @author johanwendt
  */
 public class CollectableHandler {
-    private static final int LIFESPAN_MIN = 5000;
-    private static final int LIFESPAN_MAX = 20000;
     private static final double BONUS_PROBABILITY = 0.01;
+    private static final HashSet<Collectable> collectables = new HashSet<>();
     
-    private CrashCourse crashCourse;
-
-    
+    private static double makeFasterChance;
+    private static double bombChance;
+        
     public void CollectableHandler(CrashCourse crashCourse) {
-        this.crashCourse = crashCourse;
+        setProbabilityFactors();
     }
-    public void act() {
-        if(BONUS_PROBABILITY > Math.random()) createRandomCollectable();
+    public static void act() {
+        if(BONUS_PROBABILITY > Math.random()) {
+            createRandomCollectable();
+        }
+       // removeDeadCollectables();
     }
-    private void createRandomCollectable() {
-        createMakeFasterBonus();
+    private static void createRandomCollectable() {
+        if(Math.random() < makeFasterChance) {
+            createMakeFasterBonus();
+        }
+        else if(Math.random() < bombChance) {
+            createBombCollectable();
+        }
     }
-    private void createMakeFasterBonus() {
-        MakeFasterBonus bonus = new MakeFasterBonus(crashCourse, VisibleObjects.PLAYER_ONE, LIFESPAN_MIN, LIFESPAN_MIN);
+    private static void createMakeFasterBonus() {
+        MakeFasterBonus bonus = new MakeFasterBonus(VisibleObjects.MAKE_FASTER_BONUS, TrackBuilder.getRandomXInTrack(20), TrackBuilder.getRandomYInTrack(40), Collectables.MAKE_FASTER_BONUS, true);
+    }
+    private static void createBombCollectable() {
+        BombCollectable bomb = new BombCollectable(VisibleObjects.BOMB, TrackBuilder.getRandomXInTrack(20), TrackBuilder.getRandomYInTrack(40), Collectables.BOMB_COLLECTABLE, true);
+    }
+    /**
+    private static void removeDeadCollectables() {
+        for(Collectable collectable : collectables) {
+            collectable.act();
+        }
+    }
+    * */
+    public static void addCollectable(Collectable collectable) {
+        collectables.add(collectable);
+    }
+
+    public static void setProbabilityFactors() {
+        float sumOfAll = Collectables.MAKE_FASTER_BONUS.getCollectableProbabilityFactor() + Collectables.MAKE_FASTER_BONUS.getCollectableProbabilityFactor();
+        makeFasterChance = Collectables.MAKE_FASTER_BONUS.getCollectableProbabilityFactor() / sumOfAll;
+        bombChance = 1;
     }
 }

@@ -5,65 +5,63 @@
  */
 package crashcourse;
 
+import java.util.Random;
+
 /**
  *
  * @author johanwendt
  */
 public class TrackBuilder {
-    private CrashCourse crashCourse;
-    public TrackBuilder(CrashCourse crashCourse) {
-        this.crashCourse = crashCourse;
+    private static int minXInTrack;
+    private static int maxXInTrack;
+    private static int minYInTrack;
+    private static int maxYInTrack;
+    
+    private static int edgeThicknes;
+    
+    private static final Random random = new Random();
+    
+    public TrackBuilder() {
     }
     public void buildStandardTrack() {
+        edgeThicknes = 40;
+        setTrackBoundaries();
         createBoundaries();
     }
 
     private void createBoundaries() {
-       // createUpperboundary();
-       // createLowererboundary(); 
-       // createLeftboundary(); 
-       // createRightboundary(); 
-        HorizontalFullscreenHinder hinderUp = new HorizontalFullscreenHinder(crashCourse, VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER, 0, 0);
-        HorizontalFullscreenHinder hinderDown = new HorizontalFullscreenHinder(crashCourse, VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER, 0,660);
-        VerticalFullscreenHinder hinderRight = new VerticalFullscreenHinder(crashCourse, VisibleObjects.VERTICAL_FULLSCREEN_HINDER, 1160, 40);
-        VerticalFullscreenHinder hinderLeft = new VerticalFullscreenHinder(crashCourse, VisibleObjects.VERTICAL_FULLSCREEN_HINDER, 0, 40);
-    }
-    
-
-    private void createUpperboundary() {
-        int x = 0;
-        int y = 0;
-        while(x < CrashCourse.getGameWidth()) {
-            SmallHinder hinder = new SmallHinder(crashCourse, VisibleObjects.SMALL_HINDER, x, y);
-            x += VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER.getWidth();
-        }
+        HorizontalFullscreenHinder hinderUp = new HorizontalFullscreenHinder(VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER, 0, 0);
+        HorizontalFullscreenHinder hinderDown = new HorizontalFullscreenHinder(VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER, 0, maxYInTrack);
+        VerticalFullscreenHinder hinderRight = new VerticalFullscreenHinder(VisibleObjects.VERTICAL_FULLSCREEN_HINDER, maxXInTrack, edgeThicknes);
+        VerticalFullscreenHinder hinderLeft = new VerticalFullscreenHinder(VisibleObjects.VERTICAL_FULLSCREEN_HINDER, 0, edgeThicknes);
     }
 
-    private void createLowererboundary() {
-        int x = 0;
-        int y = CrashCourse.getGameHeight() - VisibleObjects.SMALL_HINDER.getHeight();
-        while(x < CrashCourse.getGameWidth()) {
-            Hinder hinder = new SmallHinder(crashCourse, VisibleObjects.SMALL_HINDER, x, y);
-            x += VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER.getWidth();
-        }
+    private void setTrackBoundaries() {
+        minXInTrack = edgeThicknes;
+        maxXInTrack = CrashCourse.GAME_WIDTH - edgeThicknes;
+        minYInTrack = edgeThicknes;
+        maxYInTrack = CrashCourse.GAME_HEIGHT - edgeThicknes;
     }
 
-    private void createLeftboundary() {
-        int x = 0;
-        int y = 0;
-        while(y < CrashCourse.getGameHeight()) {
-            Hinder hinder = new SmallHinder(crashCourse, VisibleObjects.SMALL_HINDER, x, y);
-            y += VisibleObjects.VERTICAL_FULLSCREEN_HINDER.getHeight();
-        }
+    public static int getMinXInTrack() {
+        return minXInTrack;
     }
 
-    private void createRightboundary() {
-        int x = CrashCourse.getGameWidth()- VisibleObjects.SMALL_HINDER.getWidth();;
-        int y = 0;
-        while(y < CrashCourse.getGameHeight()) {
-          //  Hinder hinder = new SmallHinder(crashCourse, VisibleObjects.SMALL_HINDER, x, y);
-            VerticalFullscreenHinder hinder = new VerticalFullscreenHinder(crashCourse, VisibleObjects.VERTICAL_FULLSCREEN_HINDER, x, y);
-            y += VisibleObjects.VERTICAL_FULLSCREEN_HINDER.getHeight();
-        }
+    public static int getMaxXInTrack() {
+        return maxXInTrack;
+    }
+
+    public static int getMinYInTrack() {
+        return minYInTrack;
+    }
+
+    public static int getMaxYInTrack() {
+        return maxYInTrack;
+    }
+    public static int getRandomXInTrack(int widthOfObject) {
+        return minXInTrack + random.nextInt(maxXInTrack - minXInTrack - minXInTrack);
+    }
+    public static int getRandomYInTrack(int heightOfObject) {
+        return minYInTrack + random.nextInt(maxYInTrack - minYInTrack - heightOfObject);
     }
 }

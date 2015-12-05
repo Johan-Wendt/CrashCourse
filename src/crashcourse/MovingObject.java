@@ -10,51 +10,66 @@ package crashcourse;
  * @author johanwendt
  */
 public abstract class MovingObject extends VisibleObject {
-    private float yMovingDirection, xMovingDirection, maxSpeed, currentSpeed, acceleration, driftingXDirection, driftingYDirection;
+    private double yMovingDirection, xMovingDirection, maxSpeed, currentSpeed, acceleration, driftingXDirection, driftingYDirection;
+    private int maximumMaxSpeed;
     
     public MovingObject(CrashCourse crashCourse, VisibleObjects deatils) {
         super(crashCourse, deatils);
         currentSpeed = 0;
+        maximumMaxSpeed = 10;
+        ObjectHandler.addToCurrentMovingObjects(this);
+    }
+    public MovingObject(VisibleObjects deatils, double xLocation, double yLocation, double startMaxSpeed) {
+        super(deatils, xLocation, yLocation);
+        maxSpeed = startMaxSpeed;
+        currentSpeed = 0;
+        ObjectHandler.addToCurrentMovingObjects(this);
     }
 
-    public MovingObject(CrashCourse crashCourse, VisibleObjects deatils, float xLocation, float yLocation, float startSpeed, float acceleration) {
-        super(crashCourse, deatils, xLocation, yLocation);
-        maxSpeed = startSpeed;
+    public MovingObject(VisibleObjects deatils, double xLocation, double yLocation, double startMaxSpeed, double acceleration) {
+        super(deatils, xLocation, yLocation);
+        maxSpeed = startMaxSpeed;
         this.acceleration = acceleration;
         currentSpeed = 0;
+        ObjectHandler.addToCurrentMovingObjects(this);
     }
-    public float getXMovingDirection() {
+    public double getXMovingDirection() {
         return xMovingDirection;
     }
-    public float getYMovingDirection() {
+    public double getYMovingDirection() {
         return yMovingDirection;
     }
-    protected void setXMovingDirection(float newDirection) {
+    protected void setXMovingDirection(double newDirection) {
         xMovingDirection = newDirection;
     }
-    protected void setYMovingDirection(float newDirection) {
+    protected void setYMovingDirection(double newDirection) {
         yMovingDirection = newDirection;
     }
-    public float getMaxSpeed() {
+    public double getMaxSpeed() {
         return maxSpeed;
     }
-    public void setMaxSpeed(float maxSpeed) {
-        this.maxSpeed = maxSpeed;
+    public void setMaxSpeed(double maxSpeed) {
+        if(maxSpeed < maximumMaxSpeed) {
+            this.maxSpeed = maxSpeed;
+        }
+        else { 
+            maxSpeed = maximumMaxSpeed;
+        }
     }
 
-    public float getAcceleration() {
+    public double getAcceleration() {
         return acceleration;
     }
 
-    public void setAcceleration(float acceleration) {
+    public void setAcceleration(double acceleration) {
         this.acceleration = acceleration;
     }
 
-    public float getCurrentSpeed() {
+    public double getCurrentSpeed() {
         return currentSpeed;
     }
 
-    public void setCurrentSpeed(float currentSpeed) {
+    public void setCurrentSpeed(double currentSpeed) {
         this.currentSpeed = currentSpeed;
         if(currentSpeed < 0) {
             this.currentSpeed = 0;
@@ -63,50 +78,59 @@ public abstract class MovingObject extends VisibleObject {
             this.currentSpeed = maxSpeed;
         }
     }
-    protected float  getInvertXDirection() {
+    protected double  getInvertXDirection() {
         return - xMovingDirection;
     }
-    protected float getInvertYDirection() {
+    protected double getInvertYDirection() {
         return - yMovingDirection;
     }
-    protected float getMovingRotation() {
-        float slideDirection = (float) Math.toDegrees(Math.atan2(getXMovingDirection(), getYMovingDirection()));
+    protected double getMovingRotation() {
+        double slideDirection = Math.toDegrees(Math.atan2(getXMovingDirection(), getYMovingDirection()));
         slideDirection = 180 - slideDirection;
         return slideDirection;
     }
 
-    public float getyMovingDirection() {
+    public double getyMovingDirection() {
         return yMovingDirection;
     }
 
-    public void setyMovingDirection(float yMovingDirection) {
+    public void setyMovingDirection(double yMovingDirection) {
         this.yMovingDirection = yMovingDirection;
     }
 
-    public float getxMovingDirection() {
+    public double getxMovingDirection() {
         return xMovingDirection;
     }
 
-    public void setxMovingDirection(float xMovingDirection) {
+    public void setxMovingDirection(double xMovingDirection) {
         this.xMovingDirection = xMovingDirection;
     }
 
-    public float getDriftingXDirection() {
+    public double getDriftingXDirection() {
         return driftingXDirection;
     }
 
-    public void setDriftingXDirection(float driftingXDirection) {
+    public void setDriftingXDirection(double driftingXDirection) {
         this.driftingXDirection = driftingXDirection;
     }
 
-    public float getDriftingYDirection() {
+    public double getDriftingYDirection() {
         return driftingYDirection;
     }
 
-    public void setDriftingYDirection(float driftingYDirection) {
+    public void setDriftingYDirection(double driftingYDirection) {
         this.driftingYDirection = driftingYDirection;
     }
-    public float getRelativeSpeed() {
+    public double getRelativeSpeed() {
         return getCurrentSpeed() / getMaxSpeed();
+    }
+    @Override
+    public double getCrashRepositioningMultiplicator() {
+        return 1.5;
+    }
+    @Override
+    public void removeObject() {
+        super.removeObject();
+        ObjectHandler.removeFromCurrentMovingObjects(this);
     }
 }

@@ -13,13 +13,13 @@ import javafx.scene.image.Image;
  * @author johanwendt
  */
 public enum Players {
-    PLAYER_ONE(0, 400, 400, 8, (float) 0.1, (float) 0.04, 3, 0, (float) 0.4, 20, 45),
-    PLAYER_TWO(0, 500, 200, 8, (float) 0.1, (float) 0.04, 3, 0, (float) 0.4, 20, 45);
+    PLAYER_ONE(0, 400, 400, 5, 0.1, 0.04, 3, 0, 0.4, 20, 45),
+    PLAYER_TWO(0, 500, 200, 5, 0.1, 0.04, 3, 0, 0.4, 20, 45);
     
     private final int startDirection, startTurningSpeed, baseRotate, standardDesliding, maximumWheelTurnangle;
-    private final float startXLocation, startYLocation, startSpeed, startAcceleration, startRetardation, slipperyTires;
+    private final double startXLocation, startYLocation, startSpeed, startAcceleration, startRetardation, slipperyTires;
     
-    Players(int startDirection, float startXLocation, float startYLocation, float startSpeed, float startAcceleration, float startRetardation, int startTurningSpeed, int baseRotate, float slipperyTires, int standardDesliding, int maximumWheelTurnangle) {
+    Players(int startDirection, double startXLocation, double startYLocation, double startSpeed, double startAcceleration, double startRetardation, int startTurningSpeed, int baseRotate, double slipperyTires, int standardDesliding, int maximumWheelTurnangle) {
         this.startDirection = startDirection;
         this.startXLocation = startXLocation;
         this.startYLocation = startYLocation;
@@ -37,23 +37,23 @@ public enum Players {
         return startDirection;
     }
 
-    public float getStartXLocation() {
+    public double getStartXLocation() {
         return startXLocation;
     }
 
-    public float getStartYLocation() {
+    public double getStartYLocation() {
         return startYLocation;
     }
 
-    public float getStartSpeed() {
+    public double getStartSpeed() {
         return startSpeed;
     }
 
-    public float getStartAcceleration() {
+    public double getStartAcceleration() {
         return startAcceleration;
     }
 
-    public float getStartRetardation() {
+    public double getStartRetardation() {
         return startRetardation;
     }
 
@@ -65,7 +65,7 @@ public enum Players {
         return baseRotate;
     }
 
-    public float getSlipperyTires() {
+    public double getSlipperyTires() {
         return slipperyTires;
     }
     public int getStandardDesliding() {

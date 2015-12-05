@@ -11,9 +11,10 @@ package crashcourse;
  */
 public class MakeFasterBonus extends UppgradeBonus {
 
-    public MakeFasterBonus(CrashCourse crashCourse, VisibleObjects deatils, float xLocation, float yLocation) {
-        super(crashCourse, deatils, xLocation, yLocation);
+    public MakeFasterBonus(VisibleObjects deatils, double xLocation, double yLocation, Collectables collectableDetails, boolean removeOnCollision) {
+        super(deatils, xLocation, yLocation, collectableDetails, removeOnCollision);
     }
+
 
     
 }

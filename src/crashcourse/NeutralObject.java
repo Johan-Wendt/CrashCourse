@@ -11,8 +11,8 @@ package crashcourse;
  */
 public abstract class NeutralObject extends VisibleObject{
 
-    public NeutralObject(CrashCourse crashCourse, VisibleObjects deatils, float xLocation, float yLocation) {
-        super(crashCourse, deatils, xLocation, yLocation);
+    public NeutralObject(VisibleObjects deatils, double xLocation, double yLocation) {
+        super(deatils, xLocation, yLocation);
     }
     
 }

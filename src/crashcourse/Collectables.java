@@ -10,7 +10,8 @@ package crashcourse;
  * @author johanwendt
  */
 public enum Collectables {
-    MAKE_FASTER_BONUS (0, "WHEEL UP - Become faster", 10, 100, 200);
+    MAKE_FASTER_BONUS (Collectable.MAKE_FASTER_BONUS, "WHEEL UP - Become faster", 10, 10000, 20000),
+    BOMB_COLLECTABLE (Collectable.BOMB_COLLECTABLE, "BOMB - Watch out!", 10, 10000, 20000);
 
     
     private final String collectableDescription;

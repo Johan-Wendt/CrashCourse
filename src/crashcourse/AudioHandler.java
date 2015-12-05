@@ -31,16 +31,16 @@ public class AudioHandler {
         if(!thud.isPlaying()) thud.play(volume);
     }
     public static void playSqueek() {
-        if(!squeek.isPlaying()) squeek.play();
+        squeek.play();
     }
     public static void playSqueek(double volume) {
-        if(!squeek.isPlaying()) squeek.play(volume);
+        squeek.play(volume);
     }
     public static void playCrash() {
-        if(!crash.isPlaying()) crash.play();
+        crash.play();
     }
     public static void playCrash(double volume) {
-        if(!crash.isPlaying()) crash.play(volume);
+        crash.play(volume);
     }
 
 }
