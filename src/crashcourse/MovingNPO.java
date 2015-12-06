@@ -14,21 +14,23 @@ public abstract class MovingNPO extends MovingObject {
     public MovingNPO(VisibleObjects deatils, double xLocation, double yLocation, double startSpeed) {
         super(deatils, xLocation, yLocation, startSpeed);
     }
-    public MovingNPO(VisibleObjects deatils, double xLocation, double yLocation, double startSpeed, double movingXDirection, double movingYDirection) {
+    public MovingNPO(VisibleObjects deatils, double xLocation, double yLocation, double startSpeed, double driftingXDirection, double driftingYDirection) {
         super(deatils, xLocation, yLocation, startSpeed);
         setCurrentSpeed(startSpeed);
-        setXMovingDirection(movingXDirection);
-        setYMovingDirection(movingYDirection);
+        setDriftingXDirection(driftingXDirection);
+        setDriftingYDirection(driftingYDirection);
     }
     
     @Override
     public void act() {
+        recordBeforeMovePosition();
         move();
         setPosition();
+        hasCollided();
     }
     private void move() {
-        setxLocation(getxLocation() + getCurrentSpeed() * getXMovingDirection());
-        setyLocation(getyLocation() + getCurrentSpeed() * getYMovingDirection());
-
+        setxLocation(getxLocation() + getCurrentSpeed() * getDriftingXDirection());
+        setyLocation(getyLocation() + getCurrentSpeed() * getDriftingYDirection());
     }
+    
 }

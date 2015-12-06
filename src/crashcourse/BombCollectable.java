@@ -13,6 +13,7 @@ public class BombCollectable extends HappeningCollectable {
 
     public BombCollectable(VisibleObjects deatils, double xLocation, double yLocation, Collectables collectableDetails, boolean removeOnCollision) {
         super(deatils, xLocation, yLocation, collectableDetails, removeOnCollision);
+        setCrashWhole(false);
     }
     
 }

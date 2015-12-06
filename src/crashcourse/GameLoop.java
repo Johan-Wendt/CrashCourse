@@ -5,6 +5,7 @@
  */
 package crashcourse;
 
+import java.util.HashSet;
 import javafx.animation.AnimationTimer;
 
 /**
@@ -21,7 +22,8 @@ public class GameLoop extends AnimationTimer {
 
     @Override
     public void handle(long now) {
-        for(MovingObject  object: ObjectHandler.getCurrentMovingObjects()) {
+        HashSet<MovingObject> toMove = new HashSet<>(ObjectHandler.getCurrentMovingObjects());
+        for(MovingObject  object: toMove) {
             object.act();
         }
         CollectableHandler.act();

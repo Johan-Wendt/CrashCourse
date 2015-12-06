@@ -29,6 +29,8 @@ public abstract class VisibleObject {
     public static int CRASH_HARMLESS = 5;
     public static int CRASH_WHOLE = 6;
     
+    private boolean crashWhole = true;
+    
     
     
     public VisibleObject(CrashCourse crashCourse, VisibleObjects deatils) {
@@ -181,8 +183,9 @@ public abstract class VisibleObject {
             if(crasher.getBorders().getBoundsInParent().intersects(leftBorder.getBoundsInParent())) {
                 return CRASH_LEFT;
             }
-         //  if(this instanceof Collectable)
+            if(crashWhole) {
                return CRASH_WHOLE;
+            }
         
         }
         return -1;
@@ -257,5 +260,8 @@ public abstract class VisibleObject {
 
     public double getCrashRepositioningMultiplicator() {
         return 1;
+    }
+    protected void setCrashWhole(boolean crashWhole) {
+        this.crashWhole = crashWhole;
     }
 }
