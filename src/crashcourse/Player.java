@@ -325,6 +325,9 @@ public class Player extends MovingObject{
     }
     * **/
     
+    
+    Skriva om denna så att man kan bli krockad
+    /**
     @Override
     public int crashedInto(VisibleObject crasher) {
         
@@ -351,7 +354,9 @@ public class Player extends MovingObject{
           //  crashSort = VisibleObject.CRASH_HARMLESS;
        // }
         return crashSort;
+        
     }
+    * */
     private void getHurt() {
         damageLevel ++;
         if(damageLevel < getDetails().getImages().size()) {

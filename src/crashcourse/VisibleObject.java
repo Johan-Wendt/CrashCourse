@@ -20,7 +20,7 @@ public abstract class VisibleObject {
     private VisibleObjects details;
     private double xLocation, yLocation, rotation;
     private ImageView appearance;
-    private SVGPath borders, upBorder, rightBorder, downBorder, leftBorder;
+    private SVGPath borders;  //, upBorder, rightBorder, downBorder, leftBorder;
     public static int CRASH_UP = 0;
     public static int CRASH_RIGHT = 1;
     public static int CRASH_DOWN = 2;
@@ -44,7 +44,7 @@ public abstract class VisibleObject {
         ObjectHandler.addToCurrentObjects(this);
 
         
-       // borderTesting(crashCourse);
+    //    borderTesting();
     }
     
     public VisibleObject(VisibleObjects deatils, double xLocation, double yLocation) {
@@ -64,7 +64,7 @@ public abstract class VisibleObject {
         
         ObjectHandler.addToCurrentObjects(this);
         
-        borderTesting();
+      //  borderTesting();
 
     }
     public VisibleObject(VisibleObjects deatils, double xLocation, double yLocation, boolean removeOnCollision) {
@@ -88,7 +88,7 @@ public abstract class VisibleObject {
             removeObject();
         }
         
-        borderTesting();
+       // borderTesting();
     }
     public abstract void act();
     
@@ -97,6 +97,7 @@ public abstract class VisibleObject {
         appearance.setTranslateY(getyLocation());
         borders.setTranslateX(xLocation);
         borders.setTranslateY(yLocation);
+        /**
         upBorder.setTranslateX(xLocation);
         upBorder.setTranslateY(yLocation);
         rightBorder.setTranslateX(xLocation);
@@ -105,6 +106,7 @@ public abstract class VisibleObject {
         downBorder.setTranslateY(yLocation);
         leftBorder.setTranslateX(xLocation);
         leftBorder.setTranslateY(yLocation);
+        * **/
     }
     protected void turnObject() {
         
@@ -132,6 +134,7 @@ public abstract class VisibleObject {
     public SVGPath getBorders() {
         return borders;
     }
+    /**
     public SVGPath getUpBorders() {
         return upBorder;
     }
@@ -144,11 +147,12 @@ public abstract class VisibleObject {
     public SVGPath getLeftBorders() {
         return leftBorder;
     }
-    
+    **/
 
     private void setBorders() {
         borders = new SVGPath();
         borders.setContent(details.getSVGData());
+        /**
         upBorder = new SVGPath();
         upBorder.setContent(details.getSVGDataUpp());
         rightBorder = new SVGPath();
@@ -157,6 +161,7 @@ public abstract class VisibleObject {
         downBorder.setContent(details.getSVGDataDown());
         leftBorder = new SVGPath();
         leftBorder.setContent(details.getSVGDataLeft());
+        * **/
     }
     
     private boolean hasCollided() {
@@ -197,30 +202,20 @@ public abstract class VisibleObject {
     * */
     public int crashedInto(VisibleObject crasher) {
         if(crasher.getBorders().getBoundsInParent().intersects(borders.getBoundsInParent()) && !this.equals(crasher)) { 
-            Shape intersects = Shape.intersect(crasher.getBorders(), getBorders());
-            if(intersects.getBoundsInLocal().getWidth() != -1 && !this.equals(crasher)) {
-
-                Shape intersectsUp = Shape.intersect(crasher.getBorders(), getUpBorders());
-                Shape intersectsRight = Shape.intersect(crasher.getBorders(), getRightBorders());
-                Shape intersectsDown = Shape.intersect(crasher.getBorders(), getDownBorders());
-                Shape intersectsLeft = Shape.intersect(crasher.getBorders(), getLeftBorders());
-
-                double Upcrash = Math.max(intersectsUp.getBoundsInLocal().getWidth(), intersectsDown.getBoundsInLocal().getWidth());
-                double Rightcrash = Math.max(intersectsRight.getBoundsInLocal().getWidth(), intersectsLeft.getBoundsInLocal().getWidth());
-
-                if(Upcrash > Rightcrash) {
-                    System.out.println("Up" + Upcrash);
-                    return CRASH_UP;
-                }
-                else if(Rightcrash > Upcrash) {
-                    System.out.println("Right" + Rightcrash);
-                    return CRASH_RIGHT;
-                }
-                else{
-                    return CRASH_WHOLE;
-                }
+            if(this instanceof MovingObject) {
+                return CRASH_WHOLE;
             }
-        
+                    
+                    
+                    
+            Shape intersects = Shape.intersect(crasher.getBorders(), getBorders());
+            if(intersects.getBoundsInParent().getWidth() > intersects.getBoundsInParent().getHeight()) {
+                return CRASH_UP;
+            }
+            else {
+                return CRASH_RIGHT;
+            }
+
         
         }
         return -1;
@@ -248,10 +243,12 @@ public abstract class VisibleObject {
         rotation = degrees;
         appearance.setRotate(rotation);
         borders.setRotate(rotation);
+        /**
         upBorder.setRotate(rotation);
         rightBorder.setRotate(rotation);
         downBorder.setRotate(rotation);
         leftBorder.setRotate(rotation);
+        * */
     }
     protected double getFacingRotation() {
         return rotation;
@@ -260,19 +257,23 @@ public abstract class VisibleObject {
         return details.getBounciness();
     }
     private void borderTesting() {
+        CrashCourse.addToScreen(borders);
+        /**
         CrashCourse.addToScreen(upBorder);
         CrashCourse.addToScreen(rightBorder);
         CrashCourse.addToScreen(downBorder);
         CrashCourse.addToScreen(leftBorder);
-        borders.setStroke(Color.ORANGE);
-        upBorder.setStroke(Color.YELLOW);
-        rightBorder.setStroke(Color.GREEN);
-        downBorder.setStroke(Color.PINK);
-        leftBorder.setStroke(Color.GREENYELLOW);
+        borders.setStroke(Color.TRANSPARENT);
+        upBorder.setStroke(Color.TRANSPARENT);
+        rightBorder.setStroke(Color.TRANSPARENT);
+        downBorder.setStroke(Color.TRANSPARENT);
+        leftBorder.setStroke(Color.TRANSPARENT);
+        borders.setStrokeWidth(4);
         upBorder.setStrokeWidth(4);
         rightBorder.setStrokeWidth(4);
         downBorder.setStrokeWidth(4);
         leftBorder.setStrokeWidth(4);
+        * **/
     }
 
     protected VisibleObjects getDetails() {
@@ -287,10 +288,12 @@ public abstract class VisibleObject {
         ObjectHandler.removeFromCurrentObjects(this);
         appearance.setDisable(true);
         borders.setDisable(true);
+        /**
         upBorder.setDisable(true);
         downBorder.setDisable(true);
         leftBorder.setDisable(true);
         upBorder.setDisable(true);
+        * **/
     }
    // public void handleCrashedInto() {
         
