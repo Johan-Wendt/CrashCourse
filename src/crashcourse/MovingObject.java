@@ -182,12 +182,15 @@ public abstract class MovingObject extends VisibleObject {
             audioHandler.playThud(getRelativeSpeed());
         }
         if(crashe instanceof MovingObject) {
+            System.out.println("MOVING");
             bumpInto(getInvertDriftingXDirection(), getInvertDriftingYDirection(), crashe);
         }
         else if(crashSort == VisibleObject.CRASH_UP || crashSort == VisibleObject.CRASH_DOWN) {
+            System.out.println("UP");
             bumpInto(getDriftingXDirection(), getInvertDriftingYDirection(), crashe);
         }
         else if(crashSort == VisibleObject.CRASH_RIGHT || crashSort == VisibleObject.CRASH_LEFT) {
+            System.out.println("RIGHT");
             bumpInto(getInvertDriftingXDirection(), getDriftingYDirection(), crashe);
         }
     }
