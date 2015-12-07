@@ -12,7 +12,7 @@ import java.util.HashSet;
  * @author johanwendt
  */
 public class CollectableHandler {
-    private static final double BONUS_PROBABILITY = 0.01;
+    private static final double BONUS_PROBABILITY = 0.05;
     private static final HashSet<Collectable> collectables = new HashSet<>();
     
     private static double makeFasterChance;

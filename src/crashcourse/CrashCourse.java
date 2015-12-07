@@ -95,8 +95,8 @@ public class CrashCourse extends Application {
 
     private void createPlayers() {
         //CrashCourse crashCourse, VisibleObjects deatils, Players playerDetails, int xLocation, int yLocation, int startSpeed
-        playerOne = new Player(this, VisibleObjects.PLAYER_ONE, Players.PLAYER_ONE);
-        playerTwo = new Player(this, VisibleObjects.PLAYER_TWO, Players.PLAYER_TWO);
+        playerOne = new Player(VisibleObjects.PLAYER_ONE, Players.PLAYER_ONE);
+        playerTwo = new Player(VisibleObjects.PLAYER_TWO, Players.PLAYER_TWO);
     }
     public Player getPlayerOne() {
         return playerOne;

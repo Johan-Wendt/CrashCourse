@@ -21,8 +21,8 @@ public class Player extends MovingObject{
     private double slippeyTires, bumpX, bumpY, bumpFactor, steepTurning, wheelAngle, wheelRotation, slidingXDirection, slidingYDirection, slideRotationMultiplicator, beforeTurn, speedBeforeMove, crashXDirection, crashYDirection, crashSpeed, relativeCrashSpeed;
     private MovingObject lastCrashe;
 
-    public Player(CrashCourse crashCourse, VisibleObjects deatils, Players playerDetails) {
-        super(crashCourse, deatils);
+    public Player(VisibleObjects deatils, Players playerDetails) {
+        super(deatils);
         this.playerDetails = playerDetails;
         isTurningLeft = isTurningRight = isMovingForward = hasBumbed= false;
         setRotation(playerDetails.getStartDirection());
@@ -258,7 +258,7 @@ public class Player extends MovingObject{
 
         steepTurning = 0;
     }
-
+/**
     @Override
     protected void handleCrash(int crashSort, VisibleObject crashe) {
         
@@ -272,6 +272,7 @@ public class Player extends MovingObject{
             regularBump(crashSort, crashe);
         }
     }
+    * **/
 
     public void handleCrashedInto() {
         if(hasBeenCrashedInto) {

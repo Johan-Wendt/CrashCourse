@@ -14,8 +14,8 @@ public abstract class MovingObject extends VisibleObject {
     private int maximumMaxSpeed;
     private AudioHandler audioHandler = new AudioHandler();
     
-    public MovingObject(CrashCourse crashCourse, VisibleObjects deatils) {
-        super(crashCourse, deatils);
+    public MovingObject(VisibleObjects deatils) {
+        super(deatils);
         currentSpeed = 0;
         maximumMaxSpeed = 10;
         ObjectHandler.addToCurrentMovingObjects(this);
@@ -190,8 +190,9 @@ public abstract class MovingObject extends VisibleObject {
             bumpInto(getDriftingXDirection(), getInvertDriftingYDirection(), crashe);
         }
         else if(crashSort == VisibleObject.CRASH_RIGHT || crashSort == VisibleObject.CRASH_LEFT) {
-            System.out.println("RIGHT");
+            System.out.println("Before" + driftingXDirection);
             bumpInto(getInvertDriftingXDirection(), getDriftingYDirection(), crashe);
+            System.out.println("After" + driftingXDirection);
         }
     }
     
