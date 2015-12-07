@@ -327,6 +327,7 @@ public class Player extends MovingObject{
     
     
     Skriva om denna så att man kan bli krockad
+            Ta bort undantaget för moving objects?? I allla fall inte som en instacne of, hellre override
     /**
     @Override
     public int crashedInto(VisibleObject crasher) {
