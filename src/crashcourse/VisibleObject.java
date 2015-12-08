@@ -44,7 +44,7 @@ public abstract class VisibleObject {
         ObjectHandler.addToCurrentObjects(this);
 
         
-    //    borderTesting();
+      //  borderTesting();
     }
     
     public VisibleObject(VisibleObjects deatils, double xLocation, double yLocation) {
@@ -64,7 +64,7 @@ public abstract class VisibleObject {
         
         ObjectHandler.addToCurrentObjects(this);
         
-      //  borderTesting();
+     //   borderTesting();
 
     }
     public VisibleObject(VisibleObjects deatils, double xLocation, double yLocation, boolean removeOnCollision) {
@@ -84,11 +84,11 @@ public abstract class VisibleObject {
         
         ObjectHandler.addToCurrentObjects(this);
         
-        if(hasCollided() && removeOnCollision) {
+        if(hasBeenPutOnTopOfOtherItem() && removeOnCollision) {
             removeObject();
         }
         
-       // borderTesting();
+      // borderTesting();
     }
     public abstract void act();
     
@@ -163,7 +163,17 @@ public abstract class VisibleObject {
         leftBorder.setContent(details.getSVGDataLeft());
         * **/
     }
+    private boolean hasBeenPutOnTopOfOtherItem() {
+            for(VisibleObject object : ObjectHandler.getCurrentObjects()) {
+            int crashSort = object.putOnTop(this);
+            if(crashSort >= 0 ) {
+                return true;
+            }
+        }
+        return false;
+    }
     
+    /**
     private boolean hasCollided() {
         for(VisibleObject object : ObjectHandler.getCurrentObjects()) {
             int crashSort = object.crashedInto(this);
@@ -173,6 +183,7 @@ public abstract class VisibleObject {
         }
         return false;
     }
+    * **/
     /**
     public int crashedInto(VisibleObject crasher) {
         if(crasher.getBorders().getBoundsInParent().intersects(borders.getBoundsInParent()) && !this.equals(crasher)) { 
@@ -200,19 +211,49 @@ public abstract class VisibleObject {
         return -1;
     }
     * */
-    public int crashedInto(VisibleObject crasher) {
-        if(crasher.getBorders().getBoundsInParent().intersects(borders.getBoundsInParent()) && !this.equals(crasher)) { 
-            if(this instanceof MovingObject) {
-                return CRASH_WHOLE;
+    public int putOnTop(VisibleObject object) {
+        if(object.getBorders().getBoundsInParent().intersects(borders.getBoundsInParent()) && !this.equals(object)) { 
+           // if(this instanceof MovingObject) {
+          //      return CRASH_WHOLE;
+          //  }
+                    
+                    
+                    
+            Shape intersects = Shape.intersect(object.getBorders(), getBorders());
+            
+            if(intersects.getBoundsInParent().getWidth() > intersects.getBoundsInParent().getHeight()) {
+              //  System.out.println("up" + this.getClass());
+              //  System.out.println(intersects.getBoundsInParent().getWidth());
+                return CRASH_UP;
             }
+            else if(intersects.getBoundsInParent().getWidth() < intersects.getBoundsInParent().getHeight()) {
+             //   System.out.println("right" + this.getClass());
+             //   System.out.println(intersects.getBoundsInParent().getHeight());
+                return CRASH_RIGHT;
+            }
+
+        
+        }
+        return -1;
+    }
+    public int crashedInto(MovingObject crasher) {
+        if(crasher.getBorders().getBoundsInParent().intersects(borders.getBoundsInParent()) && !this.equals(crasher)) { 
+           // if(this instanceof MovingObject) {
+          //      return CRASH_WHOLE;
+          //  }
                     
                     
                     
             Shape intersects = Shape.intersect(crasher.getBorders(), getBorders());
+            
             if(intersects.getBoundsInParent().getWidth() > intersects.getBoundsInParent().getHeight()) {
+              //  System.out.println("up" + this.getClass());
+              //  System.out.println(intersects.getBoundsInParent().getWidth());
                 return CRASH_UP;
             }
-            else {
+            else if(intersects.getBoundsInParent().getWidth() < intersects.getBoundsInParent().getHeight()) {
+             //   System.out.println("right" + this.getClass());
+             //   System.out.println(intersects.getBoundsInParent().getHeight());
                 return CRASH_RIGHT;
             }
 

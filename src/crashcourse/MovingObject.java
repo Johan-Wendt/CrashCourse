@@ -5,6 +5,10 @@
  */
 package crashcourse;
 
+import static crashcourse.VisibleObject.CRASH_RIGHT;
+import static crashcourse.VisibleObject.CRASH_UP;
+import javafx.scene.shape.Shape;
+
 /**
  *
  * @author johanwendt
@@ -226,6 +230,32 @@ public abstract class MovingObject extends VisibleObject {
 
     public void setRetardation(double retardation) {
         this.retardation = retardation;
+    }
+    
+    public int crashedInto(MovingObject crasher) {
+        if(crasher.getBorders().getBoundsInParent().intersects(getBorders().getBoundsInParent()) && !this.equals(crasher)) { 
+           // if(this instanceof MovingObject) {
+          //      return CRASH_WHOLE;
+          //  }
+                    
+                    
+                    
+            Shape intersects = Shape.intersect(crasher.getBorders(), getBorders());
+            
+            if(intersects.getBoundsInParent().getWidth() > intersects.getBoundsInParent().getHeight()) {
+              //  System.out.println("up" + this.getClass());
+              //  System.out.println(intersects.getBoundsInParent().getWidth());
+                return CRASH_UP;
+            }
+            else if(intersects.getBoundsInParent().getWidth() < intersects.getBoundsInParent().getHeight()) {
+             //   System.out.println("right" + this.getClass());
+             //   System.out.println(intersects.getBoundsInParent().getHeight());
+                return CRASH_RIGHT;
+            }
+
+        
+        }
+        return -1;
     }
     
 }

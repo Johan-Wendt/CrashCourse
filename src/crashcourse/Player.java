@@ -17,7 +17,7 @@ public class Player extends MovingObject{
     private Players playerDetails;
     private boolean isTurningRight, isTurningLeft, isMovingForward, isReversing, hasBumbed, isSliding, hasBeenCrashedInto;
     private HashMap<KeyCode, Integer> controls = new HashMap<>();
-    private int turningSpeed, bumpCounter, baseRotate, bumpDeactivationFrequency, slideTimer, rockGrip, damageLevel, lastCrashSort;
+    private int turningSpeed, bumpCounter, baseRotate, bumpDeactivationFrequency, slideTimer, rockGrip, damageLevel;
     private double slippeyTires, bumpX, bumpY, bumpFactor, steepTurning, wheelAngle, wheelRotation, slidingXDirection, slidingYDirection, slideRotationMultiplicator, beforeTurn, speedBeforeMove, crashXDirection, crashYDirection, crashSpeed, relativeCrashSpeed;
     private MovingObject lastCrashe;
 
@@ -276,13 +276,11 @@ public class Player extends MovingObject{
 
     public void handleCrashedInto() {
         if(hasBeenCrashedInto) {
-            if(lastCrashSort == VisibleObject.CRASH_DAMAGING) {
-                if(crashSpeed >= 6) {
-                    getHurt();
-                    getAudioHandler().playCrash();
-                }
+            if(crashSpeed >= 6) {
+                getHurt();
+                getAudioHandler().playCrash();
             }
-            else if (lastCrashSort == VisibleObject.CRASH_HARMLESS) {
+            else {
                 if(getRelativeSpeed() > 0.3) getAudioHandler().playThud(relativeCrashSpeed);
             }
             setCurrentSpeed(crashSpeed);
@@ -291,9 +289,8 @@ public class Player extends MovingObject{
         }
     }
     
-    public void setHasBeenCrashedInto(int crashSort, MovingObject crashe) {
+    public void setHasBeenCrashedInto(MovingObject crashe) {
         lastCrashe = crashe;
-        lastCrashSort = crashSort;
         crashXDirection = crashe.getXMovingDirection();
         crashYDirection = crashe.getYMovingDirection();
         crashSpeed = crashe.getCurrentSpeed();
@@ -316,48 +313,29 @@ public class Player extends MovingObject{
         setRotation(beforeTurn);
         super.rePosition(distance);
     }
-    /**
-    private void rePosition() {
-        setRotation(beforeTurn);
-        setxLocation(beforeMoveX);
-        setyLocation(beforeMoveY);
-        setPosition();
-    }
-    * **/
+
     
-    
-    Skriva om denna så att man kan bli krockad (använd x-max,min för att ta reda på vilken del som krockats med)
-            Ta bort undantaget för moving objects?? I allla fall inte som en instacne of, hellre override
-    /**
+ Skriva om så att den tar en punkt kring vilken man kan vända fordonet (göra färdigt bumped först?)
     @Override
-    public int crashedInto(VisibleObject crasher) {
-        
-        int crashSort = -1;
-        //if(crasher.getBorders().getBoundsInParent().intersects(getBorders().getBoundsInParent()) && !this.equals(crasher)) {
+    public int crashedInto(MovingObject crasher) {
+        if(crasher.getBorders().getBoundsInParent().intersects(getBorders().getBoundsInParent()) && !this.equals(crasher)) { 
+                    
             Shape intersects = Shape.intersect(crasher.getBorders(), getBorders());
-            if(intersects.getBoundsInLocal().getWidth() != -1 && !this.equals(crasher)) {
-                if(!(crasher instanceof MovingObject)) {
-                    return VisibleObject.CRASH_HARMLESS;
-                }
-                Shape intersectsFront = Shape.intersect(crasher.getBorders(), getUpBorders());
-                Shape frontIntersector = Shape.intersect(crasher.getUpBorders(), getBorders());
-                if(intersectsFront.getBoundsInLocal().getWidth() == -1 && frontIntersector.getBoundsInLocal().getWidth() != -1) {
-                    crashSort = VisibleObject.CRASH_DAMAGING;
-                    setHasBeenCrashedInto(crashSort, (MovingObject) crasher);
-                    return crashSort;
-                }
-                else {
-                    crashSort = VisibleObject.CRASH_HARMLESS;
-                    setHasBeenCrashedInto(crashSort, (MovingObject) crasher);
-                    return crashSort;
-                }
+            
+            if(intersects.getBoundsInParent().getWidth() > intersects.getBoundsInParent().getHeight()) {
+                setHasBeenCrashedInto(crasher);
+                return CRASH_UP;
             }
-          //  crashSort = VisibleObject.CRASH_HARMLESS;
-       // }
-        return crashSort;
+            else if(intersects.getBoundsInParent().getWidth() < intersects.getBoundsInParent().getHeight()) {
+                setHasBeenCrashedInto(crasher);
+                return CRASH_RIGHT;
+            }
+
         
+        }
+        return -1;
     }
-    * */
+
     private void getHurt() {
         damageLevel ++;
         if(damageLevel < getDetails().getImages().size()) {
