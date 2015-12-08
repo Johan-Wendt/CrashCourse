@@ -12,7 +12,8 @@ import javafx.scene.media.AudioClip;
  * @author johanwendt
  */
 public class AudioHandler {
-    private AudioClip thud, squeek, crash, fuse, explosion;
+    private AudioClip thud, squeek, crash, explosion;
+    private static AudioClip fuse;
     
     public AudioHandler() {
         thud = new AudioClip(getClass().getResource("thud.wav").toExternalForm());
@@ -25,6 +26,7 @@ public class AudioHandler {
         squeek.play(0);
         crash.play(0);
         fuse.play(0);
+        fuse.stop();
         explosion.play(0);
     }
     public void playThud() {
@@ -45,14 +47,18 @@ public class AudioHandler {
     public void playCrash(double volume) {
         crash.play(volume);
     }
-    public void playFuse() {
-        fuse.play();
+    public static void playFuse() {
+        if(!fuse.isPlaying()) {
+            fuse.play();
+        }
     }
-    public void stopFuse() {
+    public static void stopFuse() {
         fuse.stop();
     }
-    public void playFuse(double volume) {
-        fuse.play(volume);
+    public static void playFuse(double volume) {
+        if(!fuse.isPlaying()) {
+            fuse.play(volume);
+        }
     }
     public void playExplosion() {
         explosion.play();

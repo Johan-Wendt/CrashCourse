@@ -16,7 +16,7 @@ import javafx.scene.shape.Shape;
 public abstract class MovingObject extends VisibleObject {
     private double yMovingDirection, xMovingDirection, maxSpeed, currentSpeed, acceleration, driftingXDirection, driftingYDirection, beforeMoveX, beforeMoveY, retardation;
     private int maximumMaxSpeed;
-    private AudioHandler audioHandler = new AudioHandler();
+    private static AudioHandler audioHandler = new AudioHandler();
     
     public MovingObject(VisibleObjects deatils) {
         super(deatils);
@@ -185,18 +185,15 @@ public abstract class MovingObject extends VisibleObject {
         if(getRelativeSpeed() > 0.3) {
             audioHandler.playThud(getRelativeSpeed());
         }
-        if(crashe instanceof MovingObject) {
-          //  System.out.println("MOVING");
+        if(crashSort == VisibleObject.CRASH_WHOLE) {
             bumpInto(getInvertDriftingXDirection(), getInvertDriftingYDirection(), crashe);
         }
-        else if(crashSort == VisibleObject.CRASH_UP || crashSort == VisibleObject.CRASH_DOWN) {
-          //  System.out.println("UP");
+
+        else if(crashSort == VisibleObject.CRASH_UP) {
             bumpInto(getDriftingXDirection(), getInvertDriftingYDirection(), crashe);
         }
-        else if(crashSort == VisibleObject.CRASH_RIGHT || crashSort == VisibleObject.CRASH_LEFT) {
-        //    System.out.println("Before" + driftingXDirection);
+        else if(crashSort == VisibleObject.CRASH_RIGHT) {
             bumpInto(getInvertDriftingXDirection(), getDriftingYDirection(), crashe);
-        //    System.out.println("After" + driftingXDirection);
         }
     }
     
@@ -233,29 +230,29 @@ public abstract class MovingObject extends VisibleObject {
     }
     
     public int crashedInto(MovingObject crasher) {
-        if(crasher.getBorders().getBoundsInParent().intersects(getBorders().getBoundsInParent()) && !this.equals(crasher)) { 
-           // if(this instanceof MovingObject) {
-          //      return CRASH_WHOLE;
-          //  }
-                    
-                    
-                    
+      
+        if(!this.equals(crasher)) {            
             Shape intersects = Shape.intersect(crasher.getBorders(), getBorders());
-            
-            if(intersects.getBoundsInParent().getWidth() > intersects.getBoundsInParent().getHeight()) {
-              //  System.out.println("up" + this.getClass());
-              //  System.out.println(intersects.getBoundsInParent().getWidth());
-                return CRASH_UP;
+            if(intersects.getBoundsInParent().getWidth() != -1) {
+                return CRASH_WHOLE;
             }
-            else if(intersects.getBoundsInParent().getWidth() < intersects.getBoundsInParent().getHeight()) {
-             //   System.out.println("right" + this.getClass());
-             //   System.out.println(intersects.getBoundsInParent().getHeight());
-                return CRASH_RIGHT;
-            }
+            /**
+            double width = intersects.getBoundsInParent().getWidth();
+            double height = intersects.getBoundsInParent().getHeight();
+            if(height != -1 && width != -1) {
 
-        
+                if(intersects.getBoundsInParent().getWidth() > intersects.getBoundsInParent().getHeight()) {
+                    return CRASH_UP;
+                }
+                else if(intersects.getBoundsInParent().getWidth() < intersects.getBoundsInParent().getHeight()) {
+                    return CRASH_RIGHT;
+                }
+
+
+            }
+            * **/
+            
         }
         return -1;
     }
-    
 }

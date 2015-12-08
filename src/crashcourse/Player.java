@@ -18,7 +18,7 @@ public class Player extends MovingObject{
     private boolean isTurningRight, isTurningLeft, isMovingForward, isReversing, hasBumbed, isSliding, hasBeenCrashedInto;
     private HashMap<KeyCode, Integer> controls = new HashMap<>();
     private int turningSpeed, bumpCounter, baseRotate, bumpDeactivationFrequency, slideTimer, rockGrip, damageLevel;
-    private double slippeyTires, bumpX, bumpY, bumpFactor, steepTurning, wheelAngle, wheelRotation, slidingXDirection, slidingYDirection, slideRotationMultiplicator, beforeTurn, speedBeforeMove, crashXDirection, crashYDirection, crashSpeed, relativeCrashSpeed;
+    private double slippeyTires, bumpX, bumpY, bumpFactor, steepTurning, wheelAngle, wheelRotation, slidingXDirection, slidingYDirection, slideRotationMultiplicator, beforeTurn, speedBeforeMove, crashXDirection, crashYDirection, crashSpeed, relativeCrashSpeed, maxAfterBumpSpeed, afterBumpSpeed;
     private MovingObject lastCrashe;
 
     public Player(VisibleObjects deatils, Players playerDetails) {
@@ -105,12 +105,17 @@ public class Player extends MovingObject{
         speedBeforeMove = getCurrentSpeed();
         
 
-        if(isSliding) {
+        if(hasBumbed) {
+            goWithTheFlow();
+            deBump();
+            retardate();
+        }
+        else if(isSliding) {
             slide();
         }
         else if(isMovingForward) {
             moveForward();
-            deBump();
+          //  deBump();
             accelerate();
         }
         else if(isReversing) {
@@ -148,13 +153,17 @@ public class Player extends MovingObject{
     * **/
     
     private void deBump() {
+        if(isMovingForward && afterBumpSpeed < maxAfterBumpSpeed) {
+            afterBumpSpeed += playerDetails.getStartAcceleration();
+        }
         if(hasBumbed && bumpCounter % bumpDeactivationFrequency == 0) {
             if(bumpFactor > 0) bumpFactor -= slippeyTires;
             if(bumpFactor < 0) {
                 bumpFactor = 0;
                 hasBumbed = false;
-                double speedReductionFactor = Math.abs(180 - (Math.abs(getFacingRotation() - getMovingRotation()))) / 180;
-                setCurrentSpeed(speedReductionFactor * getCurrentSpeed());
+              //  double speedReductionFactor = Math.abs(180 - (Math.abs(getFacingRotation() - getMovingRotation()))) / 180;
+                setCurrentSpeed(afterBumpSpeed);
+                afterBumpSpeed = 0;
             }
         }
     }
@@ -171,12 +180,18 @@ public class Player extends MovingObject{
         if(slideTimer < 1) stopSlide();
         
     }
-    
+    /**
     private void moveForward() {
         float noSlidePart = (float) (1.0 - bumpFactor);
 
         setxLocation(getxLocation() + getCurrentSpeed() * (noSlidePart * getXMovingDirection() + bumpFactor * bumpX));
         setyLocation(getyLocation() + getCurrentSpeed() * (noSlidePart * getYMovingDirection() + bumpFactor * bumpY));
+
+    }
+    **/
+    private void moveForward() {
+        setxLocation(getxLocation() + getCurrentSpeed() * getXMovingDirection());
+        setyLocation(getyLocation() + getCurrentSpeed() * getYMovingDirection());
 
     }
     private void moveBackWards() {
@@ -249,6 +264,7 @@ public class Player extends MovingObject{
         bumpX = movingXDirection;
         bumpY = movingYDirection;
         hasBumbed = true;
+        maxAfterBumpSpeed = getCurrentSpeed();
         bumpFactor = 1.0;
         bumpCounter = 0;
         setXMovingDirection(movingXDirection);
@@ -315,22 +331,15 @@ public class Player extends MovingObject{
     }
 
     
- Skriva om så att den tar en punkt kring vilken man kan vända fordonet (göra färdigt bumped först?)
     @Override
     public int crashedInto(MovingObject crasher) {
-        if(crasher.getBorders().getBoundsInParent().intersects(getBorders().getBoundsInParent()) && !this.equals(crasher)) { 
-                    
+      //  if(crasher.getBorders().getBoundsInParent().intersects(getBorders().getBoundsInParent()) && !this.equals(crasher)) { 
+        if(!this.equals(crasher)) {            
             Shape intersects = Shape.intersect(crasher.getBorders(), getBorders());
-            
-            if(intersects.getBoundsInParent().getWidth() > intersects.getBoundsInParent().getHeight()) {
+            if(intersects.getBoundsInParent().getWidth() != -1) {
                 setHasBeenCrashedInto(crasher);
-                return CRASH_UP;
+                return CRASH_WHOLE;
             }
-            else if(intersects.getBoundsInParent().getWidth() < intersects.getBoundsInParent().getHeight()) {
-                setHasBeenCrashedInto(crasher);
-                return CRASH_RIGHT;
-            }
-
         
         }
         return -1;
@@ -368,7 +377,9 @@ public class Player extends MovingObject{
         switch(collectable.getCollectableNumber()) {
             case Collectable.BOMB_COLLECTABLE: 
                 Bomb.setLastBombLocation(collectable.getxLocation(), collectable.getyLocation());
+                
                 createBomb();
+                
         }
     }
 
