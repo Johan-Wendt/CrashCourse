@@ -23,7 +23,8 @@ public enum VisibleObjects {
    // VERTICAL_FULLSCREEN_HINDER("M0,40 L0,560 40,560 40,40 Z", "M0,40 H 40", "M40,40 V 560", "M0,560 H 40", "M0,40 V 560", 40, 520);
     VERTICAL_FULLSCREEN_HINDER("M0,0 L0,660 40,660 40,0 Z", "M0,0 H 40", "M40,0 V 620", "M0,620 H 40", "M0,0 V 660", 40, 700, 0.3),
     MAKE_FASTER_BONUS("M0,0 L0,20 20,20 20,0 Z", "", "", "", "", 20, 20, 0.3),
-    BOMB("M0,0 L0,16 30,16 30,0 Z", "M0,0 H 30", "M30,0 V 16", "M0,16 H30", "M0,0 V16", 30, 16, 0.4);
+    BOMB("M0,0 L0,16 30,16 30,0 Z", "M0,0 H 30", "M30,0 V 16", "M0,16 H30", "M0,0 V16", 30, 16, 0.4),
+    EXPLOSION("M0,0 L0,138 200,138 200,0 Z", "M0,0 H 200", "M200,0 V 138", "M0,138 H200", "M0,0 V138", 200, 138, 0.8);
     
     private final ArrayList<Image> images = new ArrayList<>();
     private final String SVGData;

@@ -9,7 +9,10 @@ import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
@@ -24,16 +27,17 @@ public class CrashCourse extends Application {
     private GameLoop gameLoop;
     private Scene scene;
     private TrackBuilder trackBuilder;
+    private ImageView backGround;
+    
+    private GraphicsContext graphicsContext;
     
     public static final int GAME_WIDTH = 1200;
     public static final int GAME_HEIGHT = 700;
     
     @Override
     public void start(Stage primaryStage) {
-        scene = new Scene(root, GAME_WIDTH, GAME_HEIGHT);
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Crash Course");
-        primaryStage.show();
+        setTheStage(primaryStage);
+        
         createPopup();
         loadImages();
         AudioHandler audioHandler = new AudioHandler();
@@ -91,6 +95,11 @@ public class CrashCourse extends Application {
         VisibleObjects.MAKE_FASTER_BONUS.getImages().add(makeFasterBonus);
         Image bomb = new Image(getClass().getResourceAsStream("bomb.png"), VisibleObjects.BOMB.getWidth(), VisibleObjects.BOMB.getHeight(), true, false);
         VisibleObjects.BOMB.getImages().add(bomb);
+        Image explosion = new Image(getClass().getResourceAsStream("explosion4.gif"), VisibleObjects.EXPLOSION.getWidth(), VisibleObjects.EXPLOSION.getHeight(), true, false);
+        VisibleObjects.EXPLOSION.getImages().add(explosion);
+        Image backGroundImage = new Image(getClass().getResourceAsStream("background.png"), GAME_WIDTH, GAME_HEIGHT, true, false);
+        backGround = new ImageView(backGroundImage);
+        root.getChildren().add(backGround);
     }
 
     private void createPlayers() {
@@ -154,6 +163,15 @@ public class CrashCourse extends Application {
     }
     public static void addToScreen(Node toAdd) {
         root.getChildren().add(toAdd);
+    }
+
+    private void setTheStage(Stage primaryStage) {
+        scene = new Scene(root, GAME_WIDTH, GAME_HEIGHT);
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Crash Course");
+        primaryStage.show();
+        
+        
     }
     
 }

@@ -6,6 +6,7 @@
 package crashcourse;
 
 import javafx.geometry.Bounds;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
@@ -325,6 +326,7 @@ public abstract class VisibleObject {
         appearance.setImage(image);
     }
     public void removeObject() {
+        getAppearance().setBlendMode(BlendMode.ADD);
         CrashCourse.removeFromScreen(getAppearance());
         ObjectHandler.removeFromCurrentObjects(this);
         appearance.setDisable(true);

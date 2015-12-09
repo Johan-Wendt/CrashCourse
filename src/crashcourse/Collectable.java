@@ -14,11 +14,11 @@ import javafx.util.Duration;
  *
  * @author johanwendt
  */
-public abstract class Collectable extends VisibleObject {
+public abstract class Collectable extends VisibleObject implements TimedEvent{
     private Collectables collectableDetails;
     private int longevity;
     private float birth;
-    Timeline timeline;
+    private Timeline timeline;
     
     public static final int MAKE_FASTER_BONUS = 0;
     public static final int BOMB_COLLECTABLE = 1;
@@ -30,9 +30,7 @@ public abstract class Collectable extends VisibleObject {
         longevity = collectableDetails.getLongevityMin() + random.nextInt(collectableDetails.getLongevityMax() - collectableDetails.getLongevityMin());
         CollectableHandler.addCollectable(this);
         
-        timeline = new Timeline(new KeyFrame(Duration.millis(longevity),
-        ae -> removeObject()));
-        timeline.play();
+        setTimer(longevity);
     }
     @Override
     public void act() {
@@ -53,5 +51,12 @@ public abstract class Collectable extends VisibleObject {
        // ObjectHandler.removeFromCurrentObjects(this);
         ObjectHandler.removeFromCollectables(this);
         
+    }
+
+    @Override
+    public void setTimer(double time) {
+        timeline = new Timeline(new KeyFrame(Duration.millis(longevity),
+        ae -> removeObject()));
+        timeline.play();
     }
 }
