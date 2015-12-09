@@ -153,19 +153,25 @@ public class Player extends MovingObject{
     * **/
     
     private void deBump() {
+        if(getCurrentSpeed() == 0) {
+            bumpEnded();
+        }
         if(isMovingForward && afterBumpSpeed < maxAfterBumpSpeed) {
             afterBumpSpeed += playerDetails.getStartAcceleration() * 2;
         }
         if(hasBumbed && bumpCounter % bumpDeactivationFrequency == 0) {
             if(bumpFactor > 0) bumpFactor -= slippeyTires;
             if(bumpFactor < 0) {
-                bumpFactor = 0;
-                hasBumbed = false;
-                double speedReductionFactor = Math.abs(180 - (Math.abs(getFacingRotation() - getMovingRotation()))) / 180;
-                setCurrentSpeed(speedReductionFactor * afterBumpSpeed);
-                afterBumpSpeed = 0;
+                bumpEnded();
             }
         }
+    }
+    private void bumpEnded() {
+        bumpFactor = 0;
+        hasBumbed = false;
+        double speedReductionFactor = Math.abs(180 - (Math.abs(getFacingRotation() - getMovingRotation()))) / 180;
+        setCurrentSpeed(speedReductionFactor * afterBumpSpeed);
+        afterBumpSpeed = 0;
     }
     
     private void slide() {
@@ -337,6 +343,7 @@ public class Player extends MovingObject{
         if(!this.equals(crasher)) {            
             Shape intersects = Shape.intersect(crasher.getBorders(), getBorders());
             if(intersects.getBoundsInParent().getWidth() != -1) {
+                System.out.println(intersects.getBoundsInParent().getMinY());
                 setHasBeenCrashedInto(crasher);
                 return CRASH_WHOLE;
             }
