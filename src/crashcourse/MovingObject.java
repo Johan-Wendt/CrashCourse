@@ -233,9 +233,13 @@ public abstract class MovingObject extends VisibleObject {
       
         if(!this.equals(crasher)) {            
             Shape intersects = Shape.intersect(crasher.getBorders(), getBorders());
+            
+            Lägg till föremålet på skärmen för att se var det hamnar!
+            
             if(intersects.getBoundsInParent().getWidth() != -1) {
                 return CRASH_WHOLE;
             }
+            
             /**
             double width = intersects.getBoundsInParent().getWidth();
             double height = intersects.getBoundsInParent().getHeight();

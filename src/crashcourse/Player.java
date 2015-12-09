@@ -154,15 +154,15 @@ public class Player extends MovingObject{
     
     private void deBump() {
         if(isMovingForward && afterBumpSpeed < maxAfterBumpSpeed) {
-            afterBumpSpeed += playerDetails.getStartAcceleration();
+            afterBumpSpeed += playerDetails.getStartAcceleration() * 2;
         }
         if(hasBumbed && bumpCounter % bumpDeactivationFrequency == 0) {
             if(bumpFactor > 0) bumpFactor -= slippeyTires;
             if(bumpFactor < 0) {
                 bumpFactor = 0;
                 hasBumbed = false;
-              //  double speedReductionFactor = Math.abs(180 - (Math.abs(getFacingRotation() - getMovingRotation()))) / 180;
-                setCurrentSpeed(afterBumpSpeed);
+                double speedReductionFactor = Math.abs(180 - (Math.abs(getFacingRotation() - getMovingRotation()))) / 180;
+                setCurrentSpeed(speedReductionFactor * afterBumpSpeed);
                 afterBumpSpeed = 0;
             }
         }
