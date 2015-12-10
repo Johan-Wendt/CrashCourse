@@ -343,8 +343,9 @@ public class Player extends MovingObject{
         if(!this.equals(crasher)) {            
             Shape intersects = Shape.intersect(crasher.getBorders(), getBorders());
             if(intersects.getBoundsInParent().getWidth() != -1) {
-                System.out.println(intersects.getBoundsInParent().getMinY());
                 setHasBeenCrashedInto(crasher);
+                
+                
                 return CRASH_WHOLE;
             }
         

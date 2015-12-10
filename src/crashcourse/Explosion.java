@@ -19,6 +19,15 @@ import javafx.util.Duration;
 public class Explosion extends VisibleObject implements TimedEvent{
     private Timeline timeline;
     private SVGPath north, northEast, east, southEast, south, southWest, west, northWest;
+    
+    private static final int NORTH = 0;
+    private static final int NORTH_EAST = 45;
+    private static final int EAST = 90;
+    private static final int SOUTH_EAST = 135;
+    private static final int SOUTH = 180;
+    private static final int SOUTH_WEST = 225;
+    private static final int WEST = 270;
+    private static final int NORTH_WEST = 315;
 
     public Explosion(VisibleObjects deatils, double xLocation, double yLocation) {
         super(deatils, xLocation, yLocation);
@@ -96,5 +105,17 @@ public class Explosion extends VisibleObject implements TimedEvent{
         west.setStrokeWidth(10);
         northWest.setStrokeWidth(10);
 
+    }
+    public int crashedIntoOrientation(MovingObject crashe) {
+        int linesCrossed = 0;
+        int total = 0;
+        if(crashe.getBorders().intersects(north.getBoundsInParent())) {
+            linesCrossed ++;
+            total += NORTH;
+        }
+        if(linesCrossed == 0) {
+            return -1;
+        }
+        return total / linesCrossed;
     }
 }
