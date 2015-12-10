@@ -319,6 +319,9 @@ public class Player extends MovingObject{
         relativeCrashSpeed = crashe.getRelativeSpeed();
         hasBeenCrashedInto = true;
     }
+    public void setHasBeenBombed(double direction) {
+        System.out.println(direction);
+    }
 
 /**    
     public void removePlayer(CrashCourse crashCourse) {

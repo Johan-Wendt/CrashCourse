@@ -229,6 +229,7 @@ public abstract class MovingObject extends VisibleObject {
         this.retardation = retardation;
     }
     
+    @Override
     public int crashedInto(MovingObject crasher) {
       
         if(!this.equals(crasher)) {            
@@ -258,4 +259,8 @@ public abstract class MovingObject extends VisibleObject {
         }
         return -1;
     }
+    public void setHasBeenBombed(double direction) {
+        System.out.println(direction);
+    }
+
 }

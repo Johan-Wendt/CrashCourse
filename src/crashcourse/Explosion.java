@@ -5,11 +5,15 @@
  */
 package crashcourse;
 
+import static crashcourse.VisibleObject.CRASH_RIGHT;
+import static crashcourse.VisibleObject.CRASH_UP;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.SVGPath;
+import javafx.scene.shape.Shape;
 import javafx.util.Duration;
 
 /**
@@ -40,6 +44,7 @@ public class Explosion extends VisibleObject implements TimedEvent{
 
     @Override
     public void act() {
+        
     }
 
     @Override
@@ -56,8 +61,8 @@ public class Explosion extends VisibleObject implements TimedEvent{
     }
 
     private void adjustLocation() {
-        setxLocation(getxLocation() - getDetails().getWidth() / 2);
-        setyLocation(getyLocation() - getDetails().getHeight() / 2);
+        setxLocation(getxLocation() - (getDetails().getWidth() / 2) - VisibleObjects.BOMB.getWidth() / 2);
+        setyLocation(getyLocation() - (getDetails().getHeight() / 2) - VisibleObjects.BOMB.getHeight() / 2);
         setPosition();
     }
 
@@ -104,12 +109,24 @@ public class Explosion extends VisibleObject implements TimedEvent{
         southWest.setStrokeWidth(10);
         west.setStrokeWidth(10);
         northWest.setStrokeWidth(10);
+        
+        north.setStroke(Color.RED);
+        CrashCourse.addToScreen(north);
 
     }
-    public int crashedIntoOrientation(MovingObject crashe) {
+    public double getCrashedIntoOrientation(MovingObject crashe) {
+        if(crashe.getBorders().getBoundsInParent().intersects(getBorders().getBoundsInParent())) {
+        Line line = new Line(crashe.getxLocation(), crashe.getyLocation(), getxLocation(), getyLocation());
+        
+        Rotera tills linjen är rak och få rotate!
+        
+        return line.getRotate();
+        }
+        return -1;
+        /**
         int linesCrossed = 0;
         int total = 0;
-        if(crashe.getBorders().intersects(north.getBoundsInParent())) {
+        if(crashe.getBorders().getBoundsInParent().intersects(north.getBoundsInParent())) {
             linesCrossed ++;
             total += NORTH;
         }
@@ -117,5 +134,23 @@ public class Explosion extends VisibleObject implements TimedEvent{
             return -1;
         }
         return total / linesCrossed;
+        * */
     }
+    @Override
+    public int crashedInto(MovingObject crasher) {
+      //  if(crasher.getBorders().getBoundsInParent().intersects(getBorders().getBoundsInParent()) && !this.equals(crasher)) { 
+        if(!this.equals(crasher)) {            
+            Shape intersects = Shape.intersect(crasher.getBorders(), getBorders());
+            if(intersects.getBoundsInParent().getWidth() != -1) {
+                double orientation = getCrashedIntoOrientation(crasher);
+                crasher.setHasBeenBombed(orientation);
+                
+                
+                return CRASH_WHOLE;
+            }
+        
+        }
+        return -1;
+    }
+
 }
