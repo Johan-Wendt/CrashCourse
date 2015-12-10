@@ -319,9 +319,7 @@ public class Player extends MovingObject{
         relativeCrashSpeed = crashe.getRelativeSpeed();
         hasBeenCrashedInto = true;
     }
-    public void setHasBeenBombed(double direction) {
-        System.out.println(direction);
-    }
+
 
 /**    
     public void removePlayer(CrashCourse crashCourse) {
@@ -346,7 +344,9 @@ public class Player extends MovingObject{
         if(!this.equals(crasher)) {            
             Shape intersects = Shape.intersect(crasher.getBorders(), getBorders());
             if(intersects.getBoundsInParent().getWidth() != -1) {
+                System.out.println(getRotationDifferenceFromMovingDirection(intersects.getBoundsInParent().getMaxX(), intersects.getBoundsInParent().getMaxY()));
                 setHasBeenCrashedInto(crasher);
+                
                 
                 
                 return CRASH_WHOLE;
@@ -354,6 +354,14 @@ public class Player extends MovingObject{
         
         }
         return -1;
+    }
+    private double getRotationDifferenceFromMovingDirection(double x, double y) {
+        double newDirection = getRotationFromMovingDirection(x, y);
+        double difference = newDirection - getFacingRotation();
+        if(difference < 0) {
+            difference += 360;
+        }
+        return difference;
     }
 
     private void getHurt() {

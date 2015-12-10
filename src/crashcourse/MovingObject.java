@@ -17,6 +17,7 @@ public abstract class MovingObject extends VisibleObject {
     private double yMovingDirection, xMovingDirection, maxSpeed, currentSpeed, acceleration, driftingXDirection, driftingYDirection, beforeMoveX, beforeMoveY, retardation;
     private int maximumMaxSpeed;
     private static AudioHandler audioHandler = new AudioHandler();
+    private VisibleObject lastBombedBy;
     
     public MovingObject(VisibleObjects deatils) {
         super(deatils);
@@ -99,6 +100,25 @@ public abstract class MovingObject extends VisibleObject {
         double slideDirection = Math.toDegrees(Math.atan2(getXMovingDirection(), getYMovingDirection()));
         slideDirection = 180 - slideDirection;
         return slideDirection;
+    }
+    protected double getRotationFromMovingDirection(double x, double y) {
+        double xDirection = getMovingXDirectionFromCoordinats(getMiddleX(), getMiddleY(), x, y);
+        double yDirection = getMovingYDirectionFromCoordinats(getMiddleX(), getMiddleY(), x, y);
+        double rotation = Math.toDegrees(Math.atan2(xDirection, yDirection));
+        rotation = 180 - rotation;
+        return rotation;
+    }
+    public static double getMovingXDirectionFromCoordinats(double x1, double y1, double x2, double y2) {
+        double a = (x2 - x1);
+        double b = (y2 - y1);
+        double c = Math.sqrt((a*a) + (b*b));
+        return a / c;
+    }
+    public static double getMovingYDirectionFromCoordinats(double x1, double y1, double x2, double y2) {
+        double a = (x2 - x1);
+        double b = (y2 - y1);
+        double c = Math.sqrt((a*a) + (b*b));
+        return b / c;
     }
 
     public double getyMovingDirection() {
@@ -198,6 +218,7 @@ public abstract class MovingObject extends VisibleObject {
     }
     
     protected abstract void bumpInto(double movingXDirection, double movingYDirection, VisibleObject crashe);
+    
     protected void handleCrash(int crashSort, VisibleObject crashe) {
         if(crashe instanceof Collectable) {
             handleCollectable((Collectable) crashe);
@@ -259,8 +280,18 @@ public abstract class MovingObject extends VisibleObject {
         }
         return -1;
     }
-    public void setHasBeenBombed(double direction) {
-        System.out.println(direction);
+    public void setHasBeenBombed(double directionX, double directionY, VisibleObject bomb) {
+        if(lastBombedBy != bomb) {
+            lastBombedBy = bomb;
+            setCurrentSpeed(getMaxSpeed());
+            bumpInto(directionX, directionY, bomb);
+        }
     }
 
+    public VisibleObject getLastBombedBy() {
+        return lastBombedBy;
+    }
+
+
+    
 }

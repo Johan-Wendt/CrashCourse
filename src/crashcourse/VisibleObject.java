@@ -331,16 +331,15 @@ public abstract class VisibleObject {
         ObjectHandler.removeFromCurrentObjects(this);
         appearance.setDisable(true);
         borders.setDisable(true);
-        /**
-        upBorder.setDisable(true);
-        downBorder.setDisable(true);
-        leftBorder.setDisable(true);
-        upBorder.setDisable(true);
-        * **/
+
     }
-   // public void handleCrashedInto() {
-        
-   // }
+    public double getMiddleX() {
+        return getxLocation() + (details.getWidth() / 2);
+    }
+    public double getMiddleY() {
+        return getyLocation() + (details.getHeight() / 2);
+    }
+   
 
     public double getCrashRepositioningMultiplicator() {
         return 1;
