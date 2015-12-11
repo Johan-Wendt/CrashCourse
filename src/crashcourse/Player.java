@@ -406,4 +406,11 @@ public class Player extends MovingObject{
         //VisibleObjects deatils, double xLocation, double yLocation, double startSpeed, double movingXDirection, double movingYDirection
         Bomb bomb = new Bomb(VisibleObjects.BOMB, Bomb.getLastBombXLocation(), Bomb.getLastBombYLocation(), getCurrentSpeed(), getXMovingDirection(), getYMovingDirection());
     }
+    private double baseTurnDegreeOnCrash(double crashOrientation) {
+        double baseTurn = -1;
+        double sideHit = (getDetails().getWidth() / getDetails().getHeight()) * 90;
+        if(crashOrientation > sideHit && crashOrientation <= 180 - sideHit) {
+            baseTurn = crashOrientation -90.0; 
+        }
+    }
 }
