@@ -250,6 +250,11 @@ public abstract class MovingObject extends VisibleObject {
         this.retardation = retardation;
     }
     
+    protected void setMovingXAndYFromRotation(double rotation) {
+        setXMovingDirection(Math.sin(Math.toRadians(rotation)));
+        setYMovingDirection(- Math.cos(Math.toRadians(rotation)));
+    }
+    
     @Override
     public int crashedInto(MovingObject crasher) {
       
