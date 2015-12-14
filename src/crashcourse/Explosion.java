@@ -38,15 +38,11 @@ public class Explosion extends VisibleObject implements TimedEvent{
         setTimer(1000);
     }
 
-    @Override
-    public void act() {
-        
-    }
 
     @Override
     public void setTimer(double time) {
         timeline = new Timeline(new KeyFrame(Duration.millis(time),
-        ae -> removeObject()));
+        ae -> dieOut()));
         timeline.play();
     }
 
@@ -70,6 +66,10 @@ public class Explosion extends VisibleObject implements TimedEvent{
         
         }
         return -1;
+    }
+    private void dieOut() {
+        Crater crater = new Crater(VisibleObjects.CRATER, this.getMiddleX() - (VisibleObjects.CRATER.getWidth() / 2), this.getMiddleY() - (VisibleObjects.CRATER.getHeight()/ 2));
+        removeObject();
     }
 
     

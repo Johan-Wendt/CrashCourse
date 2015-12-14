@@ -5,11 +5,9 @@
  */
 package crashcourse;
 
-import javafx.geometry.Bounds;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.shape.Shape;
 
@@ -37,6 +35,7 @@ public abstract class VisibleObject {
     public VisibleObject(VisibleObjects deatils) {
         this.details = deatils;
         appearance = new ImageView(details.getImages().get(0));
+        appearance.toFront();
         CrashCourse.addToScreen(appearance);
         
         setBorders();
@@ -53,6 +52,7 @@ public abstract class VisibleObject {
         this.xLocation = xLocation;
         this.yLocation = yLocation;
         appearance = new ImageView(details.getImages().get(0));
+        appearance.toFront();
         CrashCourse.addToScreen(appearance);
         appearance.setTranslateX(xLocation);
         appearance.setTranslateY(yLocation);
@@ -73,41 +73,53 @@ public abstract class VisibleObject {
         this.xLocation = xLocation;
         this.yLocation = yLocation;
         appearance = new ImageView(details.getImages().get(0));
+        appearance.toFront();
         CrashCourse.addToScreen(appearance);
         appearance.setTranslateX(xLocation);
         appearance.setTranslateY(yLocation);
         
         setBorders();
-        
         setPosition();
         
-       // setBorders(crashCourse);
-        
         ObjectHandler.addToCurrentObjects(this);
-        
         if(hasBeenPutOnTopOfOtherItem() && removeOnCollision) {
             removeObject();
         }
-        
-      // borderTesting();
     }
-    public abstract void act();
+    
+    public VisibleObject(VisibleObjects deatils, double xLocation, double yLocation, boolean removeOnCollision, boolean crashable) {
+        this.details = deatils;
+        this.xLocation = xLocation;
+        this.yLocation = yLocation;
+        appearance = new ImageView(details.getImages().get(0));
+        appearance.toFront();
+        CrashCourse.addToScreen(appearance);
+        appearance.setTranslateX(xLocation);
+        appearance.setTranslateY(yLocation);
+        
+        if(crashable) {
+            setBorders();
+            setPosition();
+            if(hasBeenPutOnTopOfOtherItem() && removeOnCollision) {
+                removeObject();
+            }
+            ObjectHandler.addToCurrentObjects(this);
+        }
+        else {
+            setPositionWithoutBorders();
+        }
+    }
     
     protected void setPosition() {
         appearance.setTranslateX(getxLocation());
         appearance.setTranslateY(getyLocation());
         borders.setTranslateX(xLocation);
         borders.setTranslateY(yLocation);
-        /**
-        upBorder.setTranslateX(xLocation);
-        upBorder.setTranslateY(yLocation);
-        rightBorder.setTranslateX(xLocation);
-        rightBorder.setTranslateY(yLocation);
-        downBorder.setTranslateX(xLocation);
-        downBorder.setTranslateY(yLocation);
-        leftBorder.setTranslateX(xLocation);
-        leftBorder.setTranslateY(yLocation);
-        * **/
+    }
+    protected void setPositionWithoutBorders() {
+        appearance.setTranslateX(getxLocation());
+        appearance.setTranslateY(getyLocation());
+
     }
     protected void turnObject() {
         
@@ -135,107 +147,32 @@ public abstract class VisibleObject {
     public SVGPath getBorders() {
         return borders;
     }
-    /**
-    public SVGPath getUpBorders() {
-        return upBorder;
-    }
-    public SVGPath getRightBorders() {
-        return rightBorder;
-    }
-    public SVGPath getDownBorders() {
-        return downBorder;
-    }
-    public SVGPath getLeftBorders() {
-        return leftBorder;
-    }
-    **/
+
 
     private void setBorders() {
         borders = new SVGPath();
         borders.setContent(details.getSVGData());
-        /**
-        upBorder = new SVGPath();
-        upBorder.setContent(details.getSVGDataUpp());
-        rightBorder = new SVGPath();
-        rightBorder.setContent(details.getSVGDataRight());
-        downBorder = new SVGPath();
-        downBorder.setContent(details.getSVGDataDown());
-        leftBorder = new SVGPath();
-        leftBorder.setContent(details.getSVGDataLeft());
-        * **/
+
     }
     private boolean hasBeenPutOnTopOfOtherItem() {
             for(VisibleObject object : ObjectHandler.getCurrentObjects()) {
-            int crashSort = object.putOnTop(this);
-            if(crashSort >= 0 ) {
+            if(putOnTop(object)) {
                 return true;
             }
         }
         return false;
     }
-    
-    /**
-    private boolean hasCollided() {
-        for(VisibleObject object : ObjectHandler.getCurrentObjects()) {
-            int crashSort = object.crashedInto(this);
-            if(crashSort >= 0 ) {
-                return true;
-            }
-        }
-        return false;
-    }
-    * **/
-    /**
-    public int crashedInto(VisibleObject crasher) {
-        if(crasher.getBorders().getBoundsInParent().intersects(borders.getBoundsInParent()) && !this.equals(crasher)) { 
 
-            if(crasher.getBorders().getBoundsInParent().intersects(upBorder.getBoundsInParent())) {
-                return CRASH_UP;
-            }
-            
-            if(crasher.getBorders().getBoundsInParent().intersects(rightBorder.getBoundsInParent())) {
-                return CRASH_RIGHT;
-            }
-           
-            if(crasher.getBorders().getBoundsInParent().intersects(downBorder.getBoundsInParent())) {
-                return CRASH_DOWN;
-            }
-           
-            if(crasher.getBorders().getBoundsInParent().intersects(leftBorder.getBoundsInParent())) {
-                return CRASH_LEFT;
-            }
-            if(crashWhole) {
-               return CRASH_WHOLE;
-            }
-        
-        }
-        return -1;
-    }
-    * */
-    public int putOnTop(VisibleObject object) {
+    public boolean putOnTop(VisibleObject object) {
         if(object.getBorders().getBoundsInParent().intersects(borders.getBoundsInParent()) && !this.equals(object)) { 
-           // if(this instanceof MovingObject) {
-          //      return CRASH_WHOLE;
-          //  }
-                    
-                    
-                    
+                 
             Shape intersects = Shape.intersect(object.getBorders(), getBorders());
             
-            if(intersects.getBoundsInParent().getWidth() > intersects.getBoundsInParent().getHeight()) {
-              //  System.out.println("up" + this.getClass());
-              //  System.out.println(intersects.getBoundsInParent().getWidth());
-                return CRASH_UP;
+            if(intersects.getBoundsInParent().getWidth() !=  -1) {
+                return true;
             }
-            else if(intersects.getBoundsInParent().getWidth() < intersects.getBoundsInParent().getHeight()) {
-             //   System.out.println("right" + this.getClass());
-             //   System.out.println(intersects.getBoundsInParent().getHeight());
-                return CRASH_RIGHT;
-            }
-
-        
         }
-        return -1;
+        return false;
     }
     public int crashedInto(MovingObject crasher) {
         if(crasher.getBorders().getBoundsInParent().intersects(borders.getBoundsInParent()) && !this.equals(crasher)) { 

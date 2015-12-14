@@ -24,16 +24,16 @@ public class TrackBuilder {
     public TrackBuilder() {
     }
     public void buildStandardTrack() {
-        edgeThicknes = 40;
+        edgeThicknes = 80;
         setTrackBoundaries();
         createBoundaries();
     }
 
     private void createBoundaries() {
         HorizontalFullscreenHinder hinderUp = new HorizontalFullscreenHinder(VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER, 0, 0);
-        HorizontalFullscreenHinder hinderDown = new HorizontalFullscreenHinder(VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER, 0, maxYInTrack);
-        VerticalFullscreenHinder hinderRight = new VerticalFullscreenHinder(VisibleObjects.VERTICAL_FULLSCREEN_HINDER, maxXInTrack, edgeThicknes);
-        VerticalFullscreenHinder hinderLeft = new VerticalFullscreenHinder(VisibleObjects.VERTICAL_FULLSCREEN_HINDER, 0, edgeThicknes);
+        HorizontalFullscreenHinder hinderDown = new HorizontalFullscreenHinder(VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER, 0, maxYInTrack, true);
+        VerticalFullscreenHinder hinderRight = new VerticalFullscreenHinder(VisibleObjects.VERTICAL_FULLSCREEN_HINDER, maxXInTrack, edgeThicknes / 2, true);
+        VerticalFullscreenHinder hinderLeft = new VerticalFullscreenHinder(VisibleObjects.VERTICAL_FULLSCREEN_HINDER, 0, edgeThicknes / 2);
     }
 
     private void setTrackBoundaries() {

@@ -13,13 +13,13 @@ import javafx.scene.image.Image;
  * @author johanwendt
  */
 public enum Players {
-    PLAYER_ONE(0, 400, 400, 5, 0.1, 0.04, 3, 0, 0.4, 20, 45),
-    PLAYER_TWO(0, 500, 200, 5, 0.1, 0.04, 3, 0, 0.4, 20, 45);
+    PLAYER_ONE(0, 100, CrashCourse.getGameHeight() / 2, 5, 0.1, 0.04, 3, 0, 0.4, 20, 45, 100),
+    PLAYER_TWO(0, CrashCourse.getGameWidth() - 100, CrashCourse.getGameHeight() / 2, 5, 0.1, 0.04, 3, 0, 0.4, 20, 45, 100);
     
     private final int startDirection, startTurningSpeed, baseRotate, standardDesliding, maximumWheelTurnangle;
-    private final double startXLocation, startYLocation, startSpeed, startAcceleration, startRetardation, slipperyTires;
+    private final double startXLocation, startYLocation, startSpeed, startAcceleration, startRetardation, slipperyTires, maxLife;
     
-    Players(int startDirection, double startXLocation, double startYLocation, double startSpeed, double startAcceleration, double startRetardation, int startTurningSpeed, int baseRotate, double slipperyTires, int standardDesliding, int maximumWheelTurnangle) {
+    Players(int startDirection, double startXLocation, double startYLocation, double startSpeed, double startAcceleration, double startRetardation, int startTurningSpeed, int baseRotate, double slipperyTires, int standardDesliding, int maximumWheelTurnangle, int maxLife) {
         this.startDirection = startDirection;
         this.startXLocation = startXLocation;
         this.startYLocation = startYLocation;
@@ -31,6 +31,7 @@ public enum Players {
         this.slipperyTires = slipperyTires;
         this.standardDesliding = standardDesliding;
         this.maximumWheelTurnangle = maximumWheelTurnangle;
+        this.maxLife = maxLife;
     }
 
     public int getStartDirection() {
@@ -74,6 +75,10 @@ public enum Players {
 
     public int getMaximumWheelTurnangle() {
         return maximumWheelTurnangle;
+    }
+
+    public double getMaxLife() {
+        return maxLife;
     }
     
 }

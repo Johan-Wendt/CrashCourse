@@ -15,16 +15,17 @@ import javafx.scene.shape.Shape;
  */
 public class Player extends MovingObject{
     private Players playerDetails;
-    private boolean isTurningRight, isTurningLeft, isMovingForward, isReversing, hasBumbed, isSliding, hasBeenCrashedInto;
+    private boolean isTurningRight, isTurningLeft, isMovingForward, isReversing, hasBumped, isSliding, hasBeenCrashedInto, immobilized;
     private HashMap<KeyCode, Integer> controls = new HashMap<>();
-    private int turningSpeed, bumpCounter, baseRotate, bumpDeactivationFrequency, slideTimer, rockGrip, damageLevel;
-    private double slippeyTires, bumpX, bumpY, bumpFactor, steepTurning, wheelAngle, wheelRotation, slidingXDirection, slidingYDirection, slideRotationMultiplicator, beforeTurn, speedBeforeMove, crashXDirection, crashYDirection, crashSpeed, relativeCrashSpeed, maxAfterBumpSpeed, afterBumpSpeed, bumpRotation;
+    private int turningSpeed, bumpCounter, baseRotate, bumpDeactivationFrequency, slideTimer, rockGrip;
+    private double slippeyTires, bumpX, bumpY, bumpFactor, steepTurning, wheelAngle, wheelRotation, slidingXDirection, slidingYDirection, slideRotationMultiplicator, beforeTurn, speedBeforeMove, crashXDirection, crashYDirection, crashSpeed, relativeCrashSpeed, maxAfterBumpSpeed, afterBumpSpeed, bumpRotation, life;
     private MovingObject lastCrashe;
 
     public Player(VisibleObjects deatils, Players playerDetails) {
         super(deatils);
+        getAppearance().toFront();
         this.playerDetails = playerDetails;
-        isTurningLeft = isTurningRight = isMovingForward = hasBumbed= false;
+        isTurningLeft = isTurningRight = isMovingForward = hasBumped= false;
         setRotation(playerDetails.getStartDirection());
         turningSpeed = playerDetails.getStartTurningSpeed();
         baseRotate = playerDetails.getBaseRotate();
@@ -36,31 +37,35 @@ public class Player extends MovingObject{
         setYMovingDirection(- Math.cos(Math.toRadians(getFacingRotation())));
         setRetardation(playerDetails.getStartRetardation());
         slippeyTires = playerDetails.getSlipperyTires();
-        bumpX = bumpY = bumpFactor = wheelAngle = bumpCounter = damageLevel = 0;
+        bumpX = bumpY = bumpFactor = wheelAngle = bumpCounter = 0;
         bumpRotation = 0; 
         bumpDeactivationFrequency = playerDetails.getStandardDesliding();
         wheelRotation = playerDetails.getBaseRotate();
         setCrashWhole(false);
+        life = playerDetails.getMaxLife();
     }
 
     @Override
     public void act() {
-        handleCrashedInto();
-        turnWheels();
-        turn();
-        takeAction();
-        setPosition();
-        hasCollided();
-       // deBump();
-        bumpCounter ++;
+        if(!immobilized) {
+            recordBeforeMovePosition();
+            handleCrashedInto();
+            turnWheels();
+            turn();
+            takeAction();
+            setPosition();
+            hasCollided();
+           // deBump();
+            bumpCounter ++;
+        }
     }
        
     private void takeAction() {
-        recordBeforeMovePosition();
+        
         speedBeforeMove = getCurrentSpeed();
         
 
-        if(hasBumbed) {
+        if(hasBumped) {
             bumpRotate();
             goWithTheFlow();
             deBump();
@@ -86,7 +91,7 @@ public class Player extends MovingObject{
         }
         else {
             moveForward();
-            if(hasBumbed) retardate(3);
+            if(hasBumped) retardate(3);
             else retardate();
         }
         if(speedBeforeMove != 0) {
@@ -114,7 +119,7 @@ public class Player extends MovingObject{
         
     private void turn() {
         beforeTurn = getFacingRotation();
-        if((!hasBumbed && !isSliding && getCurrentSpeed() > 0) || (isReversing && getCurrentSpeed() == 0)) {
+        if((!hasBumped && !isSliding && getCurrentSpeed() > 0) || (isReversing && getCurrentSpeed() == 0)) {
             
             double speedFactor = getCurrentSpeed() / getMaxSpeed();
             if(isReversing && getCurrentSpeed() == 0) speedFactor = 0.1;
@@ -151,7 +156,7 @@ public class Player extends MovingObject{
         if(isMovingForward && afterBumpSpeed < maxAfterBumpSpeed) {
             afterBumpSpeed += playerDetails.getStartAcceleration() * 2;
         }
-        if(hasBumbed && bumpCounter % bumpDeactivationFrequency == 0) {
+        if(hasBumped && bumpCounter % bumpDeactivationFrequency == 0) {
             if(bumpFactor > 0) bumpFactor -= slippeyTires;
             if(bumpFactor < 0) {
                 bumpEnded();
@@ -160,15 +165,14 @@ public class Player extends MovingObject{
     }
     private void bumpEnded() {
         bumpFactor = 0;
-        hasBumbed = false;
+        hasBumped = false;
         double speedReductionFactor = Math.abs(180 - (Math.abs(getFacingRotation() - getMovingRotation()))) / 180;
         setCurrentSpeed(speedReductionFactor * afterBumpSpeed);
         afterBumpSpeed = 0;
+        bumpRotation = 0;
     }
     
     private void bumpRotate() {
-     //   System.out.println(getFacingRotation());
-       // System.out.println(bumpRotation);
         setRotation(getFacingRotation() + bumpRotation);
         setMovingXAndYFromRotation(getFacingRotation());
     }
@@ -253,14 +257,13 @@ public class Player extends MovingObject{
             }
         }
     }
-//Math.min(crashe.getBounciness(), this.getBounciness())
     @Override
     protected void bumpInto(double movingXDirection, double movingYDirection, VisibleObject crashe) {
         if(crashe instanceof Hinder) setCurrentSpeed(crashe.getBounciness() * getCurrentSpeed());
         bumpDeactivationFrequency = (int) (crashe.getBounciness() * playerDetails.getStandardDesliding());
         bumpX = movingXDirection;
         bumpY = movingYDirection;
-        hasBumbed = true;
+        hasBumped = true;
         maxAfterBumpSpeed = getCurrentSpeed();
         bumpFactor = 1.0;
         bumpCounter = 0;
@@ -271,30 +274,16 @@ public class Player extends MovingObject{
 
         steepTurning = 0;
     }
-/**
-    @Override
-    protected void handleCrash(int crashSort, VisibleObject crashe) {
-        
-        if(crashe instanceof Collectable) {
-            handleCollectable((Collectable) crashe);
-            if(crashe instanceof Bomb) {
-                regularBump(crashSort, crashe);
-            }
-        }
-        else {
-            regularBump(crashSort, crashe);
-        }
-    }
-    * **/
+
 
     public void handleCrashedInto() {
         if(hasBeenCrashedInto) {
-            if(crashSpeed >= 6) {
-                getHurt();
+            if(crashSpeed >= 2) {
+                getHurt(crashSpeed);
                 getAudioHandler().playCrash();
             }
             else {
-                if(getRelativeSpeed() > 0.3) getAudioHandler().playThud(relativeCrashSpeed);
+                getAudioHandler().playThud(relativeCrashSpeed);
             }
             setCurrentSpeed(crashSpeed);
             bumpInto(crashXDirection, crashYDirection, lastCrashe);
@@ -314,12 +303,6 @@ public class Player extends MovingObject{
     }
 
 
-/**    
-    public void removePlayer(CrashCourse crashCourse) {
-        crashCourse.removeFromScreen(getAppearance());
-        ObjectHandler.removeFromCurrentObjects(this);
-    }
-    **/
     private double getWheelRotation() {
         return wheelRotation;
     }
@@ -359,11 +342,21 @@ public class Player extends MovingObject{
         return difference;
     }
 
-    private void getHurt() {
-        damageLevel ++;
-        if(damageLevel < getDetails().getImages().size()) {
-            changeAppearance(getDetails().getImages().get(damageLevel));
+    private void getHurt(double damage) {
+        life -= damage;
+        
+        if(life < 0) {
+            life = 0;
+            immobilized = true;
         }
+        showLifeMeter();
+        double relativePain = life / playerDetails.getMaxLife();
+        double nextLevelOfPain = (1.0 / getDetails().getImages().size()) * playerDetails.getMaxLife();
+        int pictureNumber = 0;
+        while(pictureNumber * nextLevelOfPain < (playerDetails.getMaxLife() - life)) {
+            pictureNumber ++;
+        }
+        changeAppearance(getDetails().getImages().get(pictureNumber - 1));
         
     }
     @Override
@@ -384,7 +377,7 @@ public class Player extends MovingObject{
     }
 
     private void makeFaster() {
-        setMaxSpeed(getMaxSpeed() + 0.5);
+        setMaxSpeed(getMaxSpeed() + 0.1);
     }
 
     private void handleHappeningCollectable(Collectable collectable) {
@@ -410,15 +403,26 @@ public class Player extends MovingObject{
         if(crashOrientation > sideHit && crashOrientation <= 180 - sideHit) {
             baseTurn = crashOrientation - 90.0; 
         }
-        System.out.println(baseTurn);
         baseTurn = baseTurn / (Math.sqrt(Math.abs(baseTurn)));
-        System.out.println(baseTurn);
         
         return baseTurn;
     }
 
     public Players getPlayerDetails() {
         return playerDetails;
+    }
+    @Override
+    public void setHasBeenBombed(double directionX, double directionY, VisibleObject bomb) {
+        if(getLastBombedBy() != bomb) {
+            setLastBombedBy(bomb);
+            setCurrentSpeed(getMaxSpeed());
+            bumpInto(directionX, directionY, bomb);
+            getHurt(20);
+        }
+    }
+
+    private void showLifeMeter() {
+        LifeMeter lifeMeter = new LifeMeter(VisibleObjects.LIFE_METER, getxLocation() + getDetails().getWidth(), getyLocation(), false, false, life / getPlayerDetails().getMaxLife());
     }
     
 }

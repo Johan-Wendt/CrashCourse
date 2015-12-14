@@ -39,6 +39,7 @@ public abstract class MovingObject extends VisibleObject {
         currentSpeed = 0;
         ObjectHandler.addToCurrentMovingObjects(this);
     }
+    public abstract void act();
     public double getXMovingDirection() {
         return xMovingDirection;
     }
@@ -295,6 +296,9 @@ public abstract class MovingObject extends VisibleObject {
 
     public VisibleObject getLastBombedBy() {
         return lastBombedBy;
+    }
+    public void setLastBombedBy(VisibleObject bomb) {
+        lastBombedBy = bomb;
     }
 
     

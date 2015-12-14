@@ -58,11 +58,14 @@ public class Bomb extends MovingNPO {
 
     private void explode() {
         getAudioHandler().playExplosion();
-        getAudioHandler().stopFuse();
         removeObject();
         Explosion explosion = new Explosion(VisibleObjects.EXPLOSION, getxLocation(), getyLocation());
     }
-    
+    public void removeObject() {
+        getAudioHandler().stopFuse();
+        super.removeObject();
+        
+    }
 
 
 }

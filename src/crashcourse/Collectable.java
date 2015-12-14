@@ -32,10 +32,7 @@ public abstract class Collectable extends VisibleObject implements TimedEvent{
         
         setTimer(longevity);
     }
-    @Override
-    public void act() {
 
-    }
 
     protected Collectables getCollectableDetails() {
         return collectableDetails;
@@ -47,15 +44,13 @@ public abstract class Collectable extends VisibleObject implements TimedEvent{
     public void removeObject() {
         super.removeObject();
         if(timeline != null) timeline.stop();
-        //CrashCourse.removeFromScreen(getAppearance());
-       // ObjectHandler.removeFromCurrentObjects(this);
         ObjectHandler.removeFromCollectables(this);
         
     }
 
     @Override
     public void setTimer(double time) {
-        timeline = new Timeline(new KeyFrame(Duration.millis(longevity),
+        timeline = new Timeline(new KeyFrame(Duration.millis(time),
         ae -> removeObject()));
         timeline.play();
     }

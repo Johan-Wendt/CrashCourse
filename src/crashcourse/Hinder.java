@@ -15,8 +15,5 @@ public abstract class Hinder extends NeutralObject {
         super(deatils, xLocation, yLocation);
     }
 
-    @Override
-    public void act() {
-    }
     
 }
