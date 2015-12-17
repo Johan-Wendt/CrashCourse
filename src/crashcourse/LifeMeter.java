@@ -37,7 +37,7 @@ public class LifeMeter extends VisibleObject implements TimedEvent{
         if(lifeFactor < 0.2) {
             lifeLeft.setFill(Color.RED);
         }
-        CrashCourse.addToScreen(lifeLeft);
+        Client.addToScreen(lifeLeft);
         getAppearance().toFront();
     }
 
@@ -50,8 +50,8 @@ public class LifeMeter extends VisibleObject implements TimedEvent{
 
     public void removeObject() {
         getAppearance().setBlendMode(BlendMode.ADD);
-        CrashCourse.removeFromScreen(getAppearance());
-        CrashCourse.removeFromScreen(lifeLeft);
+        Client.removeFromScreen(getAppearance());
+        Client.removeFromScreen(lifeLeft);
         ObjectHandler.removeFromCurrentObjects(this);
         getAppearance().setDisable(true);
         if(timeline != null) timeline.stop();

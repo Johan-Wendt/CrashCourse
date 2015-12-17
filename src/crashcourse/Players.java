@@ -12,9 +12,9 @@ import javafx.scene.image.Image;
  *
  * @author johanwendt
  */
-public enum Players {
-    PLAYER_ONE(0, 100, CrashCourse.getGameHeight() / 2, 5, 0.1, 0.04, 3, 0, 0.4, 20, 45, 100),
-    PLAYER_TWO(0, CrashCourse.getGameWidth() - 100, CrashCourse.getGameHeight() / 2, 5, 0.1, 0.04, 3, 0, 0.4, 20, 45, 100);
+public enum Players implements Constants{
+    PLAYER_ONE(0, 100, GAME_HEIGHT / 2, 5, 0.1, 0.04, 3, 0, 0.4, 20, 45, 100),
+    PLAYER_TWO(0, GAME_WIDTH - 100, GAME_HEIGHT / 2, 5, 0.1, 0.04, 3, 0, 0.4, 20, 45, 100);
     
     private final int startDirection, startTurningSpeed, baseRotate, standardDesliding, maximumWheelTurnangle;
     private final double startXLocation, startYLocation, startSpeed, startAcceleration, startRetardation, slipperyTires, maxLife;

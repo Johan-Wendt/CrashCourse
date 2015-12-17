@@ -30,18 +30,21 @@ public abstract class VisibleObject {
     
     private boolean crashWhole = true;
     
+    private static int objectNumber = 0;
+    
     
     
     public VisibleObject(VisibleObjects deatils) {
         this.details = deatils;
         appearance = new ImageView(details.getImages().get(0));
         appearance.toFront();
-        CrashCourse.addToScreen(appearance);
+        Client.addToScreen(appearance);
         
         setBorders();
        
         
         ObjectHandler.addToCurrentObjects(this);
+        increaseObjectNumber();
 
         
       //  borderTesting();
@@ -53,7 +56,7 @@ public abstract class VisibleObject {
         this.yLocation = yLocation;
         appearance = new ImageView(details.getImages().get(0));
         appearance.toFront();
-        CrashCourse.addToScreen(appearance);
+        Client.addToScreen(appearance);
         appearance.setTranslateX(xLocation);
         appearance.setTranslateY(yLocation);
         
@@ -64,6 +67,7 @@ public abstract class VisibleObject {
        // setBorders(crashCourse);
         
         ObjectHandler.addToCurrentObjects(this);
+        increaseObjectNumber();
         
      //   borderTesting();
 
@@ -74,7 +78,7 @@ public abstract class VisibleObject {
         this.yLocation = yLocation;
         appearance = new ImageView(details.getImages().get(0));
         appearance.toFront();
-        CrashCourse.addToScreen(appearance);
+        Client.addToScreen(appearance);
         appearance.setTranslateX(xLocation);
         appearance.setTranslateY(yLocation);
         
@@ -85,6 +89,7 @@ public abstract class VisibleObject {
         if(hasBeenPutOnTopOfOtherItem() && removeOnCollision) {
             removeObject();
         }
+        increaseObjectNumber();
     }
     
     public VisibleObject(VisibleObjects deatils, double xLocation, double yLocation, boolean removeOnCollision, boolean crashable) {
@@ -93,7 +98,7 @@ public abstract class VisibleObject {
         this.yLocation = yLocation;
         appearance = new ImageView(details.getImages().get(0));
         appearance.toFront();
-        CrashCourse.addToScreen(appearance);
+        Client.addToScreen(appearance);
         appearance.setTranslateX(xLocation);
         appearance.setTranslateY(yLocation);
         
@@ -108,6 +113,7 @@ public abstract class VisibleObject {
         else {
             setPositionWithoutBorders();
         }
+        increaseObjectNumber();
     }
     
     protected void setPosition() {
@@ -236,23 +242,8 @@ public abstract class VisibleObject {
         return details.getBounciness();
     }
     private void borderTesting() {
-        CrashCourse.addToScreen(borders);
-        /**
-        CrashCourse.addToScreen(upBorder);
-        CrashCourse.addToScreen(rightBorder);
-        CrashCourse.addToScreen(downBorder);
-        CrashCourse.addToScreen(leftBorder);
-        borders.setStroke(Color.TRANSPARENT);
-        upBorder.setStroke(Color.TRANSPARENT);
-        rightBorder.setStroke(Color.TRANSPARENT);
-        downBorder.setStroke(Color.TRANSPARENT);
-        leftBorder.setStroke(Color.TRANSPARENT);
-        borders.setStrokeWidth(4);
-        upBorder.setStrokeWidth(4);
-        rightBorder.setStrokeWidth(4);
-        downBorder.setStrokeWidth(4);
-        leftBorder.setStrokeWidth(4);
-        * **/
+        Client.addToScreen(borders);
+
     }
 
     protected VisibleObjects getDetails() {
@@ -264,7 +255,7 @@ public abstract class VisibleObject {
     }
     public void removeObject() {
         getAppearance().setBlendMode(BlendMode.ADD);
-        CrashCourse.removeFromScreen(getAppearance());
+        Client.removeFromScreen(getAppearance());
         ObjectHandler.removeFromCurrentObjects(this);
         appearance.setDisable(true);
         borders.setDisable(true);
@@ -283,5 +274,8 @@ public abstract class VisibleObject {
     }
     protected void setCrashWhole(boolean crashWhole) {
         this.crashWhole = crashWhole;
+    }
+    private static void increaseObjectNumber() {
+        objectNumber ++;
     }
 }
