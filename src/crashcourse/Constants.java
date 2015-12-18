@@ -12,5 +12,6 @@ package crashcourse;
 public interface Constants {
     public static final int GAME_WIDTH = 1200;
     public static final int GAME_HEIGHT = 700;
+    public static final int SOCKET = 8000;
     
 }

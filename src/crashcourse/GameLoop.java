@@ -16,8 +16,11 @@ public class GameLoop extends AnimationTimer {
     private CrashCourse crashCourse;
     
     
+    
     public GameLoop(CrashCourse crashCourse) {
         this.crashCourse = crashCourse;
+        
+        
     }
 
     @Override

@@ -17,11 +17,15 @@ public class ObjectHandler {
     private static final HashSet<Collectable> currentCollectables = new HashSet<>();
     private static final HashSet<MovingObject> currentMovingObjects = new HashSet<>();
     
+    private static final HashSet<VisibleObject> objectsToAddToClient = new HashSet<>();
+    private static final HashSet<VisibleObject> objectsToRemoveFromClient = new HashSet<>();
+    
     public ObjectHandler() {
         
     }
     public static void addToCurrentObjects(VisibleObject object) {
         currentObjects.add(object);
+        objectsToAddToClient.add(object);
     }
 
     public static HashSet<VisibleObject> getCurrentObjects() {
@@ -29,6 +33,7 @@ public class ObjectHandler {
     }
     public static void removeFromCurrentObjects(VisibleObject object) {
         currentObjects.remove(object);
+        objectsToRemoveFromClient.remove(object);
     }
     
     public static void addToCurrentMovingObjects(MovingObject object) {
@@ -60,4 +65,17 @@ public class ObjectHandler {
         currentCollectables.clear();
         currentMovingObjects.clear();
     }
+    public static void clearAddAndRemoveClient() {
+        objectsToAddToClient.clear();
+        objectsToRemoveFromClient.clear();
+    }
+
+    public static HashSet<VisibleObject> getObjectsToAddToClient() {
+        return objectsToAddToClient;
+    }
+
+    public static HashSet<VisibleObject> getObjectsToRemoveFromClient() {
+        return objectsToRemoveFromClient;
+    }
+    
 }

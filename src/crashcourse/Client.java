@@ -6,6 +6,10 @@
 package crashcourse;
 
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -21,16 +25,21 @@ public class Client extends Application implements Constants{
     private Scene scene;
     private static Group root = new Group();
     private Player playerOne, playerTwo;
-    TrackBuilder trackBuilder;
+    private TrackBuilder trackBuilder;
+    
+    private DataInputStream fromServer;
+    private DataOutputStream toServer;
 
 
     @Override
     public void start(Stage primaryStage) {
+        connectToServer();
         setTheStage(primaryStage);
         createTrack();
         createPlayers();
         createEventHandling();
         setPlayerStartControls();
+        
     }
     
     private void setTheStage(Stage primaryStage) {
@@ -79,4 +88,45 @@ public class Client extends Application implements Constants{
         playerOne.setControls(KeyCode.UP, KeyCode.RIGHT, KeyCode.LEFT, KeyCode.DOWN);
         playerTwo.setControls(KeyCode.W, KeyCode.D, KeyCode.A, KeyCode.S);
     }
+    private void connectToServer() {
+        try {
+            Socket socket = new Socket("localhost", SOCKET);
+            
+            fromServer = new DataInputStream(socket.getInputStream());
+            
+            toServer = new DataOutputStream(socket.getOutputStream());
+            
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        
+    
+    /**
+        new Thread(() -> {
+            while(true) {
+                
+                try {
+                    int apa = fromServer.readInt();
+                    System.out.println("From server " + apa);
+                    setPostion(apa);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                try {
+                    changeDirection();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+        }).start();
+        **/
+    }
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        launch(args);
+    }
+  
 }

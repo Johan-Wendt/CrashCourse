@@ -5,10 +5,17 @@
  */
 package crashcourse;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Date;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -26,6 +33,8 @@ public class CrashCourse extends Application implements Constants{
     private TrackBuilder trackBuilder;
     private ImageView backGround;
     
+    
+    
         
     @Override
     public void start(Stage primaryStage) {
@@ -37,7 +46,32 @@ public class CrashCourse extends Application implements Constants{
         
         AudioHandler audioHandler = new AudioHandler();
         CollectableHandler.setProbabilityFactors();
-        startGameLoop();
+        
+        
+        TextArea log = new TextArea();
+        Scene scene = new Scene(new ScrollPane(log), 450, 200);
+        primaryStage.setTitle("move rectangle");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+        
+        new Thread( () -> {
+            try {
+                ServerSocket serverSocket = new ServerSocket(SOCKET);
+                Platform.runLater(() -> log.appendText(new Date() + ": ServerSocket started at socket 8000\n"));
+
+                
+                while(true) {
+                    Platform.runLater(() -> log.appendText(new Date() + "Waiting for player to join session " + '\n'));
+                    Socket player = serverSocket.accept();
+                    Platform.runLater(() -> log.appendText(new Date() + "Player joined session\n"));
+
+                    startGameLoop();
+                }
+            }   
+            catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }).start();
     }
 
     /**
