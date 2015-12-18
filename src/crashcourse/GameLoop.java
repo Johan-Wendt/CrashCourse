@@ -5,6 +5,10 @@
  */
 package crashcourse;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
 import java.util.HashSet;
 import javafx.animation.AnimationTimer;
 
@@ -13,13 +17,24 @@ import javafx.animation.AnimationTimer;
  * @author johanwendt
  */
 public class GameLoop extends AnimationTimer {
-    private CrashCourse crashCourse;
+    private Socket playerSocket;
+    private DataInputStream fromPlayer;
+    private DataOutputStream toPlayer;
     
     
-    
-    public GameLoop(CrashCourse crashCourse) {
-        this.crashCourse = crashCourse;
+    public GameLoop(Socket playerSocket) {
+        this.playerSocket = playerSocket;
         
+        try {
+            fromPlayer = new DataInputStream(playerSocket.getInputStream());
+            toPlayer = new DataOutputStream(playerSocket.getOutputStream());
+
+            toPlayer.write(1);
+            
+            } 
+        catch (IOException ex) {
+            ex.printStackTrace();
+        }
         
     }
 

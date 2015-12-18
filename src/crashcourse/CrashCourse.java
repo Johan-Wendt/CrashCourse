@@ -65,7 +65,7 @@ public class CrashCourse extends Application implements Constants{
                     Socket player = serverSocket.accept();
                     Platform.runLater(() -> log.appendText(new Date() + "Player joined session\n"));
 
-                    startGameLoop();
+                    startGameLoop(player);
                 }
             }   
             catch (IOException ex) {
@@ -141,8 +141,8 @@ public class CrashCourse extends Application implements Constants{
     }
 
 
-    private void startGameLoop() {
-        gameLoop = new GameLoop(this);
+    private void startGameLoop(Socket player) {
+        gameLoop = new GameLoop(player);
         gameLoop.start();
     }
 
