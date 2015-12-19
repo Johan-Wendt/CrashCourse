@@ -16,6 +16,7 @@ public class Bomb extends MovingNPO {
         super(deatils, xLocation, yLocation, startSpeed, movingXDirection, movingYDirection);
         setRetardation(0.01);
         explosionThreshold = (startSpeed / 2) * Math.random();
+        setPlayAudio(SOUND_FUSE);
     }
     public void act() {
         super.act();
@@ -50,19 +51,21 @@ public class Bomb extends MovingNPO {
     }
 
     private void fuse() {
-        AudioHandler.playFuse();
+      //  AudioHandler.playFuse();
         if(getCurrentSpeed() <= explosionThreshold) {
             explode();
         }
     }
 
     private void explode() {
-        getAudioHandler().playExplosion();
+        //getAudioHandler().playExplosion();
+       // setPlayAudio(SOUND_EXPLOSION);
         removeObject();
         Explosion explosion = new Explosion(VisibleObjects.EXPLOSION, getxLocation(), getyLocation());
     }
     public void removeObject() {
-        getAudioHandler().stopFuse();
+        //getAudioHandler().stopFuse();
+      //  setPlayAudio(SOUND_STOP_FUSE);
         super.removeObject();
         
     }

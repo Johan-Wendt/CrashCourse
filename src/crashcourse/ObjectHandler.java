@@ -5,8 +5,9 @@
  */
 package crashcourse;
 
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.Set;
 
 /**
  *
@@ -17,8 +18,11 @@ public class ObjectHandler {
     private static final HashSet<Collectable> currentCollectables = new HashSet<>();
     private static final HashSet<MovingObject> currentMovingObjects = new HashSet<>();
     
-    private static final HashSet<VisibleObject> objectsToAddToClient = new HashSet<>();
-    private static final HashSet<VisibleObject> objectsToRemoveFromClient = new HashSet<>();
+    private static final Set objectsToAddToClient = Collections.synchronizedSet( new HashSet<VisibleObject>());
+    private static final Set objectsToRemoveFromClient = Collections.synchronizedSet( new HashSet<VisibleObject>());
+    
+   // private static final Map objectsToAddToClient = Collections.synchronizedMap(new HashMap<Integer, VisibleObject>());
+   // private static final Map objectsToRemoveFromClient = Collections.synchronizedMap(new HashMap<Integer, VisibleObject>());
     
     public ObjectHandler() {
         
@@ -33,7 +37,7 @@ public class ObjectHandler {
     }
     public static void removeFromCurrentObjects(VisibleObject object) {
         currentObjects.remove(object);
-        objectsToRemoveFromClient.remove(object);
+        objectsToRemoveFromClient.add(object);
     }
     
     public static void addToCurrentMovingObjects(MovingObject object) {
@@ -69,12 +73,18 @@ public class ObjectHandler {
         objectsToAddToClient.clear();
         objectsToRemoveFromClient.clear();
     }
+    public static void clearAddClient() {
+        objectsToAddToClient.clear();
+    }
+    public static void clearRemoveClient() {
+        objectsToRemoveFromClient.clear();
+    }
 
-    public static HashSet<VisibleObject> getObjectsToAddToClient() {
+    public static Set getObjectsToAddToClient() {
         return objectsToAddToClient;
     }
 
-    public static HashSet<VisibleObject> getObjectsToRemoveFromClient() {
+    public static Set getObjectsToRemoveFromClient() {
         return objectsToRemoveFromClient;
     }
     

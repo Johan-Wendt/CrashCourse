@@ -13,13 +13,13 @@ import javafx.scene.image.Image;
  * @author johanwendt
  */
 public enum Players implements Constants{
-    PLAYER_ONE(0, 100, GAME_HEIGHT / 2, 5, 0.1, 0.04, 3, 0, 0.4, 20, 45, 100),
-    PLAYER_TWO(0, GAME_WIDTH - 100, GAME_HEIGHT / 2, 5, 0.1, 0.04, 3, 0, 0.4, 20, 45, 100);
+    PLAYER_ONE(0, 100, GAME_HEIGHT / 2, 5, 0.1, 0.04, 3, 0, 0.4, 20, 45, 100, 7),
+    PLAYER_TWO(0, GAME_WIDTH - 100, GAME_HEIGHT / 2, 5, 0.1, 0.04, 3, 0, 0.4, 20, 45, 100, 7);
     
-    private final int startDirection, startTurningSpeed, baseRotate, standardDesliding, maximumWheelTurnangle;
+    private final int startDirection, startTurningSpeed, baseRotate, standardDesliding, maximumWheelTurnangle, numberOfAppearancec;
     private final double startXLocation, startYLocation, startSpeed, startAcceleration, startRetardation, slipperyTires, maxLife;
     
-    Players(int startDirection, double startXLocation, double startYLocation, double startSpeed, double startAcceleration, double startRetardation, int startTurningSpeed, int baseRotate, double slipperyTires, int standardDesliding, int maximumWheelTurnangle, int maxLife) {
+    Players(int startDirection, double startXLocation, double startYLocation, double startSpeed, double startAcceleration, double startRetardation, int startTurningSpeed, int baseRotate, double slipperyTires, int standardDesliding, int maximumWheelTurnangle, int maxLife, int numberOfAppearancec) {
         this.startDirection = startDirection;
         this.startXLocation = startXLocation;
         this.startYLocation = startYLocation;
@@ -32,6 +32,7 @@ public enum Players implements Constants{
         this.standardDesliding = standardDesliding;
         this.maximumWheelTurnangle = maximumWheelTurnangle;
         this.maxLife = maxLife;
+        this.numberOfAppearancec = numberOfAppearancec;
     }
 
     public int getStartDirection() {
@@ -79,6 +80,10 @@ public enum Players implements Constants{
 
     public double getMaxLife() {
         return maxLife;
+    }
+
+    public int getNumberOfAppearancec() {
+        return numberOfAppearancec;
     }
     
 }

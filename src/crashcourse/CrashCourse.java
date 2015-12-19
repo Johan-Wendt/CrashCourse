@@ -28,19 +28,19 @@ import javafx.stage.Stage;
 public class CrashCourse extends Application implements Constants{
     private MainPopup mainPopup;
   //  private static Group root = new Group();
-    private Player playerOne, playerTwo;
+  //  private Player playerOne, playerTwo;
     private GameLoop gameLoop;
     private TrackBuilder trackBuilder;
-    private ImageView backGround;
+    //private ImageView backGround;
     
     
     
         
     @Override
     public void start(Stage primaryStage) {
-        loadImages();
-        Client client = new Client();
-        client.start(new Stage());
+//        loadImages();
+     //   Client client = new Client();
+      //  client.start(new Stage());
         
      //   createPopup();
         
@@ -64,8 +64,10 @@ public class CrashCourse extends Application implements Constants{
                     Platform.runLater(() -> log.appendText(new Date() + "Waiting for player to join session " + '\n'));
                     Socket player = serverSocket.accept();
                     Platform.runLater(() -> log.appendText(new Date() + "Player joined session\n"));
+                    Player playerOne = new Player(VisibleObjects.PLAYER_ONE, Players.PLAYER_ONE);
+                    Player playerTwo = new Player(VisibleObjects.PLAYER_TWO, Players.PLAYER_TWO);
 
-                    startGameLoop(player);
+                    startGameLoop(playerOne, playerTwo, player);
                 }
             }   
             catch (IOException ex) {
@@ -88,7 +90,7 @@ public class CrashCourse extends Application implements Constants{
    // public Group getRoot() {
    //     return root;
   //  }
-
+/**
     private void loadImages() {
         Image playerOne1 = new Image(getClass().getResourceAsStream("player-one1.png"), VisibleObjects.PLAYER_ONE.getWidth(), VisibleObjects.PLAYER_ONE.getHeight(), true, false);
         Image playerOne2 = new Image(getClass().getResourceAsStream("player-one2.png"), VisibleObjects.PLAYER_ONE.getWidth(), VisibleObjects.PLAYER_ONE.getHeight(), true, false);
@@ -139,10 +141,10 @@ public class CrashCourse extends Application implements Constants{
         backGround = new ImageView(backGroundImage);
         Client.addToScreen(backGround);
     }
+**/
 
-
-    private void startGameLoop(Socket player) {
-        gameLoop = new GameLoop(player);
+    private void startGameLoop(Player playerOne, Player playerTwo, Socket playerSocket) {
+        gameLoop = new GameLoop(playerOne, playerTwo, playerSocket);
         gameLoop.start();
     }
 

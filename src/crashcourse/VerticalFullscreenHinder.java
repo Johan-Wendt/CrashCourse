@@ -19,7 +19,7 @@ public class VerticalFullscreenHinder extends Hinder {
         public VerticalFullscreenHinder(VisibleObjects deatils, double xLocation, double yLocation, boolean upsideDown) {
         super(deatils, xLocation, yLocation);
         if(upsideDown) {
-            getAppearance().setRotate(180);
+   //         getAppearance().setRotate(180);
             getBorders().setTranslateX(getxLocation() + getDetails().getWidth() / 2);
         }
     }

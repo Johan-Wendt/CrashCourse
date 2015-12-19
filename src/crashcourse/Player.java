@@ -13,17 +13,17 @@ import javafx.scene.shape.Shape;
  *
  * @author johanwendt
  */
-public class Player extends MovingObject{
+public class Player extends MovingObject implements Constants {
     private Players playerDetails;
     private boolean isTurningRight, isTurningLeft, isMovingForward, isReversing, hasBumped, isSliding, hasBeenCrashedInto, immobilized;
     private HashMap<KeyCode, Integer> controls = new HashMap<>();
-    private int turningSpeed, bumpCounter, baseRotate, bumpDeactivationFrequency, slideTimer, rockGrip;
+    private int turningSpeed, bumpCounter, baseRotate, bumpDeactivationFrequency, slideTimer, rockGrip, pictureNumber;
     private double slippeyTires, bumpX, bumpY, bumpFactor, steepTurning, wheelAngle, wheelRotation, slidingXDirection, slidingYDirection, slideRotationMultiplicator, beforeTurn, speedBeforeMove, crashXDirection, crashYDirection, crashSpeed, relativeCrashSpeed, maxAfterBumpSpeed, afterBumpSpeed, bumpRotation, life;
     private MovingObject lastCrashe;
+    
 
     public Player(VisibleObjects deatils, Players playerDetails) {
         super(deatils);
-        getAppearance().toFront();
         this.playerDetails = playerDetails;
         isTurningLeft = isTurningRight = isMovingForward = hasBumped= false;
         setRotation(playerDetails.getStartDirection());
@@ -55,16 +55,13 @@ public class Player extends MovingObject{
             takeAction();
             setPosition();
             hasCollided();
-           // deBump();
             bumpCounter ++;
         }
     }
        
     private void takeAction() {
-        
         speedBeforeMove = getCurrentSpeed();
         
-
         if(hasBumped) {
             bumpRotate();
             goWithTheFlow();
@@ -76,7 +73,6 @@ public class Player extends MovingObject{
         }
         else if(isMovingForward) {
             moveForward();
-          //  deBump();
             accelerate();
         }
         else if(isReversing) {
@@ -131,7 +127,6 @@ public class Player extends MovingObject{
                 wheelAngle -= angleToTurn;
             }
 
-
             if(speedFactor >= 0.9 && rockGrip < 0) {
                 steepTurning += Math.abs(angleToTurn);
                 if(steepTurning >= 35) startSlide(angleToTurn);
@@ -139,15 +134,11 @@ public class Player extends MovingObject{
             else {
                 steepTurning = 0;
             }
-
             setXMovingDirection(Math.sin(Math.toRadians(getFacingRotation())));
             setYMovingDirection(- Math.cos(Math.toRadians(getFacingRotation())));
-            
             rockGrip --;
         }
-
     } 
-
     
     private void deBump() {
         if(getCurrentSpeed() == 0) {
@@ -187,13 +178,11 @@ public class Player extends MovingObject{
         
         slideTimer --;
         if(slideTimer < 1) stopSlide();
-        
     }
 
     private void moveForward() {
         setxLocation(getxLocation() + getCurrentSpeed() * getXMovingDirection());
         setyLocation(getyLocation() + getCurrentSpeed() * getYMovingDirection());
-
     }
     private void moveBackWards() {
         setxLocation(getxLocation() + getInvertXDirection());
@@ -207,7 +196,8 @@ public class Player extends MovingObject{
         if(getCurrentSpeed() < getMaxSpeed()) setCurrentSpeed(getCurrentSpeed() + getAcceleration());
     }
     private void startSlide(double multiplicator) {
-        getAudioHandler().playSqueek(0.1);
+        //getAudioHandler().playSqueek(0.1);
+        setPlayAudio(SOUND_SQUEEK, (int) (10));
         steepTurning = 0;
         isSliding = true;
         slideRotationMultiplicator = multiplicator;
@@ -257,6 +247,26 @@ public class Player extends MovingObject{
             }
         }
     }
+    public void takeTurn(int direction) {
+        switch(direction) {
+            case PLAYER_INPUT_UP_PRESSED: isMovingForward = true;
+                break;
+            case PLAYER_INPUT_RIGHT_PRESSED: isTurningRight = true;
+                break;
+            case PLAYER_INPUT_LEFT_PRESSED: isTurningLeft = true;
+                break;
+            case PLAYER_INPUT_DOWN_PRESSED: isReversing = true;
+                break;
+            case PLAYER_INPUT_UP_RELEASED: isMovingForward = false;
+                break;
+            case PLAYER_INPUT_RIGHT_RELEASED: isTurningRight = false;
+                break;
+            case PLAYER_INPUT_LEFT_RELEASED: isTurningLeft = false;
+                break;
+            case PLAYER_INPUT_DOWN_RELEASED: isReversing = false;
+                break;    
+        }
+    }
     @Override
     protected void bumpInto(double movingXDirection, double movingYDirection, VisibleObject crashe) {
         if(crashe instanceof Hinder) setCurrentSpeed(crashe.getBounciness() * getCurrentSpeed());
@@ -275,22 +285,22 @@ public class Player extends MovingObject{
         steepTurning = 0;
     }
 
-
     public void handleCrashedInto() {
         if(hasBeenCrashedInto) {
             if(crashSpeed >= 2) {
                 getHurt(crashSpeed);
-                getAudioHandler().playCrash();
+              //  getAudioHandler().playCrash();
+                setPlayAudio(SOUND_CRASH);
             }
             else {
-                getAudioHandler().playThud(relativeCrashSpeed);
+               // getAudioHandler().playThud(relativeCrashSpeed);
+                setPlayAudio(SOUND_THUD, (int) (relativeCrashSpeed * 100));
             }
             setCurrentSpeed(crashSpeed);
             bumpInto(crashXDirection, crashYDirection, lastCrashe);
             hasBeenCrashedInto = false;
         }
     }
-    
     public void setHasBeenCrashedInto(MovingObject crashe, double rotation) {
         lastCrashe = crashe;
         crashXDirection = crashe.getXMovingDirection();
@@ -299,24 +309,17 @@ public class Player extends MovingObject{
         relativeCrashSpeed = crashe.getRelativeSpeed();
         bumpRotation = relativeCrashSpeed * crashe.getDetails().getWeightFactor() * rotation;
         hasBeenCrashedInto = true;
-        
     }
-
-
     private double getWheelRotation() {
         return wheelRotation;
     }
-
     @Override
     protected void rePosition(double distance) {
         setRotation(beforeTurn);
         super.rePosition(distance);
     }
-
-    
     @Override
     public int crashedInto(MovingObject crasher) {
-      //  if(crasher.getBorders().getBoundsInParent().intersects(getBorders().getBoundsInParent()) && !this.equals(crasher)) { 
         if(!this.equals(crasher)) {            
             Shape intersects = Shape.intersect(crasher.getBorders(), getBorders());
             if(intersects.getBoundsInParent().getWidth() != -1) {
@@ -324,12 +327,8 @@ public class Player extends MovingObject{
                 double mediumY = (intersects.getBoundsInParent().getMaxY() + intersects.getBoundsInParent().getMinY()) / 2;
                 double rotationDifference = getRotationDifferenceFromMovingDirection(mediumX, mediumY);
                 setHasBeenCrashedInto(crasher, baseTurnDegreeOnCrash(rotationDifference));
-                
-                
-                
                 return CRASH_WHOLE;
             }
-        
         }
         return -1;
     }
@@ -344,20 +343,18 @@ public class Player extends MovingObject{
 
     private void getHurt(double damage) {
         life -= damage;
-        
         if(life < 0) {
             life = 0;
             immobilized = true;
         }
         showLifeMeter();
         double relativePain = life / playerDetails.getMaxLife();
-        double nextLevelOfPain = (1.0 / getDetails().getImages().size()) * playerDetails.getMaxLife();
-        int pictureNumber = 0;
+        double nextLevelOfPain = (1.0 / playerDetails.getNumberOfAppearancec()) * playerDetails.getMaxLife();
         while(pictureNumber * nextLevelOfPain < (playerDetails.getMaxLife() - life)) {
+            setChangedAppearance(true);
+            setImageNumber(getDetails().getBaseImageNumber() + pictureNumber);
             pictureNumber ++;
         }
-        changeAppearance(getDetails().getImages().get(pictureNumber - 1));
-        
     }
     @Override
     protected void handleCollectable(Collectable collectable) {
@@ -375,23 +372,19 @@ public class Player extends MovingObject{
                 makeFaster();
         }
     }
-
     private void makeFaster() {
         setMaxSpeed(getMaxSpeed() + 0.1);
     }
-
     private void handleHappeningCollectable(Collectable collectable) {
         switch(collectable.getCollectableNumber()) {
             case Collectable.BOMB_COLLECTABLE: 
                 Bomb.setLastBombLocation(collectable.getxLocation(), collectable.getyLocation());
                 
                 createBomb();
-                
         }
     }
 
     private void createBomb() {
-        //VisibleObjects deatils, double xLocation, double yLocation, double startSpeed, double movingXDirection, double movingYDirection
         Bomb bomb = new Bomb(VisibleObjects.BOMB, Bomb.getLastBombXLocation(), Bomb.getLastBombYLocation(), getCurrentSpeed(), getXMovingDirection(), getYMovingDirection());
     }
     private double baseTurnDegreeOnCrash(double crashOrientation) {
@@ -424,5 +417,4 @@ public class Player extends MovingObject{
     private void showLifeMeter() {
         LifeMeter lifeMeter = new LifeMeter(VisibleObjects.LIFE_METER, getxLocation() + getDetails().getWidth(), getyLocation(), false, false, life / getPlayerDetails().getMaxLife());
     }
-    
 }
