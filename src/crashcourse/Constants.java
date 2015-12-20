@@ -69,4 +69,25 @@ public interface Constants {
     public static final int SOUND_FUSE = 3;
     public static final int SOUND_STOP_FUSE = 4;
     public static final int SOUND_EXPLOSION = 5;
+    
+    public static final int SIZE_PLAYER_ONE_WIDTH = 20;
+    public static final int SIZE_PLAYER_ONE_HEIGHT = 40;
+    public static final int SIZE_PLAYER_TWO_WIDTH = 20;
+    public static final int SIZE_PLAYER_TWO_HEIGHT = 40;
+    public static final int SIZE_SMALL_HINDER_WIDTH = 40;
+    public static final int SIZE_SMALL_HINDER_HEIGHT = 40;
+    public static final int SIZE_HORIZONTAL_FULLSCREEN_HINDER_WIDTH = 1200;
+    public static final int SIZE_HORIZONTAL_FULLSCREEN_HINDER_HEIGHT = 40;
+    public static final int SIZE_VERTICAL_FULLSCREEN_HINDER_WIDTH = 40;
+    public static final int SIZE_VERTICAL_FULLSCREEN_HINDER_HEIGHT = 620;
+    public static final int SIZE_MAKE_FASTER_BONUS_WIDTH = 20;
+    public static final int SIZE_MAKE_FASTER_BONUS_HEIGHT = 20;
+    public static final int SIZE_BOMB_WIDTH = 30;
+    public static final int SIZE_BOMB_HEIGHT = 16;
+    public static final int SIZE_EXPLOSION_WIDTH = 200;
+    public static final int SIZE_EXPLOSION_HEIGHT = 138;
+    public static final int SIZE_CRATER_WIDTH = 30;
+    public static final int SIZE_CRATER_HEIGHT = 27;
+    public static final int SIZE_LIFE_METER_WIDTH = 12;
+    public static final int SIZE_LIFE_METER_HEIGHT = 64;
 }

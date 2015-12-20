@@ -11,14 +11,9 @@ import java.net.Socket;
 import java.util.Date;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
 /**
@@ -27,31 +22,23 @@ import javafx.stage.Stage;
  */
 public class CrashCourse extends Application implements Constants{
     private MainPopup mainPopup;
-  //  private static Group root = new Group();
-  //  private Player playerOne, playerTwo;
     private GameLoop gameLoop;
-    private TrackBuilder trackBuilder;
-    //private ImageView backGround;
-    
-    
-    
-        
+
     @Override
     public void start(Stage primaryStage) {
-//        loadImages();
-     //   Client client = new Client();
-      //  client.start(new Stage());
         
      //   createPopup();
-        
-        AudioHandler audioHandler = new AudioHandler();
         CollectableHandler.setProbabilityFactors();
-        
         
         TextArea log = new TextArea();
         Scene scene = new Scene(new ScrollPane(log), 450, 200);
         primaryStage.setTitle("move rectangle");
         primaryStage.setScene(scene);
+        
+        primaryStage.setOnCloseRequest(c -> {
+            System.exit(0);
+        });
+        
         primaryStage.show();
         
         new Thread( () -> {
