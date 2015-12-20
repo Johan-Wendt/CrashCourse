@@ -29,50 +29,11 @@ public class AudioHandler implements Constants{
         fuse.stop();
         explosion.play(0);
     }
-    /**
-    public void playThud() {
-        if(!thud.isPlaying()) thud.play();
-    }
-    public void playThud(double volume) {
-        if(!thud.isPlaying()) thud.play(volume);
-    }
-    public void playSqueek() {
-        squeek.play();
-    }
-    public void playSqueek(double volume) {
-        squeek.play(volume);
-    }
-    public void playCrash() {
-        crash.play();
-    }
-    public void playCrash(double volume) {
-        crash.play(volume);
-    }
-    public void playFuse() {
-        if(!fuse.isPlaying()) {
-            fuse.play();
-        }
-    }
-    public void stopFuse() {
-        fuse.stop();
-    }
-    public void playFuse(double volume) {
-        if(!fuse.isPlaying()) {
-            fuse.play(volume);
-        }
-    }
-    public void playExplosion() {
-        explosion.play();
-    }
-    public void playExplosion(double volume) {
-        explosion.play(volume);
-    }
-    * */
 
     public void playSound(int sound, int Volume) {
         double soundVolume = Volume / 100.0;
         switch(sound) {
-            case SOUND_THUD: thud.play(soundVolume);
+            case SOUND_THUD: if(!thud.isPlaying()) thud.play(soundVolume);
                 break;
             case SOUND_SQUEEK: squeek.play(soundVolume);
                 break;

@@ -89,20 +89,34 @@ public class GameLoop extends AnimationTimer implements Constants {
         HashSet<VisibleObject> toAdd = new HashSet<>(ObjectHandler.getObjectsToAddToClient());
         for(VisibleObject newObject : toAdd) {
             try {
-                toPlayer.writeInt(ACTION_CREATE_NEW);
-                toPlayer.writeInt(newObject.getObjectNumber());
-                toPlayer.writeInt(newObject.getImageNumber());
+                byte[] creator = new byte[6];
+                creator[0] = ACTION_CREATE_NEW;
+                byte[] objectNumber = intToByteArray(newObject.getObjectNumber());
+                for(int k = 0; k < 4; k++) {
+                        creator[k + 1] = objectNumber[k];
+                    }
+                creator[5] = (byte) newObject.getImageNumber();
+                toPlayer.write(creator);
                 
                 if(newObject instanceof LifeMeter) {
                     LifeMeter lifeMeter = (LifeMeter) newObject;
-                    toPlayer.writeInt(lifeMeter.getLifeFactor());
-                    toPlayer.writeInt(lifeMeter.getMeterXLocation());
-                    toPlayer.writeInt(lifeMeter.getMeterYLocation());
-                    toPlayer.writeInt(lifeMeter.getMeterWidth());
-                    toPlayer.writeInt(lifeMeter.getMeterHeight());
+                    byte[] life = new byte[11];
+                    byte[] xLocation = intToByteArray(lifeMeter.getMeterXLocation());
+                    byte[] yLocation = intToByteArray(lifeMeter.getMeterYLocation());
+                    
+                    life[0] = (byte) lifeMeter.getLifeFactor();
+                    for(int k = 0; k < 4; k++) {
+                        life[k + 1] = xLocation[k];
+                    }
+                    for(int k = 0; k < 4; k++) {
+                        life[k + 5] = yLocation[k];
+                    }
+                    life[9] = (byte) lifeMeter.getMeterWidth();
+                    life[10] = (byte) lifeMeter.getMeterHeight();
+                    toPlayer.write(life);
                 }
-                
-            } catch (IOException ex) {
+            } 
+            catch (IOException ex) {
                 Logger.getLogger(GameLoop.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -113,8 +127,14 @@ public class GameLoop extends AnimationTimer implements Constants {
         HashSet<VisibleObject> toRemove = new HashSet<>(ObjectHandler.getObjectsToRemoveFromClient());
         for(VisibleObject oldObject : toRemove) {
             try {
-                toPlayer.writeInt(ACTION_DESTROY_OLD);
-                toPlayer.writeInt(oldObject.getObjectNumber());
+                //toPlayer.writeByte(ACTION_DESTROY_OLD);
+                byte[] destroyer = new byte[5];
+                destroyer[0] = ACTION_DESTROY_OLD;
+                byte[] objectNumber = intToByteArray(oldObject.getObjectNumber());
+                for(int k = 0; k < 4; k++) {
+                        destroyer[k + 1] = objectNumber[k];
+                    }
+                toPlayer.write(destroyer);
             } catch (IOException ex) {
                 Logger.getLogger(GameLoop.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -125,17 +145,38 @@ public class GameLoop extends AnimationTimer implements Constants {
     private void sendPositionsToClient() {
         HashSet<VisibleObject> toMove = new HashSet<>(ObjectHandler.getCurrentObjects());
         for(VisibleObject object : toMove) {
-            try {
-                toPlayer.writeInt(ACTION_SET_POSITION);
-                toPlayer.writeInt(object.getObjectNumber());
-                toPlayer.writeInt((int) object.getxLocation());
-                toPlayer.writeInt((int) object.getyLocation());
-                toPlayer.writeInt((int) object.getFacingRotation());
+            try {                
+                byte[] newLocation = new byte[17];
+                newLocation[0] = ACTION_SET_POSITION;
+                byte[] objectNumber = intToByteArray(object.getObjectNumber());
+                byte[] xLocation = intToByteArray((int) object.getxLocation());
+                byte[] yLocation = intToByteArray((int) object.getyLocation());
+                byte[] rotation = intToByteArray((int) object.getFacingRotation());
+
+                for(int k = 0; k < 4; k++) {
+                    newLocation[k + 1] = objectNumber[k];
+                }
+                for(int k = 0; k < 4; k++) {
+                    newLocation[k + 5] = xLocation[k];
+                }
+                for(int k = 0; k < 4; k++) {
+                    newLocation[k + 9] = yLocation[k];
+                }
+                for(int k = 0; k < 4; k++) {
+                    newLocation[k + 13] = rotation[k];
+                }
+
+                toPlayer.write(newLocation);
                 
                 if(object.isChangedAppearance()) {
-                    toPlayer.writeInt(ACTION_CHANGE_APPEARANCE);
-                    toPlayer.writeInt(object.getObjectNumber());
-                    toPlayer.writeInt(object.getImageNumber());
+                    byte[] newAppearance = new byte[6];
+                    newAppearance[0] = ACTION_CHANGE_APPEARANCE;
+                    byte[] objectNumberAppearance = intToByteArray(object.getObjectNumber());
+                    for(int k = 0; k < 4; k++) {
+                        newAppearance[k + 1] = objectNumberAppearance[k];
+                    }
+                    newAppearance[5] = (byte) object.getImageNumber();
+                    toPlayer.write(newAppearance);
                     object.setChangedAppearance(false);
                 }
             } 
@@ -150,9 +191,11 @@ public class GameLoop extends AnimationTimer implements Constants {
         for(VisibleObject object : soundPlayers) {
             if(object.getPlayAudio() >= 0) {
                 try {
-                    toPlayer.writeInt(ACTION_PLAY_SOUND);
-                    toPlayer.writeInt(object.getPlayAudio());
-                    toPlayer.writeInt(object.getAudioVolume());
+                    byte[] sound = new byte[3];
+                    sound[0] = ACTION_PLAY_SOUND;
+                    sound[1] = (byte) object.getPlayAudio();
+                    sound[2] = (byte) object.getAudioVolume();
+                    toPlayer.write(sound);
                     object.setPlayAudio(-1);
                 }
                 catch (IOException ex) {
@@ -167,4 +210,11 @@ public class GameLoop extends AnimationTimer implements Constants {
         trackBuilder = new TrackBuilder();
         trackBuilder.buildStandardTrack();
     }
+    private byte[] intToByteArray(int value) {
+        return new byte[] {
+            (byte)(value >>> 24),
+            (byte)(value >>> 16),
+            (byte)(value >>> 8),
+            (byte)value};
+    } 
 }

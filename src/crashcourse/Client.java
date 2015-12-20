@@ -5,15 +5,11 @@
  */
 package crashcourse;
 
-
-import static crashcourse.Constants.GAME_HEIGHT;
-import static crashcourse.Constants.GAME_WIDTH;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -60,6 +56,11 @@ public class Client extends Application implements Constants{
         scene = new Scene(root, GAME_WIDTH, GAME_HEIGHT);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Crash Course");
+        
+        primaryStage.setOnCloseRequest(c -> {
+            System.exit(0);
+        });
+        
         primaryStage.show();
         
         
@@ -133,7 +134,7 @@ public class Client extends Application implements Constants{
     * */
     private void connectToServer() {
         try {
-            Socket socket = new Socket("localhost", SOCKET);
+            Socket socket = new Socket("192.168.0.15", SOCKET);
             
             fromServer = new DataInputStream(socket.getInputStream());
             
@@ -149,7 +150,9 @@ public class Client extends Application implements Constants{
         new Thread(() -> {
             while(true) {
                 try {
-                    int takeAction = fromServer.readInt();
+                    int takeAction = fromServer.readByte();
+                    
+                    System.out.println("takeAction: " + takeAction);
                     if(takeAction == ACTION_CREATE_NEW) {
                         loadNewObjects();
                     }
@@ -236,14 +239,14 @@ public class Client extends Application implements Constants{
 
     private void loadNewObjects() {
         try {
-            int objectNumber = fromServer.readInt();
-            int imageNumber = fromServer.readInt();
+
+            int objectNumber = readFourBytesAsInt();
+            int imageNumber = fromServer.readByte();
 
             ImageView onScreen = new ImageView(imageMap.get(imageNumber));
             if(imageNumber == IMAGE_EXPLOSION) {
                 onScreen.setBlendMode(BlendMode.COLOR_DODGE);
             }
-            
             onScreen.toFront();
 
             Platform.runLater( () -> {
@@ -253,11 +256,11 @@ public class Client extends Application implements Constants{
             objectsOnScreen.put(objectNumber, onScreen);
             
             if(imageNumber == IMAGE_LIFE_METER) {
-                int lifeFactor = fromServer.readInt();
-                int meterXLocation = fromServer.readInt();
-                int meterYLocation = fromServer.readInt();
-                int meterWidth = fromServer.readInt();
-                int meterHeight = fromServer.readInt();
+                int lifeFactor = fromServer.readByte();
+                int meterXLocation = readFourBytesAsInt();
+                int meterYLocation = readFourBytesAsInt();
+                int meterWidth = fromServer.readByte();
+                int meterHeight = fromServer.readByte();;
 
                 Rectangle lifeLeft = new Rectangle(meterXLocation, meterYLocation, meterWidth, meterHeight);
                 lifeMeters.put(objectNumber, lifeLeft);
@@ -280,51 +283,39 @@ public class Client extends Application implements Constants{
     }
 
     private void destroyOldObject() {
-        try {
-            int objectNumber = fromServer.readInt();
-            ImageView toRemove = objectsOnScreen.get(objectNumber);
-            
-            Platform.runLater( () -> {
-                removeFromScreen(toRemove);
-            });
+        int objectNumber = readFourBytesAsInt();
+        ImageView toRemove = objectsOnScreen.get(objectNumber);
 
-            objectsOnScreen.remove(toRemove);
-            if(lifeMeters.keySet().contains(objectNumber)) {
-                Platform.runLater( () -> {
-                    removeFromScreen(lifeMeters.get(objectNumber));
-                    lifeMeters.remove(objectNumber);
-                });
-            }
-        }
-        catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        Platform.runLater( () -> {
+            removeFromScreen(toRemove);
+        });
+
+        objectsOnScreen.remove(toRemove);
+        if(lifeMeters.keySet().contains(objectNumber)) {
+            Platform.runLater( () -> {
+                removeFromScreen(lifeMeters.get(objectNumber));
+                lifeMeters.remove(objectNumber);
+            });
         }
     }
 
     private void setPostion() {
-        try {
-            int objectNumber = fromServer.readInt();
-            int xPosition = fromServer.readInt();
-            int yPosition = fromServer.readInt();
-            int rotation = fromServer.readInt();
-             
-            ImageView toMove = objectsOnScreen.get(objectNumber);
-            
-            toMove.setTranslateX(xPosition);
-            toMove.setTranslateY(yPosition);
-            toMove.setRotate(rotation);
-        }
-        catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        int objectNumber = readFourBytesAsInt();
+        int xPosition = readFourBytesAsInt();
+        int yPosition = readFourBytesAsInt();
+        int rotation = readFourBytesAsInt();
+
+        ImageView toMove = objectsOnScreen.get(objectNumber);
+        toMove.setTranslateX(xPosition);
+        toMove.setTranslateY(yPosition);
+        toMove.setRotate(rotation);
     }
     private void changeAppearance() {
         try {
-            int objectNumber = fromServer.readInt();
-            int imageNumber = fromServer.readInt();
+            int objectNumber = readFourBytesAsInt();
+            int imageNumber = fromServer.readByte();
             ImageView changeAppearance = objectsOnScreen.get(objectNumber);
             changeAppearance.setImage(imageMap.get(imageNumber));
-            System.out.println("Called");
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -332,11 +323,26 @@ public class Client extends Application implements Constants{
 
     private void playSound() {
         try {
-            int audioNumber = fromServer.readInt();
-            int volume = fromServer.readInt();
+            int audioNumber = fromServer.readByte();
+            int volume = fromServer.readByte();
             audiohandler.playSound(audioNumber, volume);
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    private int byteArrayToInt(byte[] b) {
+        return   b[3] & 0xFF |
+                (b[2] & 0xFF) << 8 |
+                (b[1] & 0xFF) << 16 |
+                (b[0] & 0xFF) << 24;
+    }
+    private int readFourBytesAsInt() {
+        byte[] input = new byte[4];
+        try {
+            fromServer.read(input, 0, 4);
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return byteArrayToInt(input);
     }
 }
