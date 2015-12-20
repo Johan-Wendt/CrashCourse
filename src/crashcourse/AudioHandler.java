@@ -11,9 +11,9 @@ import javafx.scene.media.AudioClip;
  *
  * @author johanwendt
  */
-public class AudioHandler {
+public class AudioHandler implements Constants{
     private AudioClip thud, squeek, crash, explosion;
-    private static AudioClip fuse;
+    private AudioClip fuse;
     
     public AudioHandler() {
         thud = new AudioClip(getClass().getResource("thud.wav").toExternalForm());
@@ -29,6 +29,7 @@ public class AudioHandler {
         fuse.stop();
         explosion.play(0);
     }
+    /**
     public void playThud() {
         if(!thud.isPlaying()) thud.play();
     }
@@ -47,15 +48,15 @@ public class AudioHandler {
     public void playCrash(double volume) {
         crash.play(volume);
     }
-    public static void playFuse() {
+    public void playFuse() {
         if(!fuse.isPlaying()) {
             fuse.play();
         }
     }
-    public static void stopFuse() {
+    public void stopFuse() {
         fuse.stop();
     }
-    public static void playFuse(double volume) {
+    public void playFuse(double volume) {
         if(!fuse.isPlaying()) {
             fuse.play(volume);
         }
@@ -66,5 +67,25 @@ public class AudioHandler {
     public void playExplosion(double volume) {
         explosion.play(volume);
     }
+    * */
 
+    public void playSound(int sound, int Volume) {
+        double soundVolume = Volume / 100.0;
+        switch(sound) {
+            case SOUND_THUD: thud.play(soundVolume);
+                break;
+            case SOUND_SQUEEK: squeek.play(soundVolume);
+                break;
+            case SOUND_CRASH: crash.play(soundVolume);
+                break;
+            case SOUND_FUSE: if(!fuse.isPlaying()) fuse.play(soundVolume);
+                break;
+            case SOUND_STOP_FUSE: fuse.stop();
+                break;
+            case SOUND_EXPLOSION:
+                explosion.play(soundVolume);
+                fuse.stop();
+                break;
+        }
+    }
 }

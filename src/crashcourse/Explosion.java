@@ -16,25 +16,16 @@ import javafx.util.Duration;
  *
  * @author johanwendt
  */
-public class Explosion extends VisibleObject implements TimedEvent{
+public class Explosion extends VisibleObject implements TimedEvent {
     private Timeline timeline;
-    private SVGPath north, northEast, east, southEast, south, southWest, west, northWest;
-    
-    private static final int NORTH = 0;
-    private static final int NORTH_EAST = 45;
-    private static final int EAST = 90;
-    private static final int SOUTH_EAST = 135;
-    private static final int SOUTH = 180;
-    private static final int SOUTH_WEST = 225;
-    private static final int WEST = 270;
-    private static final int NORTH_WEST = 315;
 
     public Explosion(VisibleObjects deatils, double xLocation, double yLocation) {
         super(deatils, xLocation, yLocation);
+        setPlayAudio(SOUND_EXPLOSION);
         adjustLocation();
        // setSpecialBorders();
 
-        getAppearance().setBlendMode(BlendMode.COLOR_DODGE);
+   //     getAppearance().setBlendMode(BlendMode.COLOR_DODGE);
         setTimer(1000);
     }
 
@@ -74,7 +65,7 @@ public class Explosion extends VisibleObject implements TimedEvent{
 
     
     public void removeObject() {
-        getAppearance().setImage(VisibleObjects.PLAYER_ONE.getImages().get(0));
+  //      getAppearance().setImage(VisibleObjects.PLAYER_ONE.getImages().get(0));
         super.removeObject();
         if(timeline != null) timeline.stop();
 

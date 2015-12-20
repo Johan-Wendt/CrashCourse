@@ -11,36 +11,36 @@ import java.util.Random;
  *
  * @author johanwendt
  */
-public class TrackBuilder {
+public class TrackBuilder implements Constants{
     private static int minXInTrack;
     private static int maxXInTrack;
     private static int minYInTrack;
     private static int maxYInTrack;
     
-    private static int edgeThicknes;
+    private static final int edgeThicknes = 40;
     
     private static final Random random = new Random();
     
     public TrackBuilder() {
     }
     public void buildStandardTrack() {
-        edgeThicknes = 80;
+      //  edgeThicknes = 80;
         setTrackBoundaries();
         createBoundaries();
     }
 
     private void createBoundaries() {
         HorizontalFullscreenHinder hinderUp = new HorizontalFullscreenHinder(VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER, 0, 0);
-        HorizontalFullscreenHinder hinderDown = new HorizontalFullscreenHinder(VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER, 0, maxYInTrack, true);
-        VerticalFullscreenHinder hinderRight = new VerticalFullscreenHinder(VisibleObjects.VERTICAL_FULLSCREEN_HINDER, maxXInTrack, edgeThicknes / 2, true);
-        VerticalFullscreenHinder hinderLeft = new VerticalFullscreenHinder(VisibleObjects.VERTICAL_FULLSCREEN_HINDER, 0, edgeThicknes / 2);
+        HorizontalFullscreenHinder hinderDown = new HorizontalFullscreenHinder(VisibleObjects.HORIZONTAL_FULLSCREEN_HINDER, 0, maxYInTrack);
+        VerticalFullscreenHinder hinderRight = new VerticalFullscreenHinder(VisibleObjects.VERTICAL_FULLSCREEN_HINDER, maxXInTrack, edgeThicknes);
+        VerticalFullscreenHinder hinderLeft = new VerticalFullscreenHinder(VisibleObjects.VERTICAL_FULLSCREEN_HINDER, 0, edgeThicknes);
     }
 
     private void setTrackBoundaries() {
         minXInTrack = edgeThicknes;
-        maxXInTrack = CrashCourse.GAME_WIDTH - edgeThicknes;
+        maxXInTrack = GAME_WIDTH - edgeThicknes;
         minYInTrack = edgeThicknes;
-        maxYInTrack = CrashCourse.GAME_HEIGHT - edgeThicknes;
+        maxYInTrack = GAME_HEIGHT - edgeThicknes;
     }
 
     public static int getMinXInTrack() {

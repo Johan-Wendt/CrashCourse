@@ -19,7 +19,7 @@ public class Crater extends VisibleObject {
     private boolean handlePutOnTop() {
             for(VisibleObject object : ObjectHandler.getCurrentObjects()) {
             if(putOnTop(object) && object instanceof Hinder) {
-                object.getAppearance().toFront();
+ //               object.getAppearance().toFront();
             }
         }
         return false;

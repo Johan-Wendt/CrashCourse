@@ -15,16 +15,5 @@ public class HorizontalFullscreenHinder extends Hinder {
 
     public HorizontalFullscreenHinder(VisibleObjects deatils, double xLocation, double yLocation) {
         super(deatils, xLocation, yLocation);
-        
-    }
-    public HorizontalFullscreenHinder(VisibleObjects deatils, double xLocation, double yLocation, boolean upsideDown) {
-        super(deatils, xLocation, yLocation);
-        if(upsideDown) {
-            getAppearance().setRotate(180);
-            getBorders().setTranslateY(getyLocation() + getDetails().getHeight() / 2);
-        }
-        
-        
-    }
-    
+    }    
 }

@@ -5,49 +5,75 @@
  */
 package crashcourse;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Date;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 /**
  *
  * @author johanwendt
  */
-public class CrashCourse extends Application {
+public class CrashCourse extends Application implements Constants{
     private MainPopup mainPopup;
-    private static Group root = new Group();
-    private Player playerOne, playerTwo;
+  //  private static Group root = new Group();
+  //  private Player playerOne, playerTwo;
     private GameLoop gameLoop;
-    private Scene scene;
     private TrackBuilder trackBuilder;
-    private ImageView backGround;
+    //private ImageView backGround;
     
-    private GraphicsContext graphicsContext;
     
-    public static final int GAME_WIDTH = 1200;
-    public static final int GAME_HEIGHT = 700;
     
+        
     @Override
     public void start(Stage primaryStage) {
-        setTheStage(primaryStage);
+//        loadImages();
+     //   Client client = new Client();
+      //  client.start(new Stage());
         
      //   createPopup();
-        loadImages();
+        
         AudioHandler audioHandler = new AudioHandler();
         CollectableHandler.setProbabilityFactors();
-        createTrack();
-        createPlayers();
-        setPlayerStartControls();
-        createEventHandling();
-        startGameLoop();
+        
+        
+        TextArea log = new TextArea();
+        Scene scene = new Scene(new ScrollPane(log), 450, 200);
+        primaryStage.setTitle("move rectangle");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+        
+        new Thread( () -> {
+            try {
+                ServerSocket serverSocket = new ServerSocket(SOCKET);
+                Platform.runLater(() -> log.appendText(new Date() + ": ServerSocket started at socket 8000\n"));
+
+                
+                while(true) {
+                    Platform.runLater(() -> log.appendText(new Date() + "Waiting for player to join session " + '\n'));
+                    Socket player = serverSocket.accept();
+                    Platform.runLater(() -> log.appendText(new Date() + "Player joined session\n"));
+                    Player playerOne = new Player(VisibleObjects.PLAYER_ONE, Players.PLAYER_ONE);
+                    Player playerTwo = new Player(VisibleObjects.PLAYER_TWO, Players.PLAYER_TWO);
+
+                    startGameLoop(playerOne, playerTwo, player);
+                }
+            }   
+            catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }).start();
     }
 
     /**
@@ -61,10 +87,10 @@ public class CrashCourse extends Application {
         //String title, String infoText, String okMessage, String cancelMessage, CrashCourse crashCourse
         mainPopup = new MainPopup("Crash Course", "Start Game", "Cancel", this);
     }
-    public Group getRoot() {
-        return root;
-    }
-
+   // public Group getRoot() {
+   //     return root;
+  //  }
+/**
     private void loadImages() {
         Image playerOne1 = new Image(getClass().getResourceAsStream("player-one1.png"), VisibleObjects.PLAYER_ONE.getWidth(), VisibleObjects.PLAYER_ONE.getHeight(), true, false);
         Image playerOne2 = new Image(getClass().getResourceAsStream("player-one2.png"), VisibleObjects.PLAYER_ONE.getWidth(), VisibleObjects.PLAYER_ONE.getHeight(), true, false);
@@ -113,79 +139,15 @@ public class CrashCourse extends Application {
         VisibleObjects.LIFE_METER.getImages().add(lifeMeter);
         Image backGroundImage = new Image(getClass().getResourceAsStream("background.png"), GAME_WIDTH, GAME_HEIGHT, true, false);
         backGround = new ImageView(backGroundImage);
-        root.getChildren().add(backGround);
+        Client.addToScreen(backGround);
     }
+**/
 
-    private void createPlayers() {
-        //CrashCourse crashCourse, VisibleObjects deatils, Players playerDetails, int xLocation, int yLocation, int startSpeed
-        playerOne = new Player(VisibleObjects.PLAYER_ONE, Players.PLAYER_ONE);
-        playerTwo = new Player(VisibleObjects.PLAYER_TWO, Players.PLAYER_TWO);
-    }
-    public Player getPlayerOne() {
-        return playerOne;
-    }
-    public Player getPlayerTwo() {
-        return playerTwo;
-    }
-
-    private void startGameLoop() {
-        gameLoop = new GameLoop(this);
+    private void startGameLoop(Player playerOne, Player playerTwo, Socket playerSocket) {
+        gameLoop = new GameLoop(playerOne, playerTwo, playerSocket);
         gameLoop.start();
     }
 
-    
-    private void setPlayerStartControls() {
-        playerOne.setControls(KeyCode.UP, KeyCode.RIGHT, KeyCode.LEFT, KeyCode.DOWN);
-        playerTwo.setControls(KeyCode.W, KeyCode.D, KeyCode.A, KeyCode.S);
-    }
-    
 
-    private void createEventHandling() {
-        scene.setOnKeyPressed(e -> {
-            playerOne.takeKeyPressed(e.getCode());
-            playerTwo.takeKeyPressed(e.getCode());
-            if(e.getCode().equals(KeyCode.R)) {
-                reStart();
-            }
-        });
-        scene.setOnKeyReleased(e -> {
-            playerOne.takeKeyReleased(e.getCode());
-            playerTwo.takeKeyReleased(e.getCode());
-        });
-    }
-
-    public static int getGameWidth() {
-        return GAME_WIDTH;
-    }
-
-    public static int getGameHeight() {
-        return GAME_HEIGHT;
-    }
-
-    private void createTrack() {
-        trackBuilder = new TrackBuilder();
-        trackBuilder.buildStandardTrack();
-    }
-    private void reStart() {
-        ObjectHandler.resetAllObjects();
-        trackBuilder.buildStandardTrack();
-        createPlayers();
-        setPlayerStartControls();
-    }
-    public static void removeFromScreen(Node toRemove) {
-        root.getChildren().remove(toRemove);
-    }
-    public static void addToScreen(Node toAdd) {
-        root.getChildren().add(toAdd);
-    }
-
-    private void setTheStage(Stage primaryStage) {
-        scene = new Scene(root, GAME_WIDTH, GAME_HEIGHT);
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Crash Course");
-        primaryStage.show();
-        
-        
-    }
     
 }

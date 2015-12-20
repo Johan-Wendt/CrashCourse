@@ -5,15 +5,13 @@
  */
 package crashcourse;
 
-import static crashcourse.VisibleObject.CRASH_RIGHT;
-import static crashcourse.VisibleObject.CRASH_UP;
 import javafx.scene.shape.Shape;
 
 /**
  *
  * @author johanwendt
  */
-public abstract class MovingObject extends VisibleObject {
+public abstract class MovingObject extends VisibleObject implements Constants{
     private double yMovingDirection, xMovingDirection, maxSpeed, currentSpeed, acceleration, driftingXDirection, driftingYDirection, beforeMoveX, beforeMoveY, retardation;
     private int maximumMaxSpeed;
     private static AudioHandler audioHandler = new AudioHandler();
@@ -204,7 +202,8 @@ public abstract class MovingObject extends VisibleObject {
     }
     protected void regularBump(int crashSort, VisibleObject crashe) {
         if(getRelativeSpeed() > 0.3) {
-            audioHandler.playThud(getRelativeSpeed());
+          //  audioHandler.playThud(getRelativeSpeed());
+            setPlayAudio(SOUND_THUD, (int) (getRelativeSpeed() * 100));
         }
         if(crashSort == VisibleObject.CRASH_WHOLE) {
             bumpInto(getInvertDriftingXDirection(), getInvertDriftingYDirection(), crashe);
@@ -258,31 +257,11 @@ public abstract class MovingObject extends VisibleObject {
     
     @Override
     public int crashedInto(MovingObject crasher) {
-      
         if(!this.equals(crasher)) {            
             Shape intersects = Shape.intersect(crasher.getBorders(), getBorders());
-            
-            
             if(intersects.getBoundsInParent().getWidth() != -1) {
                 return CRASH_WHOLE;
             }
-            
-            /**
-            double width = intersects.getBoundsInParent().getWidth();
-            double height = intersects.getBoundsInParent().getHeight();
-            if(height != -1 && width != -1) {
-
-                if(intersects.getBoundsInParent().getWidth() > intersects.getBoundsInParent().getHeight()) {
-                    return CRASH_UP;
-                }
-                else if(intersects.getBoundsInParent().getWidth() < intersects.getBoundsInParent().getHeight()) {
-                    return CRASH_RIGHT;
-                }
-
-
-            }
-            * **/
-            
         }
         return -1;
     }

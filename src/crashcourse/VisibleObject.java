@@ -5,9 +5,6 @@
  */
 package crashcourse;
 
-import javafx.scene.effect.BlendMode;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.shape.Shape;
 
@@ -15,69 +12,54 @@ import javafx.scene.shape.Shape;
  *
  * @author johanwendt
  */
-public abstract class VisibleObject {
+public abstract class VisibleObject implements Constants{
     private VisibleObjects details;
     private double xLocation, yLocation, rotation;
-    private ImageView appearance;
-    private SVGPath borders;  //, upBorder, rightBorder, downBorder, leftBorder;
+    private SVGPath borders;
     public static int CRASH_UP = 0;
     public static int CRASH_RIGHT = 1;
-    public static int CRASH_DOWN = 2;
-    public static int CRASH_LEFT = 3;
-    public static int CRASH_DAMAGING = 4;
-    public static int CRASH_HARMLESS = 5;
+
     public static int CRASH_WHOLE = 6;
     
     private boolean crashWhole = true;
+    private boolean changedAppearance;
     
+    private static int currentObjectNumber = 0;
+    private final int objectNumber;
+    private int imageNumber;
     
+    private int playAudio = -1;
+    private int audioVolume = 100;
     
     public VisibleObject(VisibleObjects deatils) {
         this.details = deatils;
-        appearance = new ImageView(details.getImages().get(0));
-        appearance.toFront();
-        CrashCourse.addToScreen(appearance);
-        
+        imageNumber = deatils.getBaseImageNumber();
         setBorders();
        
-        
         ObjectHandler.addToCurrentObjects(this);
+        objectNumber = currentObjectNumber;
+        increaseObjectNumber();
 
-        
-      //  borderTesting();
     }
     
     public VisibleObject(VisibleObjects deatils, double xLocation, double yLocation) {
         this.details = deatils;
         this.xLocation = xLocation;
         this.yLocation = yLocation;
-        appearance = new ImageView(details.getImages().get(0));
-        appearance.toFront();
-        CrashCourse.addToScreen(appearance);
-        appearance.setTranslateX(xLocation);
-        appearance.setTranslateY(yLocation);
-        
+        imageNumber = deatils.getBaseImageNumber();
         setBorders();
         
         setPosition();
         
-       // setBorders(crashCourse);
-        
         ObjectHandler.addToCurrentObjects(this);
-        
-     //   borderTesting();
-
+        objectNumber = currentObjectNumber;
+        increaseObjectNumber();
     }
     public VisibleObject(VisibleObjects deatils, double xLocation, double yLocation, boolean removeOnCollision) {
         this.details = deatils;
         this.xLocation = xLocation;
         this.yLocation = yLocation;
-        appearance = new ImageView(details.getImages().get(0));
-        appearance.toFront();
-        CrashCourse.addToScreen(appearance);
-        appearance.setTranslateX(xLocation);
-        appearance.setTranslateY(yLocation);
-        
+        imageNumber = deatils.getBaseImageNumber();
         setBorders();
         setPosition();
         
@@ -85,129 +67,105 @@ public abstract class VisibleObject {
         if(hasBeenPutOnTopOfOtherItem() && removeOnCollision) {
             removeObject();
         }
+        objectNumber = currentObjectNumber;
+        increaseObjectNumber();
     }
     
     public VisibleObject(VisibleObjects deatils, double xLocation, double yLocation, boolean removeOnCollision, boolean crashable) {
         this.details = deatils;
         this.xLocation = xLocation;
         this.yLocation = yLocation;
-        appearance = new ImageView(details.getImages().get(0));
-        appearance.toFront();
-        CrashCourse.addToScreen(appearance);
-        appearance.setTranslateX(xLocation);
-        appearance.setTranslateY(yLocation);
-        
-        if(crashable) {
+        imageNumber = deatils.getBaseImageNumber();
+        ObjectHandler.addToCurrentObjects(this);
+      //  if(crashable) {
             setBorders();
             setPosition();
             if(hasBeenPutOnTopOfOtherItem() && removeOnCollision) {
                 removeObject();
-            }
-            ObjectHandler.addToCurrentObjects(this);
+    //        }
+          //  ObjectHandler.addToCurrentObjects(this);
         }
-        else {
-            setPositionWithoutBorders();
-        }
+      //  else {
+     //       setPositionWithoutBorders();
+     //   }
+        objectNumber = currentObjectNumber;
+        increaseObjectNumber();
     }
     
     protected void setPosition() {
-        appearance.setTranslateX(getxLocation());
-        appearance.setTranslateY(getyLocation());
-        borders.setTranslateX(xLocation);
-        borders.setTranslateY(yLocation);
+        if(borders != null) {
+            borders.setTranslateX(xLocation);
+            borders.setTranslateY(yLocation);
+        }
     }
-    protected void setPositionWithoutBorders() {
-        appearance.setTranslateX(getxLocation());
-        appearance.setTranslateY(getyLocation());
-
-    }
-    protected void turnObject() {
-        
-    }
-
     public double getxLocation() {
         return xLocation;
     }
-
     public void setxLocation(double xLocation) {
         this.xLocation = xLocation;
     }
-
     public double getyLocation() {
         return yLocation;
     }
-
     public void setyLocation(double yLocation) {
         this.yLocation = yLocation;
     }
-    public ImageView getAppearance() {
-        return appearance;
-    }
-
     public SVGPath getBorders() {
         return borders;
     }
-
-
     private void setBorders() {
         borders = new SVGPath();
         borders.setContent(details.getSVGData());
-
     }
     private boolean hasBeenPutOnTopOfOtherItem() {
+        if(borders != null) {
             for(VisibleObject object : ObjectHandler.getCurrentObjects()) {
-            if(putOnTop(object)) {
-                return true;
+                if(putOnTop(object)) {
+                    return true;
+                }
             }
         }
         return false;
     }
-
     public boolean putOnTop(VisibleObject object) {
-        if(object.getBorders().getBoundsInParent().intersects(borders.getBoundsInParent()) && !this.equals(object)) { 
-                 
-            Shape intersects = Shape.intersect(object.getBorders(), getBorders());
-            
-            if(intersects.getBoundsInParent().getWidth() !=  -1) {
-                return true;
+        if(borders != null) {
+            if(object.getBorders().getBoundsInParent().intersects(borders.getBoundsInParent()) && !this.equals(object)) { 
+
+                Shape intersects = Shape.intersect(object.getBorders(), getBorders());
+
+                if(intersects.getBoundsInParent().getWidth() !=  -1) {
+                    return true;
+                }
             }
         }
         return false;
     }
     public int crashedInto(MovingObject crasher) {
-        if(crasher.getBorders().getBoundsInParent().intersects(borders.getBoundsInParent()) && !this.equals(crasher)) { 
-           // if(this instanceof MovingObject) {
-          //      return CRASH_WHOLE;
-          //  }
-                    
-                    
-                    
-            Shape intersects = Shape.intersect(crasher.getBorders(), getBorders());
-            
-            if(intersects.getBoundsInParent().getWidth() > intersects.getBoundsInParent().getHeight()) {
-              //  System.out.println("up" + this.getClass());
-              //  System.out.println(intersects.getBoundsInParent().getWidth());
-                return CRASH_UP;
-            }
-            else if(intersects.getBoundsInParent().getWidth() < intersects.getBoundsInParent().getHeight()) {
-             //   System.out.println("right" + this.getClass());
-             //   System.out.println(intersects.getBoundsInParent().getHeight());
-                return CRASH_RIGHT;
-            }
+        if(borders != null) {
+            if(crasher.getBorders().getBoundsInParent().intersects(borders.getBoundsInParent()) && !this.equals(crasher)) {    
+                Shape intersects = Shape.intersect(crasher.getBorders(), getBorders());
 
-        
+                if(intersects.getBoundsInParent().getWidth() > intersects.getBoundsInParent().getHeight()) {
+                    return CRASH_UP;
+                }
+                else if(intersects.getBoundsInParent().getWidth() < intersects.getBoundsInParent().getHeight()) {
+                    return CRASH_RIGHT;
+                }
+            }
         }
         return -1;
     }
     public boolean mayTurn(double degrees) {
-        borders.setRotate(degrees);
-        for(VisibleObject object : ObjectHandler.getCurrentObjects()) {
-            if(object.getBorders().getBoundsInParent().intersects(borders.getBoundsInParent()) && !this.equals(object)) {
-                borders.setRotate(rotation);
-                return false;
+        if(borders != null) {
+            borders.setRotate(degrees);
+            for(VisibleObject object : ObjectHandler.getCurrentObjects()) {
+                if(object.getBorders().getBoundsInParent().intersects(borders.getBoundsInParent()) && !this.equals(object)) {
+                    borders.setRotate(rotation);
+                    return false;
+                }
             }
+            borders.setRotate(rotation);
         }
-        borders.setRotate(rotation);
         return true;
     }
     protected void setRotation(double degrees) {
@@ -220,14 +178,9 @@ public abstract class VisibleObject {
             setRotation(degrees);
         }
         rotation = degrees;
-        appearance.setRotate(rotation);
-        borders.setRotate(rotation);
-        /**
-        upBorder.setRotate(rotation);
-        rightBorder.setRotate(rotation);
-        downBorder.setRotate(rotation);
-        leftBorder.setRotate(rotation);
-        * */
+        if(borders != null) {
+            borders.setRotate(rotation);
+        }
     }
     protected double getFacingRotation() {
         return rotation;
@@ -235,40 +188,18 @@ public abstract class VisibleObject {
     public double getBounciness() {
         return details.getBounciness();
     }
-    private void borderTesting() {
-        CrashCourse.addToScreen(borders);
-        /**
-        CrashCourse.addToScreen(upBorder);
-        CrashCourse.addToScreen(rightBorder);
-        CrashCourse.addToScreen(downBorder);
-        CrashCourse.addToScreen(leftBorder);
-        borders.setStroke(Color.TRANSPARENT);
-        upBorder.setStroke(Color.TRANSPARENT);
-        rightBorder.setStroke(Color.TRANSPARENT);
-        downBorder.setStroke(Color.TRANSPARENT);
-        leftBorder.setStroke(Color.TRANSPARENT);
-        borders.setStrokeWidth(4);
-        upBorder.setStrokeWidth(4);
-        rightBorder.setStrokeWidth(4);
-        downBorder.setStrokeWidth(4);
-        leftBorder.setStrokeWidth(4);
-        * **/
-    }
-
     protected VisibleObjects getDetails() {
         return details;
     }
-    
-    protected void changeAppearance(Image image) {
-        appearance.setImage(image);
-    }
-    public void removeObject() {
-        getAppearance().setBlendMode(BlendMode.ADD);
-        CrashCourse.removeFromScreen(getAppearance());
-        ObjectHandler.removeFromCurrentObjects(this);
-        appearance.setDisable(true);
-        borders.setDisable(true);
 
+    public void removeObject() {
+   //     getAppearance().setBlendMode(BlendMode.ADD);
+   //     Client.removeFromScreen(getAppearance());
+        ObjectHandler.removeFromCurrentObjects(this);
+   //     appearance.setDisable(true);
+        if(borders != null) {
+            borders.setDisable(true);
+        }
     }
     public double getMiddleX() {
         return getxLocation() + (details.getWidth() / 2);
@@ -276,12 +207,49 @@ public abstract class VisibleObject {
     public double getMiddleY() {
         return getyLocation() + (details.getHeight() / 2);
     }
-   
-
     public double getCrashRepositioningMultiplicator() {
         return 1;
     }
     protected void setCrashWhole(boolean crashWhole) {
         this.crashWhole = crashWhole;
     }
+    private static void increaseObjectNumber() {
+        currentObjectNumber ++;
+    }
+    public int getObjectNumber() {
+        return objectNumber;
+    }
+    public int getImageNumber() {
+        return imageNumber;
+    }
+    public void setImageNumber(int number) {
+        imageNumber = number;
+    }
+
+    public boolean isChangedAppearance() {
+        return changedAppearance;
+    }
+
+    public void setChangedAppearance(boolean changedAppearance) {
+        this.changedAppearance = changedAppearance;
+    }
+
+    public int getPlayAudio() {
+        return playAudio;
+    }
+
+    public void setPlayAudio(int playAudio) {
+        this.playAudio = playAudio;
+        audioVolume = 100;
+    }
+    public void setPlayAudio(int playAudio, int volume) {
+        this.playAudio = playAudio;
+        audioVolume = volume;
+    }
+
+    public int getAudioVolume() {
+        return audioVolume;
+    }
+    
+    
 }
