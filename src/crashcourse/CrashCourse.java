@@ -44,17 +44,19 @@ public class CrashCourse extends Application implements Constants{
         new Thread( () -> {
             try {
                 ServerSocket serverSocket = new ServerSocket(SOCKET);
+                
                 Platform.runLater(() -> log.appendText(new Date() + ": ServerSocket started at socket 8000\n"));
 
                 
                 while(true) {
                     Platform.runLater(() -> log.appendText(new Date() + "Waiting for player to join session " + '\n'));
-                    Socket player = serverSocket.accept();
+                    Socket playerOneSocket = serverSocket.accept();
+                    Socket playerTwoSocket = serverSocket.accept();
                     Platform.runLater(() -> log.appendText(new Date() + "Player joined session\n"));
                     Player playerOne = new Player(VisibleObjects.PLAYER_ONE, Players.PLAYER_ONE);
                     Player playerTwo = new Player(VisibleObjects.PLAYER_TWO, Players.PLAYER_TWO);
 
-                    startGameLoop(playerOne, playerTwo, player);
+                    startGameLoop(playerOne, playerTwo, playerOneSocket, playerTwoSocket);
                 }
             }   
             catch (IOException ex) {
@@ -130,8 +132,8 @@ public class CrashCourse extends Application implements Constants{
     }
 **/
 
-    private void startGameLoop(Player playerOne, Player playerTwo, Socket playerSocket) {
-        gameLoop = new GameLoop(playerOne, playerTwo, playerSocket);
+    private void startGameLoop(Player playerOne, Player playerTwo,  Socket playerOneSocket, Socket playerTwoSocket) {
+        gameLoop = new GameLoop(playerOne, playerTwo, playerOneSocket, playerTwoSocket);
         gameLoop.start();
     }
 
