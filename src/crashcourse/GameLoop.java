@@ -41,8 +41,7 @@ public class GameLoop extends AnimationTimer implements Constants {
             
             fromPlayerTwo = new DataInputStream(playerTwoSocket.getInputStream());
             toPlayerTwo = new DataOutputStream(playerTwoSocket.getOutputStream());
-            
-            } 
+        } 
         catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -75,14 +74,14 @@ public class GameLoop extends AnimationTimer implements Constants {
     private void takePlayerInput() {
         try {
             if(fromPlayerOne.available() > 0) {
-
+System.out.println("From pl 1");
                 int direction = fromPlayerOne.read();
                 if(direction != -1) {
                     playerOne.takeTurn(direction);
                 }
             } 
             if(fromPlayerTwo.available() > 0) {
-
+                System.out.println("From pl 2");
                 int direction = fromPlayerTwo.read();
                 if(direction != -1) {
                     playerTwo.takeTurn(direction);
