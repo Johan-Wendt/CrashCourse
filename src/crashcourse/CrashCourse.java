@@ -5,10 +5,13 @@
  */
 package crashcourse;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -23,6 +26,7 @@ import javafx.stage.Stage;
 public class CrashCourse extends Application implements Constants{
     private MainPopup mainPopup;
     private GameLoop gameLoop;
+    private static int currentGameSocket = SOCKET + 1;
 
     @Override
     public void start(Stage primaryStage) {
@@ -50,8 +54,10 @@ public class CrashCourse extends Application implements Constants{
                 
                 while(true) {
                     Platform.runLater(() -> log.appendText(new Date() + "Waiting for player to join session " + '\n'));
-                    Socket playerOneSocket = serverSocket.accept();
-                    Socket playerTwoSocket = serverSocket.accept();
+                    Socket playerOneSockettemp = serverSocket.accept();
+                    Socket playerOneSocket = givePlayerNewSocket(playerOneSockettemp);
+                    Socket playerTwoSockettemp = serverSocket.accept();
+                    Socket playerTwoSocket = givePlayerNewSocket(playerTwoSockettemp);
                     Platform.runLater(() -> log.appendText(new Date() + "Player joined session\n"));
                     Player playerOne = new Player(VisibleObjects.PLAYER_ONE, Players.PLAYER_ONE);
                     Player playerTwo = new Player(VisibleObjects.PLAYER_TWO, Players.PLAYER_TWO);
@@ -79,6 +85,21 @@ public class CrashCourse extends Application implements Constants{
     private void startGameLoop(Player playerOne, Player playerTwo,  Socket playerOneSocket, Socket playerTwoSocket) {
         gameLoop = new GameLoop(playerOne, playerTwo, playerOneSocket, playerTwoSocket);
         gameLoop.start();
+    }
+
+    private Socket givePlayerNewSocket(Socket currentSocket) {
+        try {
+            ServerSocket serverSocket= new ServerSocket(currentGameSocket);
+            DataOutputStream toPlayer = new DataOutputStream(currentSocket.getOutputStream());
+            toPlayer.writeInt(currentGameSocket);
+            currentGameSocket ++;
+            Socket returnSocket = serverSocket.accept();
+            return returnSocket;
+        } 
+        catch (IOException ex) {
+            Logger.getLogger(CrashCourse.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
 
