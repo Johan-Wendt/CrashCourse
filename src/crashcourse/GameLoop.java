@@ -50,6 +50,7 @@ public class GameLoop extends AnimationTimer implements Constants {
 
     @Override
     public void handle(long now) {
+        
         takePlayerInput();
         
         HashSet<MovingObject> toMove = new HashSet<>(ObjectHandler.getCurrentMovingObjects());
@@ -74,14 +75,12 @@ public class GameLoop extends AnimationTimer implements Constants {
     private void takePlayerInput() {
         try {
             if(fromPlayerOne.available() > 0) {
-System.out.println("From pl 1");
                 int direction = fromPlayerOne.read();
                 if(direction != -1) {
                     playerOne.takeTurn(direction);
                 }
             } 
             if(fromPlayerTwo.available() > 0) {
-                System.out.println("From pl 2");
                 int direction = fromPlayerTwo.read();
                 if(direction != -1) {
                     playerTwo.takeTurn(direction);
@@ -97,27 +96,41 @@ System.out.println("From pl 1");
     private void addNewObjectsToClients() {
         HashSet<VisibleObject> toAdd = new HashSet<>(ObjectHandler.getObjectsToAddToClient());
         for(VisibleObject newObject : toAdd) {
-            byte[] creator = new byte[6];
+            byte[] creator = new byte[18];
             creator[0] = ACTION_CREATE_NEW;
             byte[] objectNumber = intToByteArray(newObject.getObjectNumber());
             for(int k = 0; k < 4; k++) {
                     creator[k + 1] = objectNumber[k];
                 }
-            creator[5] = (byte) newObject.getImageNumber();
+            byte[] xLocation = intToByteArray((int) newObject.getxLocation());
+            byte[] yLocation = intToByteArray((int) newObject.getyLocation());
+            byte[] rotation = intToByteArray((int) newObject.getFacingRotation());
+            
+            for(int k = 0; k < 4; k++) {
+                    creator[k + 5] = xLocation[k];
+                }
+            for(int k = 0; k < 4; k++) {
+                creator[k + 9] = yLocation[k];
+            }
+            for(int k = 0; k < 4; k++) {
+                creator[k + 13] = rotation[k];
+            }
+            
+            creator[17] = (byte) newObject.getImageNumber();
             writeToPlayers(creator);
 
             if(newObject instanceof LifeMeter) {
                 LifeMeter lifeMeter = (LifeMeter) newObject;
                 byte[] life = new byte[11];
-                byte[] xLocation = intToByteArray(lifeMeter.getMeterXLocation());
-                byte[] yLocation = intToByteArray(lifeMeter.getMeterYLocation());
+                byte[] xMeterLocation = intToByteArray(lifeMeter.getMeterXLocation());
+                byte[] yMeterLocation = intToByteArray(lifeMeter.getMeterYLocation());
 
                 life[0] = (byte) lifeMeter.getLifeFactor();
                 for(int k = 0; k < 4; k++) {
-                    life[k + 1] = xLocation[k];
+                    life[k + 1] = xMeterLocation[k];
                 }
                 for(int k = 0; k < 4; k++) {
-                    life[k + 5] = yLocation[k];
+                    life[k + 5] = yMeterLocation[k];
                 }
                 life[9] = (byte) lifeMeter.getMeterWidth();
                 life[10] = (byte) lifeMeter.getMeterHeight();
@@ -142,8 +155,8 @@ System.out.println("From pl 1");
     }
 
     private void sendPositionsToClient() {
-        HashSet<VisibleObject> toMove = new HashSet<>(ObjectHandler.getCurrentObjects());
-        for(VisibleObject object : toMove) {
+        HashSet<MovingObject> toMove = new HashSet<>(ObjectHandler.getCurrentMovingObjects());
+        for(MovingObject object : toMove) {
             byte[] newLocation = new byte[17];
             newLocation[0] = ACTION_SET_POSITION;
             byte[] objectNumber = intToByteArray(object.getObjectNumber());
