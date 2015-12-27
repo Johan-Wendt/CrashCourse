@@ -25,6 +25,8 @@ public interface Constants {
     public static final int PLAYER_INPUT_DOWN_RELEASED = 7;
     public static final int PLAYER_INPUT_LEFT_RELEASED = 8;
     
+    public static final int PLAYER_INPUT_RESTART = 10;
+    
     //To player output
     public static final int ACTION_CREATE_NEW = 0;
     public static final int ACTION_DESTROY_OLD = 1;

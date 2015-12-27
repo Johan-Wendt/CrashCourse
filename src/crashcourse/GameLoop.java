@@ -9,6 +9,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,6 +26,7 @@ public class GameLoop extends AnimationTimer implements Constants {
     private Player playerOne;
     private Player playerTwo;
     private TrackBuilder trackBuilder;
+    private ArrayList<byte[]> sendList = new ArrayList<>();
     
     
     public GameLoop(Player playerOne, Player playerTwo, Socket playerOneSocket, Socket playerTwoSocket) {
@@ -62,6 +64,7 @@ public class GameLoop extends AnimationTimer implements Constants {
         removeOldObjectsFromClient();
         sendPositionsToClient();
         playSounds();
+        sendListToPlayers();
     }
     @Override
     public void start() {
@@ -77,13 +80,15 @@ public class GameLoop extends AnimationTimer implements Constants {
             if(fromPlayerOne.available() > 0) {
                 int direction = fromPlayerOne.read();
                 if(direction != -1) {
-                    playerOne.takeTurn(direction);
+                    if(direction == PLAYER_INPUT_RESTART) restart();
+                    else playerOne.takeTurn(direction);
                 }
             } 
             if(fromPlayerTwo.available() > 0) {
                 int direction = fromPlayerTwo.read();
                 if(direction != -1) {
-                    playerTwo.takeTurn(direction);
+                    if(direction == PLAYER_INPUT_RESTART) restart();
+                    else playerTwo.takeTurn(direction);
                 }
             } 
         }
@@ -117,7 +122,9 @@ public class GameLoop extends AnimationTimer implements Constants {
             }
             
             creator[17] = (byte) newObject.getImageNumber();
-            writeToPlayers(creator);
+            //writeToPlayers(creator);
+            
+            sendList.add(creator);
 
             if(newObject instanceof LifeMeter) {
                 LifeMeter lifeMeter = (LifeMeter) newObject;
@@ -134,7 +141,8 @@ public class GameLoop extends AnimationTimer implements Constants {
                 }
                 life[9] = (byte) lifeMeter.getMeterWidth();
                 life[10] = (byte) lifeMeter.getMeterHeight();
-                writeToPlayers(life);
+              //  writeToPlayers(life);
+                sendList.add(life);
             } 
         }
         ObjectHandler.clearAddClient();
@@ -149,7 +157,8 @@ public class GameLoop extends AnimationTimer implements Constants {
             for(int k = 0; k < 4; k++) {
                     destroyer[k + 1] = objectNumber[k];
                 }
-            writeToPlayers(destroyer);
+            //writeToPlayers(destroyer);
+            sendList.add(destroyer);
         }
         ObjectHandler.clearRemoveClient();
     }
@@ -177,7 +186,8 @@ public class GameLoop extends AnimationTimer implements Constants {
                 newLocation[k + 13] = rotation[k];
             }
 
-            writeToPlayers(newLocation);
+            //writeToPlayers(newLocation);
+            sendList.add(newLocation);
 
             if(object.isChangedAppearance()) {
                 byte[] newAppearance = new byte[6];
@@ -187,7 +197,9 @@ public class GameLoop extends AnimationTimer implements Constants {
                     newAppearance[k + 1] = objectNumberAppearance[k];
                 }
                 newAppearance[5] = (byte) object.getImageNumber();
-                writeToPlayers(newAppearance);
+             //   writeToPlayers(newAppearance);
+                
+                sendList.add(newAppearance);
                 object.setChangedAppearance(false);
             }
         }
@@ -201,10 +213,11 @@ public class GameLoop extends AnimationTimer implements Constants {
                 sound[0] = ACTION_PLAY_SOUND;
                 sound[1] = (byte) object.getPlayAudio();
                 sound[2] = (byte) object.getAudioVolume();
-                writeToPlayers(sound);
+               // writeToPlayers(sound);
+                
+                sendList.add(sound);
                 object.setPlayAudio(-1);
             }
-            break;
         }
     }
     
@@ -226,5 +239,53 @@ public class GameLoop extends AnimationTimer implements Constants {
         } catch (IOException ex) {
             Logger.getLogger(GameLoop.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    private void sendListToPlayers() {
+        byte[] toSend = buildByteSendList();
+        writeToPlayers(toSend);
+        sendList.clear();
+    }
+
+    private byte[] buildByteSendList() {
+        int size = 0;
+        for(byte[] list : sendList) {
+            size += list.length;
+        }
+        byte [] byteSendList = new byte[size];
+        int n = 0;
+        for(byte[] list : sendList) {
+            for(byte toSend : list) {
+                byteSendList[n] = toSend;
+                n++;
+            }
+        }
+        return byteSendList;
+    }
+    private void restart() {
+        sendRestartToClients();
+        ObjectHandler.resetAllObjects();
+        trackBuilder.buildStandardTrack();
+        reCreatePlayers();
+    }
+    private void reCreatePlayers() {
+        playerOne = new Player(VisibleObjects.PLAYER_ONE, Players.PLAYER_ONE);
+        playerTwo = new Player(VisibleObjects.PLAYER_TWO, Players.PLAYER_TWO);
+    }
+
+    private void sendRestartToClients() {
+        HashSet<VisibleObject> toRemove = new HashSet<>(ObjectHandler.getCurrentObjects());
+        for(VisibleObject oldObject : toRemove) {
+            byte[] destroyer = new byte[5];
+            destroyer[0] = ACTION_DESTROY_OLD;
+            byte[] objectNumber = intToByteArray(oldObject.getObjectNumber());
+            for(int k = 0; k < 4; k++) {
+                    destroyer[k + 1] = objectNumber[k];
+                }
+            //writeToPlayers(destroyer);
+            writeToPlayers(destroyer);
+        }
+        byte[] noSound = new byte[2];
+        noSound[0] = ACTION_PLAY_SOUND;
+        noSound[1] = SOUND_STOP_FUSE;
     }
 }

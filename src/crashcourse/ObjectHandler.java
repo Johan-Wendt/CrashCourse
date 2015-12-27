@@ -68,6 +68,8 @@ public class ObjectHandler {
         currentObjects.clear();
         currentCollectables.clear();
         currentMovingObjects.clear();
+        objectsToAddToClient.clear();
+        objectsToRemoveFromClient.clear();
     }
     public static void clearAddAndRemoveClient() {
         objectsToAddToClient.clear();
